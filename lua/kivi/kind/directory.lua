@@ -1,24 +1,19 @@
 local M = {}
 
-M.action_open = function(self, items)
-  for _, item in ipairs(items) do
-    self:open_path("file", {path = item.path, layout = "no"})
+M.action_open = function(self, nodes)
+  for _, node in ipairs(nodes) do
+    self:open_path("file", {path = node.path, layout = "no"})
   end
 end
 
-M.action_tab_open = function(self, items)
-  for _, item in ipairs(items) do
-    self:open_path("file", {path = item.path, layout = "tab"})
+M.action_tab_open = function(self, nodes)
+  for _, node in ipairs(nodes) do
+    self:open_path("file", {path = node.path, layout = "tab"})
   end
 end
 
-M.action_child = function(self, items)
-  return self:action_open(items)
-end
-
-M.action_parent = function(self, items)
-  return self:action_open(items)
-end
+M.action_child = M.action_open
+M.action_parent = require("kivi/kind/file").action_parent
 
 M.default_action = "open"
 

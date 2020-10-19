@@ -71,40 +71,39 @@ M._redraw = function(self, bufnr, collect_result)
     _selected = {},
     _window_id = self._window_id,
   }
-  local items, ok = collect_result:get()
+  local root, ok = collect_result:get()
   if ok then
-    M._set_lines(bufnr, items, collect_result.source)
-    tbl._items = items
+    tbl._nodes = root:all()
+    M._set_lines(bufnr, tbl._nodes, collect_result.source)
     -- TODO: else job
   end
 
   return setmetatable(tbl, RenderedUI)
 end
 
-M._set_lines = function(bufnr, items, source)
-  local lines = vim.tbl_map(function(item)
-    return item.value
-  end, items)
-
+M._set_lines = function(bufnr, nodes, source)
+  local lines = vim.tbl_map(function(node)
+    return node.value
+  end, nodes)
   vim.bo[bufnr].modifiable = true
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
   vim.bo[bufnr].modifiable = false
 
-  source:highlight(bufnr, items)
+  source:highlight(bufnr, nodes)
 end
 
-function RenderedUI.item_groups(self, action_name, range)
-  local items = self:_selected_items(action_name, range)
-  local item_groups = listlib.group_by(items, function(item)
-    return item.kind_name or self._kind_name
+function RenderedUI.node_groups(self, action_name, range)
+  local nodes = self:_selected_nodes(action_name, range)
+  local node_groups = listlib.group_by(nodes, function(node)
+    return node.kind_name or self._kind_name
   end)
-  if #item_groups == 0 then
-    table.insert(item_groups, {"base", {}})
+  if #node_groups == 0 then
+    table.insert(node_groups, {"base", {}})
   end
-  return item_groups
+  return node_groups
 end
 
-function RenderedUI._selected_items(self, action_name, range)
+function RenderedUI._selected_nodes(self, action_name, range)
   -- TODO: select action
   if action_name ~= "toggle_selection" and not vim.tbl_isempty(self._selected) then
     local selected = vim.tbl_values(self._selected)
@@ -115,14 +114,14 @@ function RenderedUI._selected_items(self, action_name, range)
   end
 
   if range ~= nil then
-    local items = {}
+    local nodes = {}
     for i = range.first, range.last, 1 do
-      table.insert(items, self._items[i])
+      table.insert(nodes, self._nodes[i])
     end
-    return items
+    return nodes
   end
 
-  return {self._items[vim.fn.line(".")]}
+  return {self._nodes[vim.fn.line(".")]}
 end
 
 return M

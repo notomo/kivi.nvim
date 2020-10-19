@@ -5,15 +5,15 @@ local M = {}
 local Executor = {}
 Executor.__index = Executor
 
-function Executor.add(self, action_name, kind_name, items, action_opts)
-  local action, err = self:_action(action_name, kind_name, items, action_opts)
+function Executor.add(self, action_name, kind_name, nodes, action_opts)
+  local action, err = self:_action(action_name, kind_name, nodes, action_opts)
   if err ~= nil then
     return err
   end
   table.insert(self.actions, action)
 end
 
-function Executor._action(self, action_name, kind_name, items, action_opts)
+function Executor._action(self, action_name, kind_name, nodes, action_opts)
   local kind, err = kinds.create(self, kind_name)
   if err ~= nil then
     return nil, err
@@ -37,7 +37,7 @@ function Executor._action(self, action_name, kind_name, items, action_opts)
     if action.behavior.quit then
       self.rendered_ui:close()
     end
-    return action:execute(items, ctx)
+    return action:execute(nodes, ctx)
   end, nil
 end
 
@@ -59,8 +59,8 @@ function Executor.batch(self, ctx)
   return result, nil
 end
 
-function Executor.action(self, ctx, action_name, kind_name, items, action_opts)
-  local action, err = self:_action(action_name, kind_name, items, action_opts)
+function Executor.action(self, ctx, action_name, kind_name, nodes, action_opts)
+  local action, err = self:_action(action_name, kind_name, nodes, action_opts)
   if err ~= nil then
     return nil, err
   end

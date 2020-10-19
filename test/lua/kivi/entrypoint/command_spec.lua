@@ -22,14 +22,4 @@ describe("kivi", function()
     assert.exists_pattern("file")
   end)
 
-  it("can execute action", function()
-    helper.new_file("file")
-
-    command("Kivi")
-    command("normal! G")
-    command("KiviDo")
-
-    assert.file_name("file")
-  end)
-
 end)

@@ -81,10 +81,10 @@ M._execute = function(action_name, range, action_opts)
   end
 
   local executor = executor_core.create(global_notifier, ctx.ui, ctx.source_name, {}, nil)
-  local item_groups = ctx.ui:item_groups(action_name, range)
-  for _, item_group in ipairs(item_groups) do
-    local kind_name, items = unpack(item_group)
-    local add_err = executor:add(action_name, kind_name, items, action_opts)
+  local node_groups = ctx.ui:node_groups(action_name, range)
+  for _, node_group in ipairs(node_groups) do
+    local kind_name, nodes = unpack(node_group)
+    local add_err = executor:add(action_name, kind_name, nodes, action_opts)
     if add_err ~= nil then
       return nil, add_err
     end

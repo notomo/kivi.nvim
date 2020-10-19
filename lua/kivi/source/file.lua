@@ -18,8 +18,11 @@ M.collect = function(_, opts)
     return a < b
   end)
 
-  local items = {
-    {value = "..", path = vim.fn.fnamemodify(opts.path, ":p:h:h"), kind_name = "directory"},
+  local root = {
+    value = ".",
+    path = vim.fn.fnamemodify(opts.path, ":p:h"),
+    kind_name = "directory",
+    children = {},
   }
   for _, path in ipairs(paths) do
     local value
@@ -30,17 +33,17 @@ M.collect = function(_, opts)
     else
       value = vim.fn.fnamemodify(path, ":t")
     end
-    table.insert(items, {value = value, path = path, kind_name = kind_name})
+    table.insert(root.children, {value = value, path = path, kind_name = kind_name})
   end
-  return items
+  return root
 end
 
 vim.api.nvim_command("highlight default link KiviDirectory String")
 
-M.highlight = function(self, bufnr, items)
+M.highlight = function(self, bufnr, nodes)
   local highlighter = self.highlights:reset(bufnr)
-  highlighter:filter("KiviDirectory", items, function(item)
-    return item.kind_name == "directory"
+  highlighter:filter("KiviDirectory", nodes, function(node)
+    return node.kind_name == "directory"
   end)
 end
 

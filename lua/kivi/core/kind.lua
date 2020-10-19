@@ -9,8 +9,8 @@ local M = {}
 local Action = function(kind, fn, action_opts, behavior)
   local tbl = {action_opts = action_opts, behavior = behavior}
   local action = setmetatable(tbl, kind)
-  action.execute = function(self, items, ctx)
-    return fn(self, items, ctx)
+  action.execute = function(self, nodes, ctx)
+    return fn(self, nodes, ctx)
   end
   return action
 end

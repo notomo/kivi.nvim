@@ -3,9 +3,9 @@ local M = {}
 M.opts = {}
 M.behaviors = {}
 
-M.action_debug_print = function(_, items)
-  for _, item in ipairs(items) do
-    print(vim.inspect(item))
+M.action_debug_print = function(_, nodes)
+  for _, node in ipairs(nodes) do
+    print(vim.inspect(node))
   end
 end
 
