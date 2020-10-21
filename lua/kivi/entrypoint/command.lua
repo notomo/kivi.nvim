@@ -115,7 +115,7 @@ M.read = function(bufnr)
     return nil, start_err
   end
 
-  ctx.ui = ctx.ui:redraw(bufnr, result)
+  ctx.ui = ctx.ui:redraw(bufnr, result, ctx.opts)
 
   return result, nil
 end

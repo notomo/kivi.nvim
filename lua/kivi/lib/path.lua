@@ -20,8 +20,22 @@ M.parse_with_row = function(line)
   return path, tonumber(row), matched_line
 end
 
+M.add_trailing_slash = function(path)
+  if vim.endswith(path, "/") then
+    return path
+  end
+  return path .. "/"
+end
+
 M.join = function(...)
-  return table.concat({...}, "/")
+  local items = {}
+  for _, item in ipairs({...}) do
+    if vim.endswith(item, "/") then
+      item = item:sub(1, #item - 1)
+    end
+    table.insert(items, item)
+  end
+  return table.concat(items, "/")
 end
 
 if vim.fn.has("win32") == 1 then

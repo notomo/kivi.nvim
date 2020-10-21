@@ -2,10 +2,10 @@ local vim = vim
 
 local M = {}
 
-M.collect = function(_, opts)
+M.collect = function(self, opts)
   local paths = {}
   for _, path in ipairs(vim.fn.readdir(opts.path)) do
-    local abs_path = vim.fn.fnamemodify(opts.path .. "/" .. path, ":p:gs?\\?\\/?")
+    local abs_path = vim.fn.fnamemodify(self.pathlib.join(opts.path, path), ":p:gs?\\?\\/?")
     table.insert(paths, abs_path)
   end
 
@@ -20,7 +20,7 @@ M.collect = function(_, opts)
 
   local root = {
     value = ".",
-    path = vim.fn.fnamemodify(opts.path, ":p:h"),
+    path = self.pathlib.add_trailing_slash(vim.fn.fnamemodify(opts.path, ":p:h")),
     kind_name = "directory",
     children = {},
   }
@@ -28,7 +28,7 @@ M.collect = function(_, opts)
     local value
     local kind_name = M.kind_name
     if vim.fn.isdirectory(path) ~= 0 then
-      value = vim.fn.fnamemodify(path, ":h:t") .. "/"
+      value = self.pathlib.add_trailing_slash(vim.fn.fnamemodify(path, ":h:t"))
       kind_name = "directory"
     else
       value = vim.fn.fnamemodify(path, ":t")

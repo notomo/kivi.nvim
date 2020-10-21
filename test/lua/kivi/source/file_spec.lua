@@ -26,6 +26,7 @@ describe("kivi file source", function()
     command("KiviDo parent")
 
     assert.exists_pattern("file")
+    assert.current_line("dir/")
   end)
 
 end)

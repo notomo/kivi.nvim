@@ -49,23 +49,11 @@ M.from_current = function()
   return setmetatable(tbl, PendingUI)
 end
 
-function PendingUI.redraw(self, bufnr, collect_result)
-  return M._redraw(self, bufnr, collect_result)
-end
-
-function PendingUI.close(self)
+M._close = function(self)
   return windowlib.close(self._window_id)
 end
 
-function RenderedUI.redraw(self, bufnr, collect_result)
-  return M._redraw(self, bufnr, collect_result)
-end
-
-function RenderedUI.close(self)
-  return windowlib.close(self._window_id)
-end
-
-M._redraw = function(self, bufnr, collect_result)
+M._redraw = function(self, bufnr, collect_result, opts)
   local tbl = {
     _kind_name = collect_result.source.kind_name,
     _selected = {},
@@ -74,14 +62,19 @@ M._redraw = function(self, bufnr, collect_result)
   local root, ok = collect_result:get()
   if ok then
     tbl._nodes = root:all()
-    M._set_lines(bufnr, tbl._nodes, collect_result.source)
+    M._set_lines(bufnr, tbl._nodes, collect_result.source, opts.before_path)
     -- TODO: else job
   end
 
   return setmetatable(tbl, RenderedUI)
 end
 
-M._set_lines = function(bufnr, nodes, source)
+PendingUI.close = M._close
+RenderedUI.close = M._close
+PendingUI.redraw = M._redraw
+RenderedUI.redraw = M._redraw
+
+M._set_lines = function(bufnr, nodes, source, before_path)
   local lines = vim.tbl_map(function(node)
     return node.value
   end, nodes)
@@ -90,6 +83,15 @@ M._set_lines = function(bufnr, nodes, source)
   vim.bo[bufnr].modifiable = false
 
   source:highlight(bufnr, nodes)
+
+  if before_path ~= nil then
+    for i, node in ipairs(nodes) do
+      if node.path == before_path then
+        vim.api.nvim_win_set_cursor(0, {i, 0})
+        break
+      end
+    end
+  end
 end
 
 function RenderedUI.node_groups(self, action_name, range)
