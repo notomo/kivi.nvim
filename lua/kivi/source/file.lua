@@ -47,6 +47,10 @@ M.highlight = function(self, bufnr, nodes)
   end)
 end
 
+M.hook = function(_, path)
+  vim.api.nvim_command("lcd " .. path)
+end
+
 M.kind_name = "file"
 
 return M

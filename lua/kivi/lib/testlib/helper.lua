@@ -124,6 +124,10 @@ asserts.create("file_name"):register_eq(function()
   return vim.fn.fnamemodify(vim.fn.bufname("%"), ":t")
 end)
 
+asserts.create("current_dir"):register_eq(function()
+  return vim.fn.getcwd():gsub(M.test_data_dir .. "?", "")
+end)
+
 asserts.create("exists_pattern"):register(function(self)
   return function(_, args)
     local pattern = args[1]

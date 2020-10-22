@@ -29,4 +29,14 @@ describe("kivi file source", function()
     assert.current_line("dir/")
   end)
 
+  it("moves current directory", function()
+    helper.new_directory("dir")
+
+    command("Kivi")
+    helper.search("dir")
+    command("KiviDo child")
+
+    assert.current_dir("dir")
+  end)
+
 end)

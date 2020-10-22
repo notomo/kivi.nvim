@@ -128,6 +128,7 @@ M.read = function(bufnr)
     ctx.history:add()
     ctx.ui = ctx.ui:redraw(bufnr, root, result.source, ctx.history)
     ctx.history:set(root.path)
+    result.source:hook(root.path)
     -- TODO: else job
   end
 
