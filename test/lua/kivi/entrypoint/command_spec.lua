@@ -22,4 +22,20 @@ describe("kivi", function()
     assert.exists_pattern("file")
   end)
 
+  it("can remember path history", function()
+    helper.new_directory("dir")
+    helper.new_file("dir/file1")
+    helper.new_file("dir/file2")
+    helper.cd("dir")
+
+    command("Kivi")
+    helper.search("file2")
+
+    command("KiviDo parent")
+
+    command("KiviDo child")
+
+    assert.current_line("file2")
+  end)
+
 end)

@@ -25,7 +25,12 @@ local layouts = {
 }
 
 M.open = function(source_name, layout)
-  local bufnr = vim.api.nvim_create_buf(false, true)
+  local bufnr
+  if vim.bo.filetype == "kivi" then
+    bufnr = vim.api.nvim_get_current_buf()
+  else
+    bufnr = vim.api.nvim_create_buf(false, true)
+  end
   local key = ("%s/%d"):format(source_name, bufnr)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. key .. "/kivi")
   vim.bo[bufnr].filetype = "kivi"
@@ -53,18 +58,15 @@ M._close = function(self)
   return windowlib.close(self._window_id)
 end
 
-M._redraw = function(self, bufnr, collect_result, opts)
+M._redraw = function(self, bufnr, root, source, history)
   local tbl = {
-    _kind_name = collect_result.source.kind_name,
+    _kind_name = source.kind_name,
     _selected = {},
     _window_id = self._window_id,
+    _nodes = root:all(),
   }
-  local root, ok = collect_result:get()
-  if ok then
-    tbl._nodes = root:all()
-    M._set_lines(bufnr, tbl._nodes, collect_result.source, opts.before_path)
-    -- TODO: else job
-  end
+
+  M._set_lines(bufnr, tbl._nodes, source, history, root.path)
 
   return setmetatable(tbl, RenderedUI)
 end
@@ -74,7 +76,7 @@ RenderedUI.close = M._close
 PendingUI.redraw = M._redraw
 RenderedUI.redraw = M._redraw
 
-M._set_lines = function(bufnr, nodes, source, before_path)
+M._set_lines = function(bufnr, nodes, source, history, current_path)
   local lines = vim.tbl_map(function(node)
     return node.value
   end, nodes)
@@ -84,13 +86,19 @@ M._set_lines = function(bufnr, nodes, source, before_path)
 
   source:highlight(bufnr, nodes)
 
-  if before_path ~= nil then
+  local latest_path = history.latest_path
+  local ok = false
+  if latest_path ~= nil then
     for i, node in ipairs(nodes) do
-      if node.path == before_path then
+      if node.path == latest_path then
         vim.api.nvim_win_set_cursor(0, {i, 0})
+        ok = true
         break
       end
     end
+  end
+  if not ok then
+    history:restore(current_path)
   end
 end
 

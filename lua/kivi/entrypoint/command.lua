@@ -7,6 +7,7 @@ local cmdparse = require("kivi/lib/cmdparse")
 local repository = require("kivi/core/repository")
 local executor_core = require("kivi/core/executor")
 local notifiers = require("kivi/lib/notifier")
+local histories = require("kivi/core/history")
 
 local M = {}
 
@@ -43,7 +44,13 @@ M._start = function(source_name, source_opts, opts)
   source_name = source_name or "file"
   local ui, key = uis.open(source_name, opts.layout)
 
-  local ctx = {ui = ui, source_name = source_name, source_opts = source_opts, opts = opts}
+  local ctx = {
+    ui = ui,
+    source_name = source_name,
+    source_opts = source_opts,
+    opts = opts,
+    history = histories.create(key),
+  }
   repository.set(key, ctx)
 
   return M.read(ui.bufnr)
@@ -101,6 +108,7 @@ M.read = function(bufnr)
   if ctx.ui == nil then
     ctx.ui = uis.from_current()
     -- TODO: ctx.source_name = source_name
+    -- TODO: ctx.history = history
     ctx.source_opts = {}
     ctx.opts = vim.deepcopy(start_default_opts)
   end
@@ -115,7 +123,13 @@ M.read = function(bufnr)
     return nil, start_err
   end
 
-  ctx.ui = ctx.ui:redraw(bufnr, result, ctx.opts)
+  local root, ok = result:get()
+  if ok then
+    ctx.history:add()
+    ctx.ui = ctx.ui:redraw(bufnr, root, result.source, ctx.history)
+    ctx.history:set(root.path)
+    -- TODO: else job
+  end
 
   return result, nil
 end

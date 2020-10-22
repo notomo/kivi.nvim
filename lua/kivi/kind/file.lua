@@ -44,11 +44,7 @@ M.action_parent = function(self, nodes)
     return
   end
   local root = node:root()
-  self:open_path("file", {
-    path = vim.fn.fnamemodify(root.path, ":h:h"),
-    layout = "no",
-    before_path = root.path,
-  })
+  self:open_path("file", {path = vim.fn.fnamemodify(root.path, ":h:h"), layout = "no"})
 end
 
 M.action_tab_open = function(_, nodes)

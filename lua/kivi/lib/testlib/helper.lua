@@ -49,6 +49,13 @@ M.after_each = function()
   M.delete("")
 end
 
+M.buffer_log = function()
+  local lines = vim.fn.getbufline("%", 1, "$")
+  for _, line in ipairs(lines) do
+    print(line)
+  end
+end
+
 M.set_lines = function(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end
