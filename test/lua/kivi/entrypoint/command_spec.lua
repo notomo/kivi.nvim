@@ -47,4 +47,13 @@ describe("kivi", function()
     assert.current_line("file1")
   end)
 
+  it("can execute yank action", function()
+    helper.new_file("file")
+
+    command("Kivi")
+    command("KiviDo yank")
+
+    assert.register_value("+", helper.test_data_dir .. "file")
+  end)
+
 end)
