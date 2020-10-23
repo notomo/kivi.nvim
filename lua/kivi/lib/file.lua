@@ -6,9 +6,13 @@ M.readable = function(file_path)
   return vim.fn.filereadable(file_path) ~= 0
 end
 
+M.is_directory = function(path)
+  return vim.fn.isdirectory(path) ~= 0
+end
+
 M.create_if_need = function(file_path)
   local dir_path = vim.fn.fnamemodify(file_path, ":h")
-  if vim.fn.isdirectory(dir_path) == 0 then
+  if not M.is_directory(dir_path) then
     vim.fn.mkdir(dir_path, "p")
   end
   if M.readable(file_path) then

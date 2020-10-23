@@ -3,8 +3,13 @@ local vim = vim
 local M = {}
 
 M.collect = function(self, opts)
+  local dir_path = vim.fn.fnamemodify(opts.path, ":p")
+  if not self.filelib.is_directory(dir_path) then
+    return nil, "does not exist: " .. opts.path
+  end
+
   local paths = {}
-  for _, path in ipairs(vim.fn.readdir(opts.path)) do
+  for _, path in ipairs(vim.fn.readdir(dir_path)) do
     local abs_path = vim.fn.fnamemodify(self.pathlib.join(opts.path, path), ":p:gs?\\?\\/?")
     table.insert(paths, abs_path)
   end

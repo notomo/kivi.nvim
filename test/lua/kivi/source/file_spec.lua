@@ -51,4 +51,10 @@ describe("kivi file source", function()
     assert.current_line("file3")
   end)
 
+  it("raise error if path does not exist", function()
+    assert.error_message("does not exist: invalid_file_path", function()
+      command("Kivi --path=invalid_file_path")
+    end)
+  end)
+
 end)
