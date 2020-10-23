@@ -39,4 +39,16 @@ describe("kivi file source", function()
     assert.current_dir("dir")
   end)
 
+  it("place cursor to the node that has source buffer's file path", function()
+    helper.new_file("file1")
+    helper.new_file("file2")
+    helper.new_file("file3")
+
+    command("edit file3")
+
+    command("Kivi")
+
+    assert.current_line("file3")
+  end)
+
 end)

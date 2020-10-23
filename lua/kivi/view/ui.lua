@@ -26,11 +26,13 @@ local layouts = {
 }
 
 M.open = function(source_name, layout)
-  local bufnr
+  local bufnr, source_bufnr
+  local current_bufnr = vim.api.nvim_get_current_buf()
   if vim.bo.filetype == "kivi" then
-    bufnr = vim.api.nvim_get_current_buf()
+    bufnr = current_bufnr
   else
     bufnr = vim.api.nvim_create_buf(false, true)
+    source_bufnr = current_bufnr
   end
   local key = ("%s/%d"):format(source_name, bufnr)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. key .. "/kivi")
@@ -44,14 +46,14 @@ M.open = function(source_name, layout)
   vim.wo[window].number = false
   local window_id = vim.api.nvim_get_current_win()
 
-  local tbl = {bufnr = bufnr, _window_id = window_id}
+  local tbl = {bufnr = bufnr, source_bufnr = source_bufnr, _window_id = window_id}
   return setmetatable(tbl, PendingUI), key
 end
 
 M.from_current = function()
   local bufnr = vim.api.nvim_get_current_buf()
   local window_id = vim.api.nvim_get_current_win()
-  local tbl = {bufnr = bufnr, _window_id = window_id}
+  local tbl = {bufnr = bufnr, source_bufnr = nil, _window_id = window_id}
   return setmetatable(tbl, PendingUI)
 end
 
@@ -87,7 +89,7 @@ M._set_lines = function(bufnr, nodes, source, history, current_path)
 
   source:highlight(bufnr, nodes)
 
-  local latest_path = history.latest_path
+  local latest_path = source:init_path() or history.latest_path
   local ok = false
   if latest_path ~= nil then
     for i, node in ipairs(nodes) do

@@ -5,11 +5,12 @@ M.collect = function()
 end
 
 M.highlight = function()
-  return {}
+end
+
+M.init_path = function()
 end
 
 M.hook = function()
-  return {}
 end
 
 return M

@@ -113,7 +113,7 @@ M.read = function(bufnr)
     ctx.opts = vim.deepcopy(start_default_opts)
   end
 
-  local collector, create_err = collector_core.create(ctx.source_name, ctx.source_opts)
+  local collector, create_err = collector_core.create(ctx.source_name, ctx.source_opts, ctx.ui.source_bufnr)
   if create_err ~= nil then
     return nil, create_err
   end

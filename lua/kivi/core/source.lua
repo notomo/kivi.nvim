@@ -1,11 +1,12 @@
 local modulelib = require("kivi/lib/module")
 local pathlib = require("kivi/lib/path")
+local filelib = require("kivi/lib/file")
 local highlights = require("kivi/lib/highlight")
 local base = require("kivi/source/base")
 
 local M = {}
 
-M.create = function(source_name)
+M.create = function(source_name, _, source_bufnr)
   local origin
   if source_name == "base" then
     origin = base
@@ -20,8 +21,10 @@ M.create = function(source_name)
 
   local source = {}
   source.name = source_name
+  source.bufnr = source_bufnr
   source.highlights = highlights.new_factory("kivi-highlight")
   source.pathlib = pathlib
+  source.filelib = filelib
 
   return setmetatable(source, origin), nil
 end

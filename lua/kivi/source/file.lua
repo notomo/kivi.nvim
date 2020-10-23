@@ -47,6 +47,20 @@ M.highlight = function(self, bufnr, nodes)
   end)
 end
 
+M.init_path = function(self)
+  local bufnr = self.bufnr
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    return
+  end
+
+  local path = vim.api.nvim_buf_get_name(bufnr)
+  if not self.filelib.readable(path) then
+    return
+  end
+
+  return path
+end
+
 M.hook = function(_, path)
   vim.api.nvim_command("lcd " .. path)
 end

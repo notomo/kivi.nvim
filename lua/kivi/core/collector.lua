@@ -60,8 +60,8 @@ function Collector.start(self, opts)
   return setmetatable(tbl, CollectResult), nil
 end
 
-M.create = function(source_name, source_opts)
-  local source, err = source_core.create(source_name, source_opts)
+M.create = function(source_name, source_opts, source_bufnr)
+  local source, err = source_core.create(source_name, source_opts, source_bufnr)
   if err ~= nil then
     return nil, err
   end
