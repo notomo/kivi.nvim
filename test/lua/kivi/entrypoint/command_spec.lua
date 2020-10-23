@@ -38,4 +38,13 @@ describe("kivi", function()
     assert.current_line("file2")
   end)
 
+  it("opens with the cursor on the second line", function()
+    helper.new_file("file1")
+    helper.new_file("file2")
+
+    command("Kivi")
+
+    assert.current_line("file1")
+  end)
+
 end)

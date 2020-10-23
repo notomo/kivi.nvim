@@ -1,5 +1,6 @@
 local listlib = require("kivi/lib/list")
 local windowlib = require("kivi/lib/window")
+local cursorlib = require("kivi/lib/cursor")
 local vim = vim
 
 local M = {}
@@ -91,14 +92,17 @@ M._set_lines = function(bufnr, nodes, source, history, current_path)
   if latest_path ~= nil then
     for i, node in ipairs(nodes) do
       if node.path == latest_path then
-        vim.api.nvim_win_set_cursor(0, {i, 0})
+        cursorlib.set_row(i)
         ok = true
         break
       end
     end
   end
   if not ok then
-    history:restore(current_path)
+    ok = history:restore(current_path)
+  end
+  if not ok then
+    cursorlib.set_row(2)
   end
 end
 

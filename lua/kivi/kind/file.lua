@@ -1,3 +1,5 @@
+local cursorlib = require("kivi/lib/cursor")
+
 local M = {}
 M.__index = M
 
@@ -5,13 +7,8 @@ local adjust_cursor = function(node)
   if node.row == nil then
     return
   end
-  local count = vim.api.nvim_buf_line_count(0)
-  local row = node.row
-  if node.row > count then
-    row = count
-  end
   local range = node.range or {s = {column = 0}}
-  vim.api.nvim_win_set_cursor(0, {row, range.s.column})
+  cursorlib.set(node.row, range.s.column)
 end
 
 local adjust_window = function()

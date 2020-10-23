@@ -1,3 +1,4 @@
+local cursorlib = require("kivi/lib/cursor")
 local persist = require("kivi/lib/_persist")("history")
 persist.histories = persist.histories or {}
 
@@ -19,8 +20,10 @@ end
 function History.restore(self, current_path)
   local row = self._paths[current_path]
   if row ~= nil then
-    vim.api.nvim_win_set_cursor(0, {row, 0})
+    cursorlib.set_row(row)
+    return true
   end
+  return false
 end
 
 M.create = function(key)
