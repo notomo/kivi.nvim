@@ -56,6 +56,19 @@ M.buffer_log = function()
   end
 end
 
+M.set_inputs = function(...)
+  local answers = vim.fn.reverse({...})
+  require("kivi/lib/input").read = function(msg)
+    local answer = table.remove(answers)
+    if answer == nil then
+      print(msg)
+      error("no input")
+    end
+    print(msg .. answer)
+    return answer
+  end
+end
+
 M.set_lines = function(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end

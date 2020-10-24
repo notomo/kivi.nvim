@@ -1,4 +1,3 @@
-local listlib = require("kivi/lib/list")
 local windowlib = require("kivi/lib/window")
 local cursorlib = require("kivi/lib/cursor")
 local highlights = require("kivi/lib/highlight")
@@ -64,11 +63,11 @@ end
 
 M._redraw = function(self, root, source, history)
   local tbl = {
-    _kind_name = source.kind_name,
+    bufnr = self.bufnr,
+    source = source,
     _selected = {},
     _window_id = self._window_id,
     _nodes = root:all(),
-    bufnr = self.bufnr,
     _selection_hl_factory = highlights.new_factory("kivi-selection-highlight", self.bufnr),
   }
 
@@ -111,18 +110,7 @@ M._set_lines = function(bufnr, nodes, source, history, current_path)
   end
 end
 
-function RenderedUI.node_groups(self, action_name, range)
-  local nodes = self:_selected_nodes(action_name, range)
-  local node_groups = listlib.group_by(nodes, function(node)
-    return node.kind_name or self._kind_name
-  end)
-  if #node_groups == 0 then
-    table.insert(node_groups, {"base", {}})
-  end
-  return node_groups
-end
-
-function RenderedUI._selected_nodes(self, action_name, range)
+function RenderedUI.selected_nodes(self, action_name, range)
   if action_name ~= "toggle_selection" and not vim.tbl_isempty(self._selected) then
     -- TODO sort by index?
     return vim.tbl_values(self._selected)

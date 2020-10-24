@@ -57,4 +57,32 @@ describe("kivi file source", function()
     end)
   end)
 
+  it("can delete file", function()
+    helper.set_inputs("Y")
+
+    helper.new_file("file1")
+    helper.new_file("file2")
+
+    command("Kivi")
+    helper.search("file1")
+    command("KiviDo delete")
+
+    assert.no.exists_pattern("file1")
+    assert.exists_pattern("file2")
+  end)
+
+  it("can delete directory", function()
+    helper.set_inputs("Y")
+
+    helper.new_directory("dir1")
+    helper.new_directory("dir2")
+
+    command("Kivi")
+    helper.search("dir1")
+    command("KiviDo delete")
+
+    assert.no.exists_pattern("dir1")
+    assert.exists_pattern("dir2")
+  end)
+
 end)

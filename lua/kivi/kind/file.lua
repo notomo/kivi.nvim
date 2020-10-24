@@ -71,6 +71,16 @@ M.action_vsplit_open = function(_, nodes)
   end
 end
 
-M.default_action = "open"
+M.action_delete = function(self, nodes)
+  local yes = self:confirm("remove?", nodes)
+  if not yes then
+    return
+  end
+
+  for _, node in ipairs(nodes) do
+    vim.fn.delete(node.path, "rf")
+  end
+  self:open_path("file", {path = ".", layout = "no"})
+end
 
 return M

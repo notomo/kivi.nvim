@@ -1,6 +1,6 @@
 local modulelib = require("kivi/lib/module")
 local filelib = require("kivi/lib/file")
-local custom = require("kivi/custom")
+local inputlib = require("kivi/lib/input")
 local base = require("kivi/kind/base")
 local vim = vim
 
@@ -8,6 +8,7 @@ local M = {}
 
 local Action = function(kind, fn, action_opts, behavior)
   local tbl = {action_opts = action_opts, behavior = behavior}
+  kind.__index = kind
   local action = setmetatable(tbl, kind)
   action.execute = function(self, nodes, ctx)
     return fn(self, nodes, ctx)
@@ -17,30 +18,37 @@ end
 
 local action_prefix = "action_"
 
-local find_action = function(kind, action_name, action_opts)
-  local name = action_name
-  if name == "default" then
-    name = kind.default_action
-  end
+local Kind = {}
 
-  local key = action_prefix .. name
-  local opts = vim.tbl_extend("force", kind.opts[name] or {}, action_opts)
-  local behavior = vim.tbl_deep_extend("force", {quit = false}, kind.behaviors[name] or {})
+function Kind.find_action(self, action_name, action_opts)
+  local key = action_prefix .. action_name
+  local opts = vim.tbl_extend("force", self.opts[action_name] or {}, action_opts)
+  local behavior = vim.tbl_deep_extend("force", {quit = false}, self.behaviors[action_name] or {})
 
-  local action = kind[key]
+  local action = self[key]
   if action ~= nil then
-    return Action(kind, action, opts, behavior), nil
+    return Action(self, action, opts, behavior), nil
   end
 
-  return nil, "not found action: " .. name
+  return nil, "not found action: " .. action_name
 end
 
-local open_path = function(kind, source_name, opts)
+function Kind.open_path(self, source_name, opts)
   local source_opts = {}
-  return kind._notifier:send("open_path", source_name, source_opts, opts)
+  return self._notifier:send("open_path", source_name, source_opts, opts)
 end
 
-M.create = function(executor, kind_name)
+function Kind.confirm(self, message, nodes)
+  local paths = vim.tbl_map(function(node)
+    return node.path
+  end, nodes)
+  local target = table.concat(paths, "\n")
+  local msg = ("%s\n%s Y/n: "):format(target, message)
+  local input = self._input_reader(msg)
+  return input == "Y"
+end
+
+M.create = function(executor, kind_name, action_name)
   local origin
   if kind_name == "base" then
     origin = base
@@ -53,34 +61,24 @@ M.create = function(executor, kind_name)
     origin.__index = origin
   end
 
-  local source_name = executor.source_name
+  local tbl = {
+    name = kind_name,
+    source_name = executor.source_name,
+    filelib = filelib,
+    executor = executor,
+    opts = vim.tbl_deep_extend("force", base.opts, origin.opts or {}),
+    behaviors = vim.tbl_deep_extend("force", base.behaviors, origin.behaviors or {}),
+    _notifier = executor.notifier,
+    _input_reader = inputlib.reader(),
+  }
+  tbl = vim.tbl_extend("error", tbl, Kind)
+  local self = setmetatable(tbl, origin)
 
-  local kind = {}
-  kind.name = kind_name
-  kind.source_name = source_name
-  kind.filelib = filelib
-  kind.executor = executor
-  kind.find_action = find_action
-  kind.open_path = open_path
-  kind._notifier = executor.notifier
-  kind.__index = kind
-
-  local source_user_opts = {}
-  local source_user_behaviors = {}
-  if custom.source_actions ~= nil and custom.source_actions[source_name] ~= nil then
-    source_user_opts = custom.source_actions[source_name].opts or {}
-    source_user_behaviors = custom.source_actions[source_name].behaviors or {}
+  if kind_name ~= self.parent_kind_name and self.parent_kind_name ~= nil and self[action_prefix .. action_name] == nil then
+    return M.create(executor, self.parent_kind_name, action_name)
   end
-  local user_opts = {}
-  local user_behaviors = {}
-  if custom.kind_actions ~= nil and custom.kind_actions[kind_name] ~= nil then
-    user_opts = custom.kind_actions[kind_name].opts or {}
-    user_behaviors = custom.kind_actions[kind_name].behaviors or {}
-  end
-  kind.opts = vim.tbl_deep_extend("force", base.opts, origin.opts or {}, user_opts, source_user_opts)
-  kind.behaviors = vim.tbl_deep_extend("force", base.behaviors, origin.behaviors or {}, user_behaviors, source_user_behaviors)
 
-  return setmetatable(kind, origin), nil
+  return self, nil
 end
 
 return M

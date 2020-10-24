@@ -13,8 +13,7 @@ M.action_tab_open = function(self, nodes)
 end
 
 M.action_child = M.action_open
-M.action_parent = require("kivi/kind/file").action_parent
 
-M.default_action = "open"
+M.parent_kind_name = "file"
 
 return M

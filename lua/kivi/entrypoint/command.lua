@@ -83,23 +83,9 @@ M._execute = function(action_name, range, action_opts)
     return nil, "not found state: " .. err
   end
 
-  if action_name == nil then
-    action_name = "default"
-  end
-
-  local executor = executor_core.create(global_notifier, ctx.ui, ctx.source_name, {}, nil)
-  local node_groups = ctx.ui:node_groups(action_name, range)
-  for _, node_group in ipairs(node_groups) do
-    local kind_name, nodes = unpack(node_group)
-    local add_err = executor:add(action_name, kind_name, nodes, action_opts)
-    if add_err ~= nil then
-      return nil, add_err
-    end
-  end
-
+  local nodes = ctx.ui:selected_nodes(action_name, range)
   ctx.ui:reset_selections(action_name)
-
-  return executor:batch(ctx)
+  return executor_core.create(global_notifier, ctx.ui):execute(ctx, nodes, action_name, action_opts)
 end
 
 M.read = function(bufnr)
