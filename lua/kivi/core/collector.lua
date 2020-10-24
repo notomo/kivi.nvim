@@ -1,42 +1,14 @@
 local source_core = require("kivi/core/source")
+local nodes = require("kivi/core/node")
 
 local M = {}
-
-local Node = {}
-Node.__index = Node
-
-function Node.new(raw, parent)
-  local tbl = {parent = parent}
-  tbl.__index = tbl
-  local meta = setmetatable(tbl, Node)
-  return setmetatable(raw, meta)
-end
-
-function Node.all(self)
-  local nodes = {self}
-  for _, child in ipairs(self.children or {}) do
-    local node = Node.new(child, self)
-    vim.list_extend(nodes, node:all())
-  end
-  return nodes
-end
-
-function Node.root(self)
-  local current = self
-  while true do
-    if current.parent == nil then
-      return current
-    end
-    current = current.parent
-  end
-end
 
 local CollectResult = {}
 CollectResult.__index = CollectResult
 
 function CollectResult.get(self)
   if self._root ~= nil then
-    return Node.new(self._root), true
+    return nodes.new(self._root), true
   end
   return {}, false
 end

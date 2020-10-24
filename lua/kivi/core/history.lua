@@ -8,6 +8,7 @@ local History = {}
 History.__index = History
 
 function History.add(self, is_back)
+  vim.validate({is_back = {is_back, "boolean"}})
   if self.latest_path ~= nil then
     self._rows[self.latest_path] = vim.api.nvim_win_get_cursor(0)[1]
     if not is_back then
@@ -17,6 +18,7 @@ function History.add(self, is_back)
 end
 
 function History.set(self, path)
+  vim.validate({path = {path, "string"}})
   self.latest_path = path
 end
 
@@ -24,8 +26,9 @@ function History.pop(self)
   return table.remove(self._paths)
 end
 
-function History.restore(self, current_path)
-  local row = self._rows[current_path]
+function History.restore(self, path)
+  vim.validate({path = {path, "string"}})
+  local row = self._rows[path]
   if row ~= nil then
     cursorlib.set_row(row)
     return true
@@ -34,6 +37,7 @@ function History.restore(self, current_path)
 end
 
 M.create = function(key)
+  vim.validate({key = {key, "string"}})
   local history = persist.histories[key]
   if history ~= nil then
     return history

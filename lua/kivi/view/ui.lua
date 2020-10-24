@@ -28,7 +28,6 @@ M.open = function(source_name, layout)
   vim.bo[bufnr].modifiable = false
 
   local window_id = layouts.open(layout, bufnr)
-  vim.api.nvim_win_set_width(window_id, 38)
   vim.wo[window_id].number = false
 
   local tbl = {bufnr = bufnr, source_bufnr = source_bufnr, _window_id = window_id}

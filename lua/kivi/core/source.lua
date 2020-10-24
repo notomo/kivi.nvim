@@ -19,14 +19,14 @@ M.create = function(source_name, _, source_bufnr)
     origin.__index = origin
   end
 
-  local source = {}
-  source.name = source_name
-  source.bufnr = source_bufnr
-  source.highlights = highlights.new_factory("kivi-highlight")
-  source.pathlib = pathlib
-  source.filelib = filelib
-
-  return setmetatable(source, origin), nil
+  local tbl = {
+    name = source_name,
+    bufnr = source_bufnr,
+    highlights = highlights.new_factory("kivi-highlight"),
+    pathlib = pathlib,
+    filelib = filelib,
+  }
+  return setmetatable(tbl, origin), nil
 end
 
 return M
