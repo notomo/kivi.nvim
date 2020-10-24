@@ -69,7 +69,7 @@ M._redraw = function(self, root, source, history)
     _window_id = self._window_id,
     _nodes = root:all(),
     bufnr = self.bufnr,
-    _selection_hl_factory = highlights.new_factory("kivi-selection-highlight"),
+    _selection_hl_factory = highlights.new_factory("kivi-selection-highlight", self.bufnr),
   }
 
   M._set_lines(tbl.bufnr, tbl._nodes, source, history, root.path)
@@ -123,7 +123,6 @@ function RenderedUI.node_groups(self, action_name, range)
 end
 
 function RenderedUI._selected_nodes(self, action_name, range)
-  -- TODO: select action
   if action_name ~= "toggle_selection" and not vim.tbl_isempty(self._selected) then
     -- TODO sort by index?
     return vim.tbl_values(self._selected)
@@ -142,15 +141,14 @@ end
 
 function RenderedUI.toggle_selections(self, nodes)
   for _, node in ipairs(nodes) do
-    local key = node.path
-    if self._selected[key] then
-      self._selected[key] = nil
+    if self._selected[node.path] then
+      self._selected[node.path] = nil
     else
-      self._selected[key] = node
+      self._selected[node.path] = node
     end
   end
 
-  local highligher = self._selection_hl_factory:reset(self.bufnr)
+  local highligher = self._selection_hl_factory:reset()
   highligher:filter("KiviSelected", self._nodes, function(node)
     return self._selected[node.path] ~= nil
   end)
@@ -161,7 +159,7 @@ function RenderedUI.reset_selections(self, action_name)
     return
   end
   self._selected = {}
-  self._selection_hl_factory:reset(self.bufnr)
+  self._selection_hl_factory:reset()
 end
 
 vim.api.nvim_command("highlight default link KiviSelected Statement")

@@ -25,19 +25,22 @@ local Factory = {}
 Factory.__index = Factory
 
 function Factory.create(self, bufnr)
+  bufnr = bufnr or self.bufnr
   local highlighter = {bufnr = bufnr, ns = self.ns}
   return setmetatable(highlighter, Highlighter)
 end
 
 function Factory.reset(self, bufnr)
+  bufnr = bufnr or self.bufnr
   local highlighter = self:create(bufnr)
   vim.api.nvim_buf_clear_namespace(bufnr, self.ns, 0, -1)
   return highlighter
 end
 
-M.new_factory = function(key)
+M.new_factory = function(key, bufnr)
+  vim.validate {key = {key, "string"}, bufnr = {bufnr, "number", true}}
   local ns = vim.api.nvim_create_namespace(key)
-  local factory = {ns = ns}
+  local factory = {ns = ns, bufnr = bufnr}
   return setmetatable(factory, Factory)
 end
 
