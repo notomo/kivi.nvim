@@ -11,12 +11,12 @@ local histories = require("kivi/core/history")
 
 local M = {}
 
+local start_default_opts = {path = ".", layout = "vertical", back = false}
+
 local global_notifier = notifiers.new()
 global_notifier:on("open_path", function(source_name, source_opts, opts)
-  M._start(source_name, source_opts, opts)
+  M._start(source_name, source_opts, vim.tbl_extend("force", start_default_opts, opts))
 end)
-
-local start_default_opts = {path = ".", layout = "vertical"}
 
 M.start_by_excmd = function(has_range, raw_range, raw_args)
   local source_name, opts, ex_opts, parse_err = cmdparse.args(raw_args, vim.tbl_extend("force", start_default_opts, custom.opts))
@@ -125,7 +125,7 @@ M.read = function(bufnr)
 
   local root, ok = result:get()
   if ok then
-    ctx.history:add()
+    ctx.history:add(ctx.opts.back)
     ctx.ui = ctx.ui:redraw(bufnr, root, result.source, ctx.history)
     ctx.history:set(root.path)
     result.source:hook(root.path)

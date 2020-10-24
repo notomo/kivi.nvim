@@ -56,4 +56,22 @@ describe("kivi", function()
     assert.register_value("+", helper.test_data_dir .. "file")
   end)
 
+  it("can execute back action", function()
+    helper.new_directory("dir1")
+    helper.new_directory("dir1/dir2")
+
+    command("Kivi --path=dir1/dir2")
+    command("KiviDo parent")
+    command("KiviDo parent")
+    command("KiviDo back")
+
+    assert.current_dir("dir1")
+
+    command("KiviDo back")
+    assert.current_dir("dir1/dir2")
+
+    command("KiviDo back")
+    assert.current_dir("dir1/dir2")
+  end)
+
 end)

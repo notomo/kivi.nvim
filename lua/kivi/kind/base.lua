@@ -21,6 +21,14 @@ M.action_yank = function(self, nodes)
   end
 end
 
+M.action_back = function(self, _, ctx)
+  local path = ctx.history:pop()
+  if path == nil then
+    return
+  end
+  self:open_path(ctx.source_name, {path = path, layout = "no", back = true})
+end
+
 M.__index = M
 setmetatable(M, {})
 
