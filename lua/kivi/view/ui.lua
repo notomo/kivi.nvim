@@ -1,6 +1,7 @@
 local listlib = require("kivi/lib/list")
 local windowlib = require("kivi/lib/window")
 local cursorlib = require("kivi/lib/cursor")
+local highlights = require("kivi/lib/highlight")
 local vim = vim
 
 local M = {}
@@ -61,15 +62,17 @@ M._close = function(self)
   return windowlib.close(self._window_id)
 end
 
-M._redraw = function(self, bufnr, root, source, history)
+M._redraw = function(self, root, source, history)
   local tbl = {
     _kind_name = source.kind_name,
     _selected = {},
     _window_id = self._window_id,
     _nodes = root:all(),
+    bufnr = self.bufnr,
+    _selection_hl_factory = highlights.new_factory("kivi-selection-highlight"),
   }
 
-  M._set_lines(bufnr, tbl._nodes, source, history, root.path)
+  M._set_lines(tbl.bufnr, tbl._nodes, source, history, root.path)
 
   return setmetatable(tbl, RenderedUI)
 end
@@ -122,11 +125,8 @@ end
 function RenderedUI._selected_nodes(self, action_name, range)
   -- TODO: select action
   if action_name ~= "toggle_selection" and not vim.tbl_isempty(self._selected) then
-    local selected = vim.tbl_values(self._selected)
-    table.sort(selected, function(a, b)
-      return a.index < b.index
-    end)
-    return selected
+    -- TODO sort by index?
+    return vim.tbl_values(self._selected)
   end
 
   if range ~= nil then
@@ -139,5 +139,31 @@ function RenderedUI._selected_nodes(self, action_name, range)
 
   return {self._nodes[vim.fn.line(".")]}
 end
+
+function RenderedUI.toggle_selections(self, nodes)
+  for _, node in ipairs(nodes) do
+    local key = node.path
+    if self._selected[key] then
+      self._selected[key] = nil
+    else
+      self._selected[key] = node
+    end
+  end
+
+  local highligher = self._selection_hl_factory:reset(self.bufnr)
+  highligher:filter("KiviSelected", self._nodes, function(node)
+    return self._selected[node.path] ~= nil
+  end)
+end
+
+function RenderedUI.reset_selections(self, action_name)
+  if action_name == "toggle_selection" then
+    return
+  end
+  self._selected = {}
+  self._selection_hl_factory:reset(self.bufnr)
+end
+
+vim.api.nvim_command("highlight default link KiviSelected Statement")
 
 return M

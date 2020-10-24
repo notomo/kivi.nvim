@@ -97,6 +97,8 @@ M._execute = function(action_name, range, action_opts)
     end
   end
 
+  ctx.ui:reset_selections(action_name)
+
   return executor:batch(ctx)
 end
 
@@ -126,7 +128,7 @@ M.read = function(bufnr)
   local root, ok = result:get()
   if ok then
     ctx.history:add(ctx.opts.back)
-    ctx.ui = ctx.ui:redraw(bufnr, root, result.source, ctx.history)
+    ctx.ui = ctx.ui:redraw(root, result.source, ctx.history)
     ctx.history:set(root.path)
     result.source:hook(root.path)
     -- TODO: else job

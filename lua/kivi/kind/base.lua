@@ -29,6 +29,10 @@ M.action_back = function(self, _, ctx)
   self:open_path(ctx.source_name, {path = path, layout = "no", back = true})
 end
 
+M.action_toggle_selection = function(_, nodes, ctx)
+  ctx.ui:toggle_selections(nodes)
+end
+
 M.__index = M
 setmetatable(M, {})
 

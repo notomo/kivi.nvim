@@ -74,4 +74,50 @@ describe("kivi", function()
     assert.current_dir("dir1/dir2")
   end)
 
+  it("can select nodes and execute action", function()
+    helper.new_file("file1")
+    helper.new_file("file2")
+    helper.new_file("file3")
+
+    command("Kivi")
+    helper.search("file2")
+    command("KiviDo toggle_selection")
+    helper.search("file3")
+    command("KiviDo toggle_selection")
+    command("KiviDo tab_open")
+
+    assert.tab_count(3)
+  end)
+
+  it("can reset selections by action", function()
+    helper.new_file("file1")
+    helper.new_file("file2")
+
+    command("Kivi")
+    helper.search("file1")
+    command("KiviDo toggle_selection")
+    command("KiviDo tab_open")
+
+    command("tabprevious")
+    helper.search("file2")
+    command("KiviDo tab_open")
+
+    assert.tab_count(3)
+  end)
+
+  it("can reset selections by toggle_selection action", function()
+    helper.new_file("file1")
+    helper.new_file("file2")
+
+    command("Kivi")
+    helper.search("file1")
+    command("KiviDo toggle_selection")
+    command("KiviDo toggle_selection")
+    helper.search("file2")
+    command("KiviDo tab_open")
+
+    assert.tab_count(2)
+    assert.file_name("file2")
+  end)
+
 end)
