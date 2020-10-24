@@ -38,7 +38,7 @@ function Factory.reset(self, bufnr)
 end
 
 M.new_factory = function(key, bufnr)
-  vim.validate {key = {key, "string"}, bufnr = {bufnr, "number", true}}
+  vim.validate({key = {key, "string"}, bufnr = {bufnr, "number", true}})
   local ns = vim.api.nvim_create_namespace(key)
   local factory = {ns = ns, bufnr = bufnr}
   return setmetatable(factory, Factory)

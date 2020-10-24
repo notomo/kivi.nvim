@@ -1,6 +1,7 @@
 local windowlib = require("kivi/lib/window")
 local cursorlib = require("kivi/lib/cursor")
 local highlights = require("kivi/lib/highlight")
+local layouts = require("kivi/view/layout")
 local vim = vim
 
 local M = {}
@@ -10,20 +11,6 @@ PendingUI.__index = PendingUI
 
 local RenderedUI = {}
 RenderedUI.__index = RenderedUI
-
-local layouts = {
-  vertical = function(bufnr)
-    vim.api.nvim_command("vsplit")
-    vim.api.nvim_command("buffer " .. bufnr)
-  end,
-  no = function(bufnr)
-    vim.api.nvim_command("buffer " .. bufnr)
-  end,
-  tab = function(bufnr)
-    vim.api.nvim_command("tabedit")
-    vim.api.nvim_command("buffer " .. bufnr)
-  end,
-}
 
 M.open = function(source_name, layout)
   local bufnr, source_bufnr
@@ -40,11 +27,9 @@ M.open = function(source_name, layout)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
 
-  local window = 0
-  layouts[layout](bufnr)
-  vim.api.nvim_win_set_width(window, 38)
-  vim.wo[window].number = false
-  local window_id = vim.api.nvim_get_current_win()
+  local window_id = layouts.open(layout, bufnr)
+  vim.api.nvim_win_set_width(window_id, 38)
+  vim.wo[window_id].number = false
 
   local tbl = {bufnr = bufnr, source_bufnr = source_bufnr, _window_id = window_id}
   return setmetatable(tbl, PendingUI), key
