@@ -41,7 +41,7 @@ M.action_parent = function(self, nodes)
     return
   end
   local root = node:root()
-  self:open_path("file", {path = vim.fn.fnamemodify(root.path, ":h:h"), layout = "no"})
+  self:start_path({path = vim.fn.fnamemodify(root.path, ":h:h")})
 end
 
 M.action_tab_open = function(_, nodes)
@@ -80,7 +80,7 @@ M.action_delete = function(self, nodes)
   for _, node in ipairs(nodes) do
     vim.fn.delete(node.path, "rf")
   end
-  self:open_path("file", {path = ".", layout = "no"})
+  self:start_path()
 end
 
 return M

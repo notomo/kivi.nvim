@@ -2,13 +2,13 @@ local M = {}
 
 M.action_open = function(self, nodes)
   for _, node in ipairs(nodes) do
-    self:open_path("file", {path = node.path, layout = "no"})
+    self:start_path({path = node.path})
   end
 end
 
 M.action_tab_open = function(self, nodes)
   for _, node in ipairs(nodes) do
-    self:open_path("file", {path = node.path, layout = "tab"})
+    self:start_path({path = node.path, layout = "tab"})
   end
 end
 

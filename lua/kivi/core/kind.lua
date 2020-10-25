@@ -33,9 +33,11 @@ function Kind.find_action(self, action_name, action_opts)
   return nil, "not found action: " .. action_name
 end
 
-function Kind.open_path(self, source_name, opts)
+function Kind.start_path(self, opts, source_name)
+  opts = opts or {}
+  source_name = source_name or self.source_name
   local source_opts = {}
-  return self._notifier:send("open_path", source_name, source_opts, opts)
+  return self._notifier:send("start_path", source_name, source_opts, opts)
 end
 
 function Kind.confirm(self, message, nodes)

@@ -10,7 +10,7 @@ describe("kivi", function()
   it("can open ui", function()
     command("Kivi")
 
-    assert.filetype("kivi")
+    assert.filetype("kivi-file")
   end)
 
   it("can reload ui", function()

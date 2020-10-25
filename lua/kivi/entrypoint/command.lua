@@ -11,10 +11,10 @@ local histories = require("kivi/core/history")
 
 local M = {}
 
-local start_default_opts = {path = ".", layout = "vertical", back = false}
+local start_default_opts = {path = ".", layout = "no", back = false}
 
 local global_notifier = notifiers.new()
-global_notifier:on("open_path", function(source_name, source_opts, opts)
+global_notifier:on("start_path", function(source_name, source_opts, opts)
   M._start(source_name, source_opts, vim.tbl_extend("force", start_default_opts, opts))
 end)
 

@@ -26,7 +26,7 @@ M.action_back = function(self, _, ctx)
   if path == nil then
     return
   end
-  self:open_path(ctx.source_name, {path = path, layout = "no", back = true})
+  self:start_path({path = path, back = true}, ctx.source_name)
 end
 
 M.action_toggle_selection = function(_, nodes, ctx)
