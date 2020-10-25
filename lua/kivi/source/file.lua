@@ -32,7 +32,7 @@ M.collect = function(self, opts)
   for _, path in ipairs(paths) do
     local value
     local kind_name = M.kind_name
-    if vim.fn.isdirectory(path) ~= 0 then
+    if self.filelib.is_directory(path) then
       value = self.pathlib.add_trailing_slash(vim.fn.fnamemodify(path, ":h:t"))
       kind_name = "directory"
     else

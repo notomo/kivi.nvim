@@ -46,9 +46,8 @@ function Kind.confirm(self, message, nodes)
     return node.path
   end, nodes)
   local target = table.concat(paths, "\n")
-  local msg = ("%s\n%s Y/n: "):format(target, message)
-  local input = self._input_reader(msg)
-  return input == "Y"
+  local msg = ("%s\n%s"):format(target, message)
+  return self._input_reader:confirm(msg)
 end
 
 M.create = function(executor, kind_name, action_name)
