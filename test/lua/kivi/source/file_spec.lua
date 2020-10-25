@@ -85,4 +85,13 @@ describe("kivi file source", function()
     assert.exists_pattern("dir2")
   end)
 
+  it("can execute vsplit_open action", function()
+    helper.new_file("file1")
+
+    command("Kivi")
+    command("KiviDo vsplit_open")
+
+    assert.window_count(2)
+  end)
+
 end)

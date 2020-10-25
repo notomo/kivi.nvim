@@ -70,4 +70,42 @@ M.find_git_root = function()
   return git_root, nil
 end
 
+M.delete = function(path)
+  vim.fn.delete(path, "rf")
+end
+
+local get_bufnr = function(path)
+  local pattern = ("^%s$"):format(path)
+  return vim.fn.bufnr(pattern)
+end
+
+M.open = function(path)
+  local bufnr = get_bufnr(path)
+  if bufnr ~= -1 then
+    vim.api.nvim_command("buffer " .. bufnr)
+  else
+    vim.api.nvim_command("edit " .. path)
+  end
+end
+
+M.tab_open = function(path)
+  local bufnr = get_bufnr(path)
+  if bufnr ~= -1 then
+    vim.api.nvim_command("tabedit")
+    vim.api.nvim_command("buffer " .. bufnr)
+  else
+    vim.api.nvim_command("tabedit " .. path)
+  end
+end
+
+M.vsplit_open = function(path)
+  local bufnr = get_bufnr(path)
+  if bufnr ~= -1 then
+    vim.api.nvim_command("vsplit")
+    vim.api.nvim_command("buffer " .. bufnr)
+  else
+    vim.api.nvim_command("vsplit" .. path)
+  end
+end
+
 return M
