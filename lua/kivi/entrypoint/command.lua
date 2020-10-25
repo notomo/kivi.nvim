@@ -113,7 +113,7 @@ M.read = function(bufnr)
 
   local root, ok = result:get()
   if ok then
-    ctx.history:add(ctx.opts.back)
+    ctx.history:add(root.path, ctx.opts.back)
     ctx.ui = ctx.ui:redraw(root, result.source, ctx.history)
     ctx.history:set(root.path)
     result.source:hook(root.path)

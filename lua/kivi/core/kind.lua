@@ -1,5 +1,6 @@
 local modulelib = require("kivi/lib/module")
 local filelib = require("kivi/lib/file")
+local pathlib = require("kivi/lib/path")
 local inputlib = require("kivi/lib/input")
 local base = require("kivi/kind/base")
 local vim = vim
@@ -67,6 +68,7 @@ M.create = function(executor, kind_name, action_name)
     name = kind_name,
     source_name = executor.source_name,
     filelib = filelib,
+    pathlib = pathlib,
     executor = executor,
     opts = vim.tbl_deep_extend("force", base.opts, origin.opts or {}),
     behaviors = vim.tbl_deep_extend("force", base.behaviors, origin.behaviors or {}),

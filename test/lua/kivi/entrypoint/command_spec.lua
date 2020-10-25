@@ -120,4 +120,15 @@ describe("kivi", function()
     assert.file_name("file2")
   end)
 
+  it("does not move the cursor on opening the same path", function()
+    helper.new_file("file1")
+    helper.new_file("file2")
+
+    command("Kivi")
+    helper.search("file2")
+    command("Kivi")
+
+    assert.current_line("file2")
+  end)
+
 end)

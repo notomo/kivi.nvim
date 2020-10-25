@@ -41,7 +41,7 @@ M.action_parent = function(self, nodes)
     return
   end
   local root = node:root()
-  self:start_path({path = vim.fn.fnamemodify(root.path, ":h:h")})
+  self:start_path({path = self.pathlib.add_trailing_slash(vim.fn.fnamemodify(root.path, ":h:h"))})
 end
 
 M.action_tab_open = function(_, nodes)
@@ -72,7 +72,7 @@ M.action_vsplit_open = function(_, nodes)
 end
 
 M.action_delete = function(self, nodes)
-  local yes = self:confirm("remove?", nodes)
+  local yes = self:confirm("delete?", nodes)
   if not yes then
     return
   end

@@ -7,13 +7,15 @@ local M = {}
 local History = {}
 History.__index = History
 
-function History.add(self, is_back)
-  vim.validate({is_back = {is_back, "boolean"}})
-  if self.latest_path ~= nil then
-    self._rows[self.latest_path] = vim.api.nvim_win_get_cursor(0)[1]
-    if not is_back then
-      table.insert(self._paths, self.latest_path)
-    end
+function History.add(self, path, is_back)
+  vim.validate({path = {path, "string"}, is_back = {is_back, "boolean"}})
+  if self.latest_path == nil or self.latest_path == path then
+    return
+  end
+
+  self._rows[self.latest_path] = vim.api.nvim_win_get_cursor(0)[1]
+  if not is_back then
+    table.insert(self._paths, self.latest_path)
   end
 end
 
