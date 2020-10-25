@@ -67,7 +67,7 @@ M.init_path = function(self)
 end
 
 M.hook = function(_, path)
-  vim.api.nvim_command("lcd " .. path)
+  vim.api.nvim_command("silent lcd " .. path)
 end
 
 M.kind_name = "file"
