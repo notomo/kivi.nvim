@@ -8,6 +8,8 @@ local repository = require("kivi/core/repository")
 local executor_core = require("kivi/core/executor")
 local notifiers = require("kivi/lib/notifier")
 local histories = require("kivi/core/history")
+local clipboards = require("kivi/core/clipboard")
+local renamer = require("kivi/view/renamer")
 
 local M = {}
 
@@ -16,6 +18,9 @@ local start_default_opts = {path = ".", layout = "no", back = false}
 local global_notifier = notifiers.new()
 global_notifier:on("start_path", function(source_name, source_opts, opts)
   M._start(source_name, source_opts, vim.tbl_extend("force", start_default_opts, opts))
+end)
+global_notifier:on("start_renamer", function(source_name, base_node, rename_items, has_cut)
+  M._start_renamer(source_name, base_node, rename_items, has_cut)
 end)
 
 M.start_by_excmd = function(has_range, raw_range, raw_args)
@@ -50,6 +55,7 @@ M._start = function(source_name, source_opts, opts)
     source_opts = source_opts,
     opts = opts,
     history = histories.create(key),
+    clipboard = clipboards.create(source_name),
   }
   repository.set(key, ctx)
 
@@ -121,6 +127,11 @@ M.read = function(bufnr)
   end
 
   return result, nil
+end
+
+M._start_renamer = function(source_name, base_node, rename_items, has_cut)
+  renamer.open()
+  -- TODO
 end
 
 vim.api.nvim_command("doautocmd User KiviSourceLoad")

@@ -33,6 +33,14 @@ M.action_toggle_selection = function(_, nodes, ctx)
   ctx.ui:toggle_selections(nodes)
 end
 
+M.action_copy = function(_, nodes, ctx)
+  ctx.clipboard:copy(nodes)
+end
+
+M.action_cut = function(_, nodes, ctx)
+  ctx.clipboard:cut(nodes)
+end
+
 M.__index = M
 setmetatable(M, {})
 

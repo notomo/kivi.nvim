@@ -60,6 +60,17 @@ else
   M.env_separator = ":"
 end
 
+M.trim_head = function(path)
+  if vim.endswith(path, "/") and path ~= "/" then
+    path = path:sub(1, #path - 1)
+  end
+  return M.add_trailing_slash(vim.fn.fnamemodify(path, ":h"))
+end
+
+M.head = function(path)
+  return vim.fn.fnamemodify(path, ":t")
+end
+
 -- for app
 
 M.user_data_path = function(file_name)

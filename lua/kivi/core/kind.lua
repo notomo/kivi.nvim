@@ -41,13 +41,17 @@ function Kind.start_path(self, opts, source_name)
   return self._notifier:send("start_path", source_name, source_opts, opts)
 end
 
+function Kind.start_renamer(self, base_node, rename_items, has_cut)
+  return self._notifier:send("start_renamer", self.source_name, base_node, rename_items, has_cut)
+end
+
 function Kind.confirm(self, message, nodes)
   local paths = vim.tbl_map(function(node)
     return node.path
   end, nodes)
   local target = table.concat(paths, "\n")
   local msg = ("%s\n%s"):format(target, message)
-  return self._input_reader:confirm(msg)
+  return self.input_reader:confirm(msg)
 end
 
 M.create = function(executor, kind_name, action_name)
@@ -71,8 +75,8 @@ M.create = function(executor, kind_name, action_name)
     executor = executor,
     opts = vim.tbl_deep_extend("force", base.opts, origin.opts or {}),
     behaviors = vim.tbl_deep_extend("force", base.behaviors, origin.behaviors or {}),
+    input_reader = inputlib.reader(),
     _notifier = executor.notifier,
-    _input_reader = inputlib.reader(),
   }
   tbl = vim.tbl_extend("error", tbl, Kind)
   local self = setmetatable(tbl, origin)
