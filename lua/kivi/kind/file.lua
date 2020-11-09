@@ -105,4 +105,37 @@ M.action_paste = function(self, nodes, ctx)
   end
 end
 
+M.action_rename = function(self, nodes)
+  local target = nodes[1]
+  if target == nil then
+    return
+  end
+  local base_node = target.parent
+  if base_node == nil then
+    return
+  end
+
+  local rename_items = vim.tbl_map(function(node)
+    return {from = node.path}
+  end, nodes)
+
+  local has_cut = true
+  self:start_renamer(base_node, rename_items, has_cut)
+end
+
+M.rename = function(self, items)
+  local success = {}
+  local already_exists = {}
+  for i, item in ipairs(items) do
+    if self.filelib.exists(item.to) then
+      table.insert(already_exists, item)
+      goto continue
+    end
+    self.filelib.rename(item.from, item.to)
+    success[i] = item
+    ::continue::
+  end
+  return {success = success, already_exists = already_exists}
+end
+
 return M

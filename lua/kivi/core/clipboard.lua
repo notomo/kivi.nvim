@@ -1,5 +1,4 @@
-local persist = require("kivi/lib/_persist")("clipboard")
-persist.clipborads = persist.clipborads or {}
+local persist = {clipborads = {}}
 
 local M = {}
 

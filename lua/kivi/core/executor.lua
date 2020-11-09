@@ -57,6 +57,14 @@ function Executor.execute(self, ctx, all_nodes, action_name, action_opts)
   return result, nil
 end
 
+function Executor.rename(self, items)
+  local kind, err = kind_core.create(self, self.kind_name, nil)
+  if err ~= nil then
+    return nil, err
+  end
+  return kind:rename(items)
+end
+
 M.create = function(notifier, ui)
   local tbl = {
     notifier = notifier,

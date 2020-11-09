@@ -1,14 +1,10 @@
-local persist = require("kivi/lib/_persist")("repository")
+local persist = {}
 local vim = vim
 
 local M = {}
 
 M.set = function(key, values)
-  local new_values = {}
-  for k, v in pairs(values) do
-    new_values[k] = v
-  end
-  persist[key] = new_values
+  persist[key] = values
 end
 
 M.get = function(key)

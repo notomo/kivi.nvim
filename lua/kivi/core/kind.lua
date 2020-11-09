@@ -42,7 +42,7 @@ function Kind.start_path(self, opts, source_name)
 end
 
 function Kind.start_renamer(self, base_node, rename_items, has_cut)
-  return self._notifier:send("start_renamer", self.source_name, base_node, rename_items, has_cut)
+  return self._notifier:send("start_renamer", base_node, rename_items, has_cut)
 end
 
 function Kind.confirm(self, message, nodes)

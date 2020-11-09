@@ -9,7 +9,7 @@ local executor_core = require("kivi/core/executor")
 local notifiers = require("kivi/lib/notifier")
 local histories = require("kivi/core/history")
 local clipboards = require("kivi/core/clipboard")
-local renamer = require("kivi/view/renamer")
+local Renamer = require("kivi/view/renamer").Renamer
 
 local M = {}
 
@@ -19,8 +19,8 @@ local global_notifier = notifiers.new()
 global_notifier:on("start_path", function(source_name, source_opts, opts)
   M._start(source_name, source_opts, vim.tbl_extend("force", start_default_opts, opts))
 end)
-global_notifier:on("start_renamer", function(source_name, base_node, rename_items, has_cut)
-  M._start_renamer(source_name, base_node, rename_items, has_cut)
+global_notifier:on("start_renamer", function(base_node, rename_items, has_cut)
+  M._start_renamer(base_node, rename_items, has_cut)
 end)
 
 M.start_by_excmd = function(has_range, raw_range, raw_args)
@@ -129,9 +129,14 @@ M.read = function(bufnr)
   return result, nil
 end
 
-M._start_renamer = function(source_name, base_node, rename_items, has_cut)
-  renamer.open()
-  -- TODO
+M._start_renamer = function(base_node, rename_items, has_cut)
+  local ctx, err = repository.get_from_path()
+  if err ~= nil then
+    return nil, "not found state: " .. err
+  end
+
+  local executor = executor_core.create(global_notifier, ctx.ui)
+  Renamer.open(executor, base_node, rename_items, has_cut)
 end
 
 vim.api.nvim_command("doautocmd User KiviSourceLoad")

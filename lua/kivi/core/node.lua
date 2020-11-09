@@ -32,6 +32,14 @@ function Node.move_to(self, parent)
   return M.new(old, parent)
 end
 
+function Node.to_relative_path(self, path)
+  local base = pathlib.add_trailing_slash(self.path)
+  if not vim.startswith(path, base) then
+    return path
+  end
+  return path:sub(#base + 1)
+end
+
 M.new = function(raw, parent)
   local tbl = {parent = parent}
   tbl.__index = tbl
