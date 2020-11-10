@@ -108,4 +108,22 @@ M.vsplit_open = function(path)
   end
 end
 
+M.rename = function(from, to)
+  vim.fn.rename(from, to)
+end
+
+M.copy = function(from, to)
+  local from_file = io.open(from, "r")
+  local content = from_file:read("*a")
+  from_file:close()
+
+  local to_file = io.open(to, "w")
+  to_file:write(content)
+  to_file:close()
+end
+
+M.exists = function(path)
+  return M.readable(path) or M.is_directory(path)
+end
+
 return M

@@ -94,4 +94,127 @@ describe("kivi file source", function()
     assert.window_count(2)
   end)
 
+  it("can copy and paste", function()
+    helper.new_file("file")
+    helper.new_directory("dir")
+
+    command("Kivi")
+
+    helper.search("file")
+    command("KiviDo copy")
+
+    helper.search("dir")
+    command("KiviDo child")
+
+    command("KiviDo paste")
+
+    assert.exists_pattern("file")
+
+    command("KiviDo parent")
+    assert.exists_pattern("file")
+  end)
+
+  it("can copy and force paste", function()
+    helper.new_file("file", [[test]])
+    helper.new_directory("dir")
+    helper.new_file("dir/file", [[overwrriten]])
+
+    command("Kivi")
+
+    helper.search("file")
+    command("KiviDo copy")
+
+    helper.search("dir")
+    command("KiviDo child")
+
+    helper.set_inputs("f")
+    command("KiviDo paste")
+
+    assert.exists_pattern("file")
+
+    helper.search("file")
+    command("KiviDo vsplit_open")
+    assert.current_line("test")
+    command("wincmd p")
+
+    command("KiviDo parent")
+    assert.exists_pattern("file")
+  end)
+
+  it("can copy and rename paste", function()
+    helper.new_file("file", [[test]])
+    helper.new_directory("dir")
+    helper.new_file("dir/file", [[ok]])
+
+    command("Kivi")
+
+    helper.search("file")
+    command("KiviDo copy")
+
+    helper.search("dir")
+    command("KiviDo child")
+
+    helper.set_inputs("r")
+    command("KiviDo paste")
+
+    command("s/file/renamed/")
+    command("write")
+    command("wincmd p")
+
+    assert.exists_pattern("file")
+    assert.exists_pattern("renamed")
+
+    command("wincmd w")
+    command("s/renamed/again/")
+    command("write")
+    command("wincmd p")
+
+    assert.no.exists_pattern("renamed")
+    assert.exists_pattern("again")
+  end)
+
+  it("can cut and paste", function()
+    helper.new_file("file")
+    helper.new_directory("dir")
+
+    command("Kivi")
+
+    helper.search("file")
+    command("KiviDo cut")
+
+    helper.search("dir")
+    command("KiviDo child")
+
+    command("KiviDo paste")
+
+    assert.exists_pattern("file")
+
+    command("KiviDo parent")
+    assert.no.exists_pattern("file")
+  end)
+
+  it("can paste empty", function()
+    helper.new_file("file")
+
+    command("Kivi")
+    command("KiviDo paste")
+
+    assert.exists_pattern("file")
+  end)
+
+  it("can rename", function()
+    helper.new_file("file")
+
+    command("Kivi")
+    command("KiviDo rename")
+
+    assert.current_line("file")
+
+    command("s/file/renamed/")
+    command("wq")
+
+    assert.no.exists_pattern("file")
+    assert.exists_pattern("renamed")
+  end)
+
 end)

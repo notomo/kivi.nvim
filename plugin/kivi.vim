@@ -3,21 +3,12 @@ if exists('g:loaded_kivi')
 endif
 let g:loaded_kivi = 1
 
-if get(g:, 'kivi_debug', v:false)
-    command! -nargs=* -range=0 Kivi lua require("kivi/lib/module").cleanup(); require("kivi/entrypoint/command").start_by_excmd(<count>, {<line1>, <line2>}, {<f-args>})
-    command! -nargs=* -range=0 KiviDo lua require("kivi/lib/module").cleanup(); require("kivi/entrypoint/command").execute(<count>, {<line1>, <line2>}, {<f-args>})
-    augroup kivi
-        autocmd!
-        autocmd BufReadCmd kivi://* lua require("kivi/lib/module").cleanup(); require("kivi/entrypoint/command").read(tonumber(vim.fn.expand('<abuf>')))
-    augroup END
-else
-    command! -nargs=* -range=0 Kivi lua require("kivi/entrypoint/command").start_by_excmd(<count>, {<line1>, <line2>}, {<f-args>})
-    command! -nargs=* -range=0 KiviDo lua require("kivi/entrypoint/command").execute(<count>, {<line1>, <line2>}, {<f-args>})
-    augroup kivi
-        autocmd!
-        autocmd BufReadCmd kivi://* lua require("kivi/entrypoint/command").read(tonumber(vim.fn.expand('<abuf>')))
-    augroup END
-endif
+command! -nargs=* -range=0 Kivi lua require("kivi/entrypoint/command").start_by_excmd(<count>, {<line1>, <line2>}, {<f-args>})
+command! -nargs=* -range=0 KiviDo lua require("kivi/entrypoint/command").execute(<count>, {<line1>, <line2>}, {<f-args>})
+augroup kivi
+    autocmd!
+    autocmd BufReadCmd kivi://* lua require("kivi/entrypoint/command").read(tonumber(vim.fn.expand('<abuf>')))
+augroup END
 
 augroup kivi_mapping
     autocmd!
@@ -31,3 +22,10 @@ function! s:mapping() abort
     nnoremap <buffer> l <Cmd>KiviDo child<CR>
     nnoremap <buffer> q <Cmd>quit<CR>
 endfunction
+
+if get(g:, 'kivi_debug', v:false)
+    augroup kivi_dev
+        autocmd!
+        execute 'autocmd BufWritePost' expand('<sfile>:p:h:h') .. '/*' 'lua require("kivi/lib/module").cleanup()'
+    augroup END
+endif

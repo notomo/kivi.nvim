@@ -20,6 +20,14 @@ M.parse_with_row = function(line)
   return path, tonumber(row), matched_line
 end
 
+M.find_root = function(pattern)
+  local file = vim.api.nvim_get_runtime_file("lua/" .. pattern, false)[1]
+  if file == nil then
+    return nil, "project root directory not found by pattern: " .. pattern
+  end
+  return vim.split(M.adjust_sep(file), "/lua/", true)[1], nil
+end
+
 M.add_trailing_slash = function(path)
   if vim.endswith(path, "/") then
     return path
@@ -58,6 +66,17 @@ else
   end
 
   M.env_separator = ":"
+end
+
+M.trim_head = function(path)
+  if vim.endswith(path, "/") and path ~= "/" then
+    path = path:sub(1, #path - 1)
+  end
+  return M.add_trailing_slash(vim.fn.fnamemodify(path, ":h"))
+end
+
+M.head = function(path)
+  return vim.fn.fnamemodify(path, ":t")
 end
 
 -- for app

@@ -1,3 +1,5 @@
+local pathlib = require("kivi/lib/path")
+
 local M = {}
 
 local Node = {}
@@ -20,6 +22,22 @@ function Node.root(self)
     end
     current = current.parent
   end
+end
+
+function Node.move_to(self, parent)
+  local old = vim.deepcopy(self)
+  old.path = parent.path .. pathlib.head(old.path)
+  old.parent = nil
+  old.__index = nil
+  return M.new(old, parent)
+end
+
+function Node.to_relative_path(self, path)
+  local base = pathlib.add_trailing_slash(self.path)
+  if not vim.startswith(path, base) then
+    return path
+  end
+  return path:sub(#base + 1)
 end
 
 M.new = function(raw, parent)
