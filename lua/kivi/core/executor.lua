@@ -16,7 +16,7 @@ function Executor._action(self, kind, nodes, action_name, action_opts)
 
   return function(ctx)
     if action.behavior.quit then
-      self.rendered_ui:close()
+      self.ui:close()
     end
     return action:execute(nodes, ctx)
   end, nil
@@ -69,12 +69,12 @@ function Executor.reload(self)
   self.notifier:send("reload_path", self.ui.bufnr)
 end
 
-M.create = function(notifier, ui)
+M.create = function(notifier, ui, source)
   local tbl = {
     notifier = notifier,
     ui = ui,
-    source_name = ui.source.name,
-    kind_name = ui.source.kind_name,
+    source_name = source.name,
+    kind_name = source.kind_name,
   }
   return setmetatable(tbl, Executor)
 end

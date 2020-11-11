@@ -1,5 +1,6 @@
 local uis = require("kivi/view/ui")
 local collector_core = require("kivi/core/collector")
+local source_core = require("kivi/core/source")
 local wraplib = require("kivi/lib/wrap")
 local messagelib = require("kivi/lib/message")
 local custom = require("kivi/custom")
@@ -49,16 +50,18 @@ M.start_by_excmd = function(has_range, raw_range, raw_args)
 end
 
 M._start = function(source_name, source_opts, opts)
-  source_name = source_name or "file"
-  local ui, key = uis.open(source_name, opts.layout)
+  local source, err = source_core.create(source_name, source_opts)
+  if err ~= nil then
+    return nil, err
+  end
 
+  local ui, key = uis.open(source, opts.layout)
   local ctx = {
     ui = ui,
-    source_name = source_name,
-    source_opts = source_opts,
+    source = source,
     opts = opts,
     history = histories.create(key),
-    clipboard = clipboards.create(source_name),
+    clipboard = clipboards.create(source.name),
   }
   repository.set(key, ctx)
 
@@ -94,7 +97,7 @@ M._execute = function(action_name, range, action_opts)
 
   local nodes = ctx.ui:selected_nodes(action_name, range)
   ctx.ui:reset_selections(action_name)
-  return executor_core.create(global_notifier, ctx.ui):execute(ctx, nodes, action_name, action_opts)
+  return executor_core.create(global_notifier, ctx.ui, ctx.source):execute(ctx, nodes, action_name, action_opts)
 end
 
 M.read = function(bufnr)
@@ -103,14 +106,10 @@ M.read = function(bufnr)
     return nil, err
   end
   if ctx.ui == nil then
-    ctx.ui = uis.from_current()
-    -- TODO: ctx.source_name = source_name
-    -- TODO: ctx.history = history
-    ctx.source_opts = {}
-    ctx.opts = vim.deepcopy(start_default_opts)
+    return nil, nil
   end
 
-  local collector, create_err = collector_core.create(ctx.source_name, ctx.source_opts, ctx.ui.source_bufnr)
+  local collector, create_err = collector_core.create(ctx.source)
   if create_err ~= nil then
     return nil, create_err
   end
@@ -123,9 +122,9 @@ M.read = function(bufnr)
   local root, ok = result:get()
   if ok then
     ctx.history:add(root.path, ctx.opts.back)
-    ctx.ui = ctx.ui:redraw(root, result.source, ctx.history)
+    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history)
     ctx.history:set(root.path)
-    result.source:hook(root.path)
+    ctx.source:hook(root.path)
     -- TODO: else job
   end
 
@@ -138,7 +137,7 @@ M._start_renamer = function(base_node, rename_items, has_cut)
     return nil, "not found state: " .. err
   end
 
-  local executor = executor_core.create(global_notifier, ctx.ui)
+  local executor = executor_core.create(global_notifier, ctx.ui, ctx.source)
   Renamer.open(executor, base_node, rename_items, has_cut)
 end
 

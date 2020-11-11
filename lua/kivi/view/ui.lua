@@ -12,38 +12,25 @@ PendingUI.__index = PendingUI
 local RenderedUI = {}
 RenderedUI.__index = RenderedUI
 
-M._to_filetype = function(source_name)
-  return ("kivi-%s"):format(source_name)
-end
-
-M.open = function(source_name, layout)
-  local bufnr, source_bufnr
+M.open = function(source, layout)
+  local bufnr
   local current_bufnr = vim.api.nvim_get_current_buf()
-  local filetype = M._to_filetype(source_name)
-  if vim.bo.filetype == filetype then
+  if vim.bo.filetype == source.filetype then
     bufnr = current_bufnr
   else
     bufnr = vim.api.nvim_create_buf(false, true)
-    source_bufnr = current_bufnr
   end
-  local key = ("%s/%d"):format(source_name, bufnr)
+  local key = ("%s/%d"):format(source.name, bufnr)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. key .. "/kivi")
-  vim.bo[bufnr].filetype = filetype
+  vim.bo[bufnr].filetype = source.filetype
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
 
   local window_id = layouts.open(layout, bufnr)
   vim.wo[window_id].number = false
 
-  local tbl = {bufnr = bufnr, source_bufnr = source_bufnr, _window_id = window_id}
+  local tbl = {bufnr = bufnr, _window_id = window_id}
   return setmetatable(tbl, PendingUI), key
-end
-
-M.from_current = function()
-  local bufnr = vim.api.nvim_get_current_buf()
-  local window_id = vim.api.nvim_get_current_win()
-  local tbl = {bufnr = bufnr, source_bufnr = nil, _window_id = window_id}
-  return setmetatable(tbl, PendingUI)
 end
 
 M._close = function(self)
@@ -53,7 +40,6 @@ end
 M._redraw = function(self, root, source, history)
   local tbl = {
     bufnr = self.bufnr,
-    source = source,
     _selected = {},
     _window_id = self._window_id,
     _nodes = root:all(),

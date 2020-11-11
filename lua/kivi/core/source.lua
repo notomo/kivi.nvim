@@ -6,7 +6,12 @@ local base = require("kivi/source/base")
 
 local M = {}
 
-M.create = function(source_name, _, source_bufnr)
+local Source = {}
+Source.__index = Source
+
+M.create = function(source_name, _)
+  source_name = source_name or "file"
+
   local origin
   if source_name == "base" then
     origin = base
@@ -21,7 +26,8 @@ M.create = function(source_name, _, source_bufnr)
 
   local tbl = {
     name = source_name,
-    bufnr = source_bufnr,
+    bufnr = vim.api.nvim_get_current_buf(),
+    filetype = ("kivi-%s"):format(source_name),
     highlights = highlights.new_factory("kivi-highlight"),
     pathlib = pathlib,
     filelib = filelib,

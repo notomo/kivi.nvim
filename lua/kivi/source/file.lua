@@ -54,6 +54,10 @@ end
 
 M.init_path = function(self)
   local bufnr = self.bufnr
+  if vim.bo[bufnr].filetype == self.filetype then
+    return
+  end
+
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return
   end

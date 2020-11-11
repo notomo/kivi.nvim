@@ -1,4 +1,3 @@
-local source_core = require("kivi/core/source")
 local nodes = require("kivi/core/node")
 
 local M = {}
@@ -22,7 +21,7 @@ function Collector.start(self, opts)
     return nil, err
   end
 
-  local tbl = {source = self.source}
+  local tbl = {}
   if root_or_job.is_job == nil then
     tbl._root = root_or_job
   else
@@ -32,12 +31,7 @@ function Collector.start(self, opts)
   return setmetatable(tbl, CollectResult), nil
 end
 
-M.create = function(source_name, source_opts, source_bufnr)
-  local source, err = source_core.create(source_name, source_opts, source_bufnr)
-  if err ~= nil then
-    return nil, err
-  end
-
+M.create = function(source)
   local tbl = {source = source}
   return setmetatable(tbl, Collector), nil
 end
