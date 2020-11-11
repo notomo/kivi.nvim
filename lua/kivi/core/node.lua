@@ -4,11 +4,19 @@ local M = {}
 
 local Node = {}
 Node.__index = Node
+M.Node = Node
+
+function Node.new(raw, parent)
+  local tbl = {parent = parent}
+  tbl.__index = tbl
+  local meta = setmetatable(tbl, Node)
+  return setmetatable(raw, meta)
+end
 
 function Node.all(self)
   local nodes = {self}
   for _, child in ipairs(self.children or {}) do
-    local node = M.new(child, self)
+    local node = Node.new(child, self)
     vim.list_extend(nodes, node:all())
   end
   return nodes
@@ -29,7 +37,7 @@ function Node.move_to(self, parent)
   old.path = parent.path .. pathlib.head(old.path)
   old.parent = nil
   old.__index = nil
-  return M.new(old, parent)
+  return Node.new(old, parent)
 end
 
 function Node.to_relative_path(self, path)
@@ -38,13 +46,6 @@ function Node.to_relative_path(self, path)
     return path
   end
   return path:sub(#base + 1)
-end
-
-M.new = function(raw, parent)
-  local tbl = {parent = parent}
-  tbl.__index = tbl
-  local meta = setmetatable(tbl, Node)
-  return setmetatable(raw, meta)
 end
 
 return M

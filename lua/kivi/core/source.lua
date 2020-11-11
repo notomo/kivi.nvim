@@ -8,8 +8,9 @@ local M = {}
 
 local Source = {}
 Source.__index = Source
+M.Source = Source
 
-M.create = function(source_name, _)
+function Source.new(source_name, _)
   source_name = source_name or "file"
 
   local origin

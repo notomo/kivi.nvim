@@ -5,6 +5,20 @@ local M = {}
 
 local History = {}
 History.__index = History
+M.History = History
+
+function History.new(key)
+  vim.validate({key = {key, "string"}})
+  local history = persist.histories[key]
+  if history ~= nil then
+    return history
+  end
+
+  local tbl = {_rows = {}, _paths = {}, latest_path = nil}
+  local self = setmetatable(tbl, History)
+  persist.histories[key] = self
+  return self
+end
 
 function History.add(self, path, is_back)
   vim.validate({path = {path, "string"}, is_back = {is_back, "boolean"}})
@@ -35,19 +49,6 @@ function History.restore(self, path)
     return true
   end
   return false
-end
-
-M.create = function(key)
-  vim.validate({key = {key, "string"}})
-  local history = persist.histories[key]
-  if history ~= nil then
-    return history
-  end
-
-  local tbl = {_rows = {}, _paths = {}, latest_path = nil}
-  local self = setmetatable(tbl, History)
-  persist.histories[key] = self
-  return self
 end
 
 return M

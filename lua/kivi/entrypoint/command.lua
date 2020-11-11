@@ -1,22 +1,22 @@
-local uis = require("kivi/view/ui")
-local collector_core = require("kivi/core/collector")
-local source_core = require("kivi/core/source")
 local wraplib = require("kivi/lib/wrap")
 local messagelib = require("kivi/lib/message")
 local custom = require("kivi/custom")
 local cmdparse = require("kivi/lib/cmdparse")
+local Notifier = require("kivi/lib/notifier").Notifier
 local repository = require("kivi/core/repository")
-local executor_core = require("kivi/core/executor")
-local notifiers = require("kivi/lib/notifier")
-local histories = require("kivi/core/history")
-local clipboards = require("kivi/core/clipboard")
+local Source = require("kivi/core/source").Source
+local Collector = require("kivi/core/collector").Collector
+local Executor = require("kivi/core/executor").Executor
+local History = require("kivi/core/history").History
+local Clipboard = require("kivi/core/clipboard").Clipboard
+local PendingUI = require("kivi/view/ui").PendingUI
 local Renamer = require("kivi/view/renamer").Renamer
 
 local M = {}
 
 local start_default_opts = {path = ".", layout = "no", back = false}
 
-local global_notifier = notifiers.new()
+local global_notifier = Notifier.new()
 global_notifier:on("start_path", function(source_name, source_opts, opts)
   M._start(source_name, source_opts, vim.tbl_extend("force", start_default_opts, opts))
 end)
@@ -50,18 +50,18 @@ M.start_by_excmd = function(has_range, raw_range, raw_args)
 end
 
 M._start = function(source_name, source_opts, opts)
-  local source, err = source_core.create(source_name, source_opts)
+  local source, err = Source.new(source_name, source_opts)
   if err ~= nil then
     return nil, err
   end
 
-  local ui, key = uis.open(source, opts.layout)
+  local ui, key = PendingUI.open(source, opts.layout)
   local ctx = {
     ui = ui,
     source = source,
     opts = opts,
-    history = histories.create(key),
-    clipboard = clipboards.create(source.name),
+    history = History.new(key),
+    clipboard = Clipboard.new(source.name),
   }
   repository.set(key, ctx)
 
@@ -97,7 +97,7 @@ M._execute = function(action_name, range, action_opts)
 
   local nodes = ctx.ui:selected_nodes(action_name, range)
   ctx.ui:reset_selections(action_name)
-  return executor_core.create(global_notifier, ctx.ui, ctx.source):execute(ctx, nodes, action_name, action_opts)
+  return Executor.new(global_notifier, ctx.ui, ctx.source):execute(ctx, nodes, action_name, action_opts)
 end
 
 M.read = function(bufnr)
@@ -109,12 +109,7 @@ M.read = function(bufnr)
     return nil, nil
   end
 
-  local collector, create_err = collector_core.create(ctx.source)
-  if create_err ~= nil then
-    return nil, create_err
-  end
-
-  local result, start_err = collector:start(ctx.opts)
+  local result, start_err = Collector.new(ctx.source):start(ctx.opts)
   if start_err ~= nil then
     return nil, start_err
   end
@@ -137,7 +132,7 @@ M._start_renamer = function(base_node, rename_items, has_cut)
     return nil, "not found state: " .. err
   end
 
-  local executor = executor_core.create(global_notifier, ctx.ui, ctx.source)
+  local executor = Executor.new(global_notifier, ctx.ui, ctx.source)
   Renamer.open(executor, base_node, rename_items, has_cut)
 end
 

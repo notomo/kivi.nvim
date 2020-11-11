@@ -5,6 +5,17 @@ local M = {}
 
 local Executor = {}
 Executor.__index = Executor
+M.Executor = Executor
+
+function Executor.new(notifier, ui, source)
+  local tbl = {
+    notifier = notifier,
+    ui = ui,
+    source_name = source.name,
+    kind_name = source.kind_name,
+  }
+  return setmetatable(tbl, Executor)
+end
 
 function Executor._action(self, kind, nodes, action_name, action_opts)
   local opts = action_opts or {}
@@ -67,16 +78,6 @@ end
 
 function Executor.reload(self)
   self.notifier:send("reload_path", self.ui.bufnr)
-end
-
-M.create = function(notifier, ui, source)
-  local tbl = {
-    notifier = notifier,
-    ui = ui,
-    source_name = source.name,
-    kind_name = source.kind_name,
-  }
-  return setmetatable(tbl, Executor)
 end
 
 return M

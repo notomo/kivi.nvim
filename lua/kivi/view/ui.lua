@@ -8,11 +8,9 @@ local M = {}
 
 local PendingUI = {}
 PendingUI.__index = PendingUI
+M.PendingUI = PendingUI
 
-local RenderedUI = {}
-RenderedUI.__index = RenderedUI
-
-M.open = function(source, layout)
+function PendingUI.open(source, layout)
   local bufnr
   local current_bufnr = vim.api.nvim_get_current_buf()
   if vim.bo.filetype == source.filetype then
@@ -32,6 +30,9 @@ M.open = function(source, layout)
   local tbl = {bufnr = bufnr, _window_id = window_id}
   return setmetatable(tbl, PendingUI), key
 end
+
+local RenderedUI = {}
+RenderedUI.__index = RenderedUI
 
 M._close = function(self)
   return windowlib.close(self._window_id)
