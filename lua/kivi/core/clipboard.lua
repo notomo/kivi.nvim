@@ -1,4 +1,4 @@
-local persist = {clipborads = {}}
+local persist = {clipboards = {}}
 
 local M = {}
 
@@ -24,14 +24,14 @@ end
 
 M.create = function(source_name)
   vim.validate({source_name = {source_name, "string"}})
-  local clipboard = persist.clipborads[source_name]
+  local clipboard = persist.clipboards[source_name]
   if clipboard ~= nil then
     return clipboard
   end
 
   local tbl = {_paths = {}, _has_cut = false}
   local self = setmetatable(tbl, Clipboard)
-  persist.clipborads[source_name] = self
+  persist.clipboards[source_name] = self
   return self
 end
 
