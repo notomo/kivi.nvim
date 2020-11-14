@@ -2,25 +2,15 @@ local modulelib = require("kivi/lib/module")
 local filelib = require("kivi/lib/file")
 local pathlib = require("kivi/lib/path")
 local inputlib = require("kivi/lib/input")
-local base = require("kivi/kind/base")
+local Action = require("kivi/core/action").Action
 local vim = vim
 
 local M = {}
 
-local Action = function(kind, fn, action_opts, behavior)
-  local tbl = {action_opts = action_opts, behavior = behavior}
-  kind.__index = kind
-  local action = setmetatable(tbl, kind)
-  action.execute = function(self, nodes, ctx)
-    return fn(self, nodes, ctx)
-  end
-  return action
-end
-
 local Kind = {}
 Kind.__index = Kind
 M.Kind = Kind
-base = setmetatable(base, Kind)
+local base = setmetatable(require("kivi/kind/base"), Kind)
 
 function Kind.new(starter, kind_name)
   vim.validate({kind_name = {kind_name, "string"}})
@@ -57,7 +47,7 @@ function Kind.find_action(self, action_name, action_opts)
 
   local action = self[key]
   if action ~= nil then
-    return Action(self, action, opts, behavior), nil
+    return Action.new(self, action, opts, behavior), nil
   end
 
   return nil, "not found action: " .. action_name
