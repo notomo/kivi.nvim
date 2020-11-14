@@ -1,3 +1,5 @@
+local pathlib = require("kivi/lib/path")
+
 local vim = vim
 
 local M = {}
@@ -113,6 +115,15 @@ M.rename = function(from, to)
 end
 
 M.copy = function(from, to)
+  if M.is_directory(from) then
+    if M.is_directory(to) then
+      vim.fn.system({"cp", "-RT", from, pathlib.trim_trailing_slash(to)})
+    else
+      vim.fn.system({"cp", "-R", from, pathlib.trim_trailing_slash(to)})
+    end
+    return
+  end
+
   local from_file = io.open(from, "r")
   local content = from_file:read("*a")
   from_file:close()

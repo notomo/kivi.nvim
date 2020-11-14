@@ -23,6 +23,7 @@ M.before_each = function()
   M.command("syntax enable")
   M.new_directory("")
   vim.api.nvim_set_current_dir(M.test_data_dir)
+  M.set_inputs()
 end
 
 M.after_each = function()
@@ -50,7 +51,7 @@ M.set_inputs = function(...)
     local answer = table.remove(answers)
     if answer == nil then
       print(msg)
-      error("no input")
+      assert("no input")
     end
     print(msg .. answer)
     return answer

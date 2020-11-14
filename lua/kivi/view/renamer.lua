@@ -13,6 +13,11 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
 
+  local froms = {}
+  for i, item in ipairs(rename_items) do
+    froms[i] = item.from
+  end
+
   local lines = vim.tbl_map(function(item)
     return base_node:to_relative_path(item.to or item.from)
   end, rename_items)
@@ -50,6 +55,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local tbl = {
     _bufnr = bufnr,
     _lines = lines,
+    _froms = froms,
     _base_node = base_node,
     _has_cut = has_cut,
     _kind = kind,
@@ -71,7 +77,7 @@ function Renamer.write(self)
       goto continue
     end
     table.insert(items, {
-      from = pathlib.join(self._base_node.path, original_line),
+      from = self._froms[i] or pathlib.join(self._base_node.path, original_line),
       to = pathlib.join(self._base_node.path, line),
     })
     ::continue::
@@ -85,6 +91,7 @@ function Renamer.write(self)
       virt_text = {{"<- " .. line, "Comment"}},
     })
     self._lines[i] = line
+    self._froms[i] = nil
   end
 
   if #result.already_exists == 0 then

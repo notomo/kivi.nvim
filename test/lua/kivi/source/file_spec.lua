@@ -94,7 +94,7 @@ describe("kivi file source", function()
     assert.window_count(2)
   end)
 
-  it("can copy and paste", function()
+  it("can copy file and paste", function()
     helper.new_file("file")
     helper.new_directory("dir")
 
@@ -114,7 +114,33 @@ describe("kivi file source", function()
     assert.exists_pattern("file")
   end)
 
-  it("can copy and force paste", function()
+  it("can copy directory and paste", function()
+    helper.new_directory("dir1")
+    helper.new_file("dir1/file")
+    helper.new_directory("dir2")
+
+    command("Kivi")
+
+    helper.search("dir1")
+    command("KiviDo copy")
+
+    helper.search("dir2")
+    command("KiviDo child")
+
+    command("KiviDo paste")
+
+    helper.search("dir1")
+    command("KiviDo child")
+
+    assert.exists_pattern("file")
+
+    command("KiviDo parent")
+    command("KiviDo parent")
+    assert.exists_pattern("dir1")
+    assert.exists_pattern("dir2")
+  end)
+
+  it("can copy file and force paste", function()
     helper.new_file("file", [[test]])
     helper.new_directory("dir")
     helper.new_file("dir/file", [[overwrriten]])
@@ -141,7 +167,34 @@ describe("kivi file source", function()
     assert.exists_pattern("file")
   end)
 
-  it("can copy and rename paste", function()
+  it("can copy directory and force paste", function()
+    helper.new_directory("dir1")
+    helper.new_file("dir1/file", [[test]])
+
+    helper.new_directory("dir2")
+    helper.new_directory("dir2/dir1")
+    helper.new_file("dir2/dir1/file")
+
+    command("Kivi")
+
+    helper.search("dir1")
+    command("KiviDo copy")
+
+    helper.search("dir2")
+    command("KiviDo child")
+
+    helper.set_inputs("f")
+    command("KiviDo paste")
+
+    helper.search("dir1")
+    command("KiviDo child")
+
+    helper.search("file")
+    command("KiviDo vsplit_open")
+    assert.current_line("test")
+  end)
+
+  it("can copy file and rename paste", function()
     helper.new_file("file", [[test]])
     helper.new_directory("dir")
     helper.new_file("dir/file", [[ok]])
@@ -173,7 +226,39 @@ describe("kivi file source", function()
     assert.exists_pattern("again")
   end)
 
-  it("can cut and paste", function()
+  it("can copy directory and rename paste", function()
+    helper.new_directory("dir1")
+    helper.new_file("dir1/file", [[test]])
+
+    helper.new_directory("dir2")
+    helper.new_directory("dir2/dir1")
+
+    command("Kivi")
+
+    helper.search("dir1")
+    command("KiviDo copy")
+
+    helper.search("dir2")
+    command("KiviDo child")
+
+    helper.set_inputs("r")
+    command("KiviDo paste")
+
+    command("s/dir1/renamed/")
+    command("write")
+    command("wincmd p")
+
+    assert.exists_pattern("dir1")
+
+    helper.search("renamed")
+    command("KiviDo child")
+
+    helper.search("file")
+    command("KiviDo vsplit_open")
+    assert.current_line("test")
+  end)
+
+  it("can cut file and paste", function()
     helper.new_file("file")
     helper.new_directory("dir")
 
@@ -193,6 +278,32 @@ describe("kivi file source", function()
     assert.no.exists_pattern("file")
   end)
 
+  it("can cut directory and paste", function()
+    helper.new_directory("dir1")
+    helper.new_file("dir1/file")
+    helper.new_directory("dir2")
+
+    command("Kivi")
+
+    helper.search("dir1")
+    command("KiviDo cut")
+
+    helper.search("dir2")
+    command("KiviDo child")
+
+    command("KiviDo paste")
+
+    helper.search("dir1")
+    command("KiviDo child")
+
+    assert.exists_pattern("file")
+
+    command("KiviDo parent")
+    command("KiviDo parent")
+    assert.no.exists_pattern("dir1")
+    assert.exists_pattern("dir2")
+  end)
+
   it("can paste empty", function()
     helper.new_file("file")
 
@@ -202,7 +313,7 @@ describe("kivi file source", function()
     assert.exists_pattern("file")
   end)
 
-  it("can rename", function()
+  it("can rename file", function()
     helper.new_file("file")
 
     command("Kivi")
@@ -215,6 +326,21 @@ describe("kivi file source", function()
 
     assert.no.exists_pattern("file")
     assert.exists_pattern("renamed")
+  end)
+
+  it("can rename directory", function()
+    helper.new_directory("dir")
+
+    command("Kivi")
+    command("KiviDo rename")
+
+    assert.current_line("dir/")
+
+    command("s/dir/renamed/")
+    command("wq")
+
+    assert.no.exists_pattern("dir")
+    assert.exists_pattern("renamed/")
   end)
 
 end)

@@ -35,6 +35,13 @@ M.add_trailing_slash = function(path)
   return path .. "/"
 end
 
+M.trim_trailing_slash = function(path)
+  if not vim.endswith(path, "/") or path == "/" then
+    return path
+  end
+  return path:sub(1, #path - 1)
+end
+
 M.join = function(...)
   local items = {}
   for _, item in ipairs({...}) do
@@ -76,6 +83,9 @@ M.trim_head = function(path)
 end
 
 M.head = function(path)
+  if vim.endswith(path, "/") and path ~= "/" then
+    path = vim.fn.fnamemodify(path, ":h")
+  end
   return vim.fn.fnamemodify(path, ":t")
 end
 
