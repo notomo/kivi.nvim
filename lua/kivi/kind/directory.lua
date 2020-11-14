@@ -14,6 +14,4 @@ end
 
 M.action_child = M.action_open
 
-M.parent_kind_name = "file"
-
-return M
+return setmetatable(M, require("kivi/kind/file"))

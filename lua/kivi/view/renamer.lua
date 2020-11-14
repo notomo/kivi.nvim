@@ -9,7 +9,7 @@ local Renamer = {}
 Renamer.__index = Renamer
 M.Renamer = Renamer
 
-function Renamer.open(executor, base_node, rename_items, has_cut)
+function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
 
@@ -52,7 +52,8 @@ function Renamer.open(executor, base_node, rename_items, has_cut)
     _lines = lines,
     _base_node = base_node,
     _has_cut = has_cut,
-    _executor = executor,
+    _kind = kind,
+    _loader = loader,
   }
   local renamer = setmetatable(tbl, Renamer)
   repository.set(bufnr, renamer)
@@ -76,7 +77,7 @@ function Renamer.write(self)
     ::continue::
   end
 
-  local result = self._executor:rename(items, self._has_cut)
+  local result = self._kind:rename(items, self._has_cut)
 
   for i in pairs(result.success) do
     local line = lines[i]
@@ -89,7 +90,7 @@ function Renamer.write(self)
   if #result.already_exists == 0 then
     vim.api.nvim_buf_set_option(self._bufnr, "modified", false)
     self._has_cut = true
-    self._executor:reload()
+    self._loader:load()
   end
 end
 

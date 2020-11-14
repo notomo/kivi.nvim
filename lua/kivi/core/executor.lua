@@ -1,5 +1,5 @@
-local kind_core = require "kivi/core/kind"
 local listlib = require "kivi/lib/list"
+local Kind = require("kivi/core/kind").Kind
 
 local M = {}
 
@@ -7,13 +7,8 @@ local Executor = {}
 Executor.__index = Executor
 M.Executor = Executor
 
-function Executor.new(notifier, ui, source)
-  local tbl = {
-    notifier = notifier,
-    ui = ui,
-    source_name = source.name,
-    kind_name = source.kind_name,
-  }
+function Executor.new(starter, ui, source)
+  local tbl = {_ui = ui, _kind_name = source.kind_name, _starter = starter}
   return setmetatable(tbl, Executor)
 end
 
@@ -27,7 +22,7 @@ function Executor._action(self, kind, nodes, action_name, action_opts)
 
   return function(ctx)
     if action.behavior.quit then
-      self.ui:close()
+      self._ui:close()
     end
     return action:execute(nodes, ctx)
   end, nil
@@ -37,9 +32,9 @@ function Executor.execute(self, ctx, all_nodes, action_name, action_opts)
   local cache = {}
   local kinds = {}
   for _, node in ipairs(all_nodes) do
-    local kind_name = node.kind_name or self.kind_name
+    local kind_name = node.kind_name or self._kind_name
     if cache[kind_name] == nil then
-      local kind, err = kind_core.create(self, kind_name, action_name)
+      local kind, err = Kind.new(self._starter, kind_name)
       if err ~= nil then
         return nil, err
       end
@@ -66,18 +61,6 @@ function Executor.execute(self, ctx, all_nodes, action_name, action_opts)
     result = res
   end
   return result, nil
-end
-
-function Executor.rename(self, items, has_cut)
-  local kind, err = kind_core.create(self, self.kind_name, nil)
-  if err ~= nil then
-    return nil, err
-  end
-  return kind:rename(items, has_cut)
-end
-
-function Executor.reload(self)
-  self.notifier:send("reload_path", self.ui.bufnr)
 end
 
 return M

@@ -13,4 +13,6 @@ end
 M.hook = function()
 end
 
+M.kind_name = "base"
+
 return M

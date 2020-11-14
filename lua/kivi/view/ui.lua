@@ -12,12 +12,12 @@ M.PendingUI = PendingUI
 
 function PendingUI.open(source, layout)
   local bufnr
-  local current_bufnr = vim.api.nvim_get_current_buf()
   if vim.bo.filetype == source.filetype then
-    bufnr = current_bufnr
+    bufnr = vim.api.nvim_get_current_buf()
   else
     bufnr = vim.api.nvim_create_buf(false, true)
   end
+
   local key = ("%s/%d"):format(source.name, bufnr)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. key .. "/kivi")
   vim.bo[bufnr].filetype = source.filetype
