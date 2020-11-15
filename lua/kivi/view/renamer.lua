@@ -1,5 +1,4 @@
-local repository = require("kivi/core/repository")
-local pathlib = require("kivi/lib/path")
+local persist = {renamers = {}}
 
 local M = {}
 
@@ -62,7 +61,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     _loader = loader,
   }
   local renamer = setmetatable(tbl, Renamer)
-  repository.set(bufnr, renamer)
+  persist.renamers[bufnr] = renamer
 end
 
 function Renamer.write(self)
@@ -97,12 +96,12 @@ function Renamer.write(self)
   if #result.already_exists == 0 then
     vim.api.nvim_buf_set_option(self._bufnr, "modified", false)
     self._has_cut = true
-    self._loader:load()
   end
+  self._loader:load()
 end
 
 M.write = function(bufnr)
-  local renamer = repository.get(bufnr)
+  local renamer = persist.renamers[bufnr]
   if renamer == nil then
     return
   end

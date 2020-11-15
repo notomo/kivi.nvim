@@ -8,6 +8,7 @@ local Kind = require("kivi/core/kind").Kind
 local Options = require("kivi/core/option").Options
 local PendingUI = require("kivi/view/ui").PendingUI
 local Renamer = require("kivi/view/renamer").Renamer
+local Creator = require("kivi/view/creator").Creator
 
 local M = {}
 
@@ -66,6 +67,21 @@ function Starter.rename(self, base_node, rename_items, has_cut)
 
   local loader = Loader.new(ctx.ui.bufnr)
   Renamer.open(kind, loader, base_node, rename_items, has_cut)
+end
+
+function Starter.create(self, base_node)
+  local ctx, err = repository.get_from_path()
+  if err ~= nil then
+    return nil, err
+  end
+
+  local kind, kind_err = Kind.new(self, ctx.source.kind_name)
+  if err ~= nil then
+    return nil, kind_err
+  end
+
+  local loader = Loader.new(ctx.ui.bufnr)
+  Creator.open(kind, loader, base_node)
 end
 
 return M

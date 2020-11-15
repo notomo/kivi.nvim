@@ -343,4 +343,26 @@ describe("kivi file source", function()
     assert.exists_pattern("renamed/")
   end)
 
+  it("can create file", function()
+    command("Kivi")
+
+    command("KiviDo create")
+
+    vim.fn.setline(1, "created")
+    command("wq")
+
+    assert.exists_pattern("created")
+  end)
+
+  it("can create directory", function()
+    command("Kivi")
+
+    command("KiviDo create")
+
+    vim.fn.setline(1, "created/")
+    command("wq")
+
+    assert.exists_pattern("created/")
+  end)
+
 end)

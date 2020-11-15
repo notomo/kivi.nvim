@@ -97,6 +97,19 @@ M.action_paste = function(self, nodes, ctx)
   end
 end
 
+M.action_create = function(self, nodes)
+  local target = nodes[1]
+  if target == nil then
+    return
+  end
+  local base_node = target:root()
+  if base_node == nil then
+    return
+  end
+
+  self:start_creator(base_node)
+end
+
 M.action_rename = function(self, nodes)
   local target = nodes[1]
   if target == nil then
@@ -131,6 +144,23 @@ M.rename = function(_, items, has_cut)
     end
 
     success[i] = item
+    ::continue::
+  end
+  return {success = success, already_exists = already_exists}
+end
+
+M.create = function(_, paths)
+  local success = {}
+  local already_exists = {}
+  for i, path in ipairs(paths) do
+    if path:exists() then
+      table.insert(already_exists, path)
+      goto continue
+    end
+
+    path:create()
+
+    success[i] = path
     ::continue::
   end
   return {success = success, already_exists = already_exists}

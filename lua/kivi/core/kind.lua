@@ -61,6 +61,10 @@ function Kind.start_renamer(self, base_node, rename_items, has_cut)
   return self._starter:rename(base_node, rename_items, has_cut)
 end
 
+function Kind.start_creator(self, base_node)
+  return self._starter:create(base_node)
+end
+
 function Kind.confirm(self, message, nodes)
   local paths = vim.tbl_map(function(node)
     return node.path:get()

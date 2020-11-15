@@ -104,4 +104,12 @@ function File.exists(self)
   return self:readable() or self:is_dir()
 end
 
+function File.create(self)
+  if vim.endswith(self.path, "/") then
+    vim.fn.mkdir(self.path, "p")
+    return
+  end
+  io.open(self.path, "w"):close()
+end
+
 return M

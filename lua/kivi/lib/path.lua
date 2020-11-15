@@ -22,13 +22,23 @@ end
 
 function Path.join(self, ...)
   local items = {}
+  local slash = false
   for _, item in ipairs({self.path, ...}) do
     if vim.endswith(item, "/") then
       item = item:sub(1, #item - 1)
+      slash = true
+    else
+      slash = false
     end
     table.insert(items, item)
   end
-  return self.new(table.concat(items, "/"))
+
+  local path = table.concat(items, "/")
+  if slash then
+    path = path .. "/"
+  end
+
+  return self.new(path)
 end
 
 function Path.parent(self)
