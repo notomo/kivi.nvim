@@ -5,36 +5,27 @@ local adjust_window = function()
   vim.api.nvim_command("wincmd w")
 end
 
-M.action_open = function(self, nodes)
+M.action_open = function(_, nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
-    self.filelib.open(node.path)
+    node.path:open()
   end
 end
 
-M.action_tab_open = function(self, nodes)
+M.action_tab_open = function(_, nodes)
   for _, node in ipairs(nodes) do
-    self.filelib.tab_open(node.path)
+    node.path:tab_open()
   end
 end
 
-M.action_vsplit_open = function(self, nodes)
+M.action_vsplit_open = function(_, nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
-    self.filelib.vsplit_open(node.path)
+    node.path:vsplit_open()
   end
 end
 
 M.action_child = M.action_open
-
-M.action_parent = function(self, nodes)
-  local node = nodes[1]
-  if node == nil then
-    return
-  end
-  local root = node:root()
-  self:start_path({path = self.pathlib.add_trailing_slash(vim.fn.fnamemodify(root.path, ":h:h"))})
-end
 
 M.action_delete = function(self, nodes)
   local yes = self:confirm("delete?", nodes)
@@ -43,7 +34,7 @@ M.action_delete = function(self, nodes)
   end
 
   for _, node in ipairs(nodes) do
-    self.filelib.delete(node.path)
+    node.path:delete()
   end
   self:start_path()
 end
@@ -62,15 +53,15 @@ M.action_paste = function(self, nodes, ctx)
   local copied, has_cut = ctx.clipboard:pop()
   for _, old_node in ipairs(copied) do
     local new_node = old_node:move_to(base_node)
-    if self.filelib.exists(new_node.path) then
+    if new_node.path:exists() then
       table.insert(already_exists, {from = old_node, to = new_node})
       goto continue
     end
 
     if has_cut then
-      self.filelib.rename(old_node.path, new_node.path)
+      old_node.path:rename(new_node.path)
     else
-      self.filelib.copy(old_node.path, new_node.path)
+      old_node.path:copy(new_node.path)
     end
 
     ::continue::
@@ -79,7 +70,7 @@ M.action_paste = function(self, nodes, ctx)
   local overwrite_items = {}
   local rename_items = {}
   for _, item in ipairs(already_exists) do
-    local answer = self.input_reader:get(item.to.path .. " already exists, (f)orce (n)o (r)ename: ")
+    local answer = self.input_reader:get(item.to.path:get() .. " already exists, (f)orce (n)o (r)ename: ")
     if answer == "n" then
       goto continue
     elseif answer == "r" then
@@ -91,10 +82,11 @@ M.action_paste = function(self, nodes, ctx)
   end
 
   for _, item in ipairs(overwrite_items) do
+
     if has_cut then
-      self.filelib.rename(item.from.path, item.to.path)
+      item.from.path:rename(item.to.path)
     else
-      self.filelib.copy(item.from.path, item.to.path)
+      item.from.path:copy(item.to.path)
     end
   end
 
@@ -123,19 +115,19 @@ M.action_rename = function(self, nodes)
   self:start_renamer(base_node, rename_items, has_cut)
 end
 
-M.rename = function(self, items, has_cut)
+M.rename = function(_, items, has_cut)
   local success = {}
   local already_exists = {}
   for i, item in ipairs(items) do
-    if self.filelib.exists(item.to) then
+    if item.to:exists() then
       table.insert(already_exists, item)
       goto continue
     end
 
     if has_cut then
-      self.filelib.rename(item.from, item.to)
+      item.from:rename(item.to)
     else
-      self.filelib.copy(item.from, item.to)
+      item.from:copy(item.to)
     end
 
     success[i] = item

@@ -63,7 +63,7 @@ end
 
 function Kind.confirm(self, message, nodes)
   local paths = vim.tbl_map(function(node)
-    return node.path
+    return node.path:get()
   end, nodes)
   local target = table.concat(paths, "\n")
   local msg = ("%s\n%s"):format(target, message)

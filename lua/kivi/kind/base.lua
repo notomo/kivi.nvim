@@ -4,6 +4,15 @@ M.opts = {yank = {key = "path", register = "+"}}
 
 M.behaviors = {}
 
+M.action_parent = function(self, nodes)
+  local node = nodes[1]
+  if node == nil then
+    return
+  end
+  local root = node:root()
+  self:start_path({path = root.path:parent()})
+end
+
 M.action_debug_print = function(_, nodes)
   for _, node in ipairs(nodes) do
     print(vim.inspect(node))
@@ -12,7 +21,7 @@ end
 
 M.action_yank = function(self, nodes)
   local values = vim.tbl_map(function(node)
-    return node[self.action_opts.key]
+    return tostring(node[self.action_opts.key])
   end, nodes)
   local value = table.concat(values, "\n")
   if value ~= "" then

@@ -1,42 +1,33 @@
+local File = require("kivi/lib/file").File
 local vim = vim
 
 local M = {}
 
-M.collect = function(self, opts)
-  local dir_path = vim.fn.fnamemodify(opts.path, ":p")
-  if not self.filelib.is_directory(dir_path) then
-    return nil, "does not exist: " .. opts.path
+M.collect = function(_, opts)
+  local dir = File.new(opts.path:get())
+  if not dir:is_dir() then
+    return nil, "does not exist: " .. opts.path:get()
   end
 
-  local paths = {}
-  for _, path in ipairs(vim.fn.readdir(dir_path)) do
-    local abs_path = vim.fn.fnamemodify(self.pathlib.join(opts.path, path), ":p:gs?\\?\\/?")
-    table.insert(paths, abs_path)
-  end
-
+  local paths = dir:paths()
   table.sort(paths, function(a, b)
-    local is_dir_a = vim.fn.isdirectory(a)
-    local is_dir_b = vim.fn.isdirectory(b)
+    local is_dir_a = a:is_dir() and 1 or 0
+    local is_dir_b = b:is_dir() and 1 or 0
     if is_dir_a ~= is_dir_b then
       return is_dir_a > is_dir_b
     end
-    return a < b
+    return a:get() < b:get()
   end)
 
-  local root = {
-    value = ".",
-    path = self.pathlib.add_trailing_slash(vim.fn.fnamemodify(opts.path, ":p:h")),
-    kind_name = "directory",
-    children = {},
-  }
+  local root = {value = ".", path = dir:slash(), kind_name = "directory", children = {}}
   for _, path in ipairs(paths) do
     local value
     local kind_name = M.kind_name
-    if self.filelib.is_directory(path) then
-      value = self.pathlib.add_trailing_slash(vim.fn.fnamemodify(path, ":h:t"))
+    if path:is_dir() then
+      value = path:slash():head()
       kind_name = "directory"
     else
-      value = vim.fn.fnamemodify(path, ":t")
+      value = path:head()
     end
     table.insert(root.children, {value = value, path = path, kind_name = kind_name})
   end
@@ -63,7 +54,7 @@ M.init_path = function(self)
   end
 
   local path = vim.api.nvim_buf_get_name(bufnr)
-  if not self.filelib.readable(path) then
+  if not File.new(path):readable() then
     return
   end
 
@@ -71,7 +62,7 @@ M.init_path = function(self)
 end
 
 M.hook = function(_, path)
-  vim.api.nvim_command("silent lcd " .. path)
+  vim.api.nvim_command("silent lcd " .. path:get())
 end
 
 M.kind_name = "file"

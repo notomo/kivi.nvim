@@ -71,7 +71,7 @@ M._set_lines = function(bufnr, nodes, source, history, current_path)
   local ok = false
   if latest_path ~= nil then
     for i, node in ipairs(nodes) do
-      if node.path == latest_path and i ~= 1 then
+      if node.path:get() == latest_path and i ~= 1 then
         cursorlib.set_row(i)
         ok = true
         break
@@ -79,9 +79,9 @@ M._set_lines = function(bufnr, nodes, source, history, current_path)
     end
   end
   if not ok then
-    ok = history:restore(current_path)
+    ok = history:restore(current_path:get())
   end
-  if not ok and latest_path ~= current_path then
+  if not ok and latest_path ~= current_path:get() then
     cursorlib.set_row(2)
   end
 end

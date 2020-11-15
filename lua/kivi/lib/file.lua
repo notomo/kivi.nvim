@@ -1,140 +1,107 @@
 local pathlib = require("kivi/lib/path")
-
 local vim = vim
 
 local M = {}
 
-M.readable = function(file_path)
-  return vim.fn.filereadable(file_path) ~= 0
-end
+local File = setmetatable({}, pathlib.Path)
+File.__index = File
+M.File = File
 
-M.is_directory = function(path)
-  return vim.fn.isdirectory(path) ~= 0
-end
-
-M.create_if_need = function(file_path)
-  local dir_path = vim.fn.fnamemodify(file_path, ":h")
-  if not M.is_directory(dir_path) then
-    vim.fn.mkdir(dir_path, "p")
+function File.new(path)
+  if type(path) == "table" then
+    path = path:get()
   end
-  if M.readable(file_path) then
-    return false
-  end
-  io.open(file_path, "w"):close()
-  return true
+  local tbl = {path = vim.fn.fnamemodify(path, ":p")}
+  return setmetatable(tbl, File)
 end
 
-M.read_lines = function(path, s, e)
-  local f = io.open(path, "r")
-  if f == nil then
-    return {}
-  end
-
-  local lines = {}
-  local read = f:lines()
-  for _ = 1, s - 1, 1 do
-    read() -- skip
-  end
-  for _ = s, e, 1 do
-    table.insert(lines, read())
-  end
-  io.close(f)
-  return lines
+function File.__tostring(self)
+  return self.path
 end
 
-M.write_lines = function(path, lines)
-  local f = io.open(path, "w")
-  for _, line in ipairs(lines) do
-    f:write(line .. "\n")
+function File.is_dir(self)
+  return vim.fn.isdirectory(self.path) ~= 0
+end
+
+function File.paths(self)
+  local paths = {}
+  for _, p in ipairs(vim.fn.readdir(self.path)) do
+    table.insert(paths, self:join(p))
   end
-  f:close()
+  return paths
 end
 
-M.find_upward_dir = function(child_pattern)
-  local found_file = vim.fn.findfile(child_pattern, ".;")
-  if found_file ~= "" then
-    return vim.fn.fnamemodify(found_file, ":p:h")
-  end
-
-  local found_dir = vim.fn.finddir(child_pattern, ".;")
-  if found_dir ~= "" then
-    return vim.fn.fnamemodify(found_dir, ":p:h:h")
-  end
-
-  return nil
+function File.delete(self)
+  return vim.fn.delete(self.path, "rf")
 end
 
-M.find_git_root = function()
-  local git_root = M.find_upward_dir(".git")
-  if git_root == nil then
-    return nil, "not found .git"
-  end
-  return git_root, nil
+function File.rename(self, to)
+  return vim.fn.rename(self.path, to:get())
 end
 
-M.delete = function(path)
-  vim.fn.delete(path, "rf")
-end
-
-local get_bufnr = function(path)
-  local pattern = ("^%s$"):format(path)
-  return vim.fn.bufnr(pattern)
-end
-
-M.open = function(path)
-  local bufnr = get_bufnr(path)
-  if bufnr ~= -1 then
-    vim.api.nvim_command("buffer " .. bufnr)
-  else
-    vim.api.nvim_command("edit " .. path)
-  end
-end
-
-M.tab_open = function(path)
-  local bufnr = get_bufnr(path)
-  if bufnr ~= -1 then
-    vim.api.nvim_command("tabedit")
-    vim.api.nvim_command("buffer " .. bufnr)
-  else
-    vim.api.nvim_command("tabedit " .. path)
-  end
-end
-
-M.vsplit_open = function(path)
-  local bufnr = get_bufnr(path)
-  if bufnr ~= -1 then
-    vim.api.nvim_command("vsplit")
-    vim.api.nvim_command("buffer " .. bufnr)
-  else
-    vim.api.nvim_command("vsplit" .. path)
-  end
-end
-
-M.rename = function(from, to)
-  vim.fn.rename(from, to)
-end
-
-M.copy = function(from, to)
-  if M.is_directory(from) then
-    if M.is_directory(to) then
-      vim.fn.system({"cp", "-RT", from, pathlib.trim_trailing_slash(to)})
+function File.copy(self, to)
+  if self:is_dir() then
+    if to:is_dir() then
+      vim.fn.system({"cp", "-RT", self.path, to:trim_slash():get()})
     else
-      vim.fn.system({"cp", "-R", from, pathlib.trim_trailing_slash(to)})
+      vim.fn.system({"cp", "-R", self.path, to:trim_slash():get()})
     end
     return
   end
 
-  local from_file = io.open(from, "r")
+  local from_file = io.open(self.path, "r")
   local content = from_file:read("*a")
   from_file:close()
 
-  local to_file = io.open(to, "w")
+  local to_file = io.open(to:get(), "w")
   to_file:write(content)
   to_file:close()
 end
 
-M.exists = function(path)
-  return M.readable(path) or M.is_directory(path)
+function File._bufnr(self)
+  local pattern = ("^%s$"):format(self.path)
+  local bufnr = vim.fn.bufnr(pattern)
+  if bufnr ~= -1 then
+    return bufnr
+  end
+  return nil
+end
+
+function File.open(self)
+  local bufnr = self:_bufnr()
+  if bufnr ~= nil then
+    vim.api.nvim_command("buffer " .. bufnr)
+  else
+    vim.api.nvim_command("edit " .. self.path)
+  end
+end
+
+function File.tab_open(self)
+  local bufnr = self:_bufnr()
+  if bufnr ~= nil then
+    vim.api.nvim_command("tabedit")
+    vim.api.nvim_command("buffer " .. bufnr)
+  else
+    vim.api.nvim_command("tabedit " .. self.path)
+  end
+end
+
+function File.vsplit_open(self)
+  local bufnr = self:_bufnr()
+  if bufnr ~= nil then
+    vim.api.nvim_command("vsplit")
+    vim.api.nvim_command("buffer " .. bufnr)
+  else
+    vim.api.nvim_command("vsplit" .. self.path)
+  end
+end
+
+function File.readable(self)
+  return vim.fn.filereadable(self.path) ~= 0
+end
+
+function File.exists(self)
+  return self:readable() or self:is_dir()
 end
 
 return M

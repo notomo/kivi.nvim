@@ -13,14 +13,14 @@ function Clipboard.new(source_name)
     return clipboard
   end
 
-  local tbl = {_paths = {}, _has_cut = false}
+  local tbl = {_nodes = {}, _has_cut = false}
   local self = setmetatable(tbl, Clipboard)
   persist.clipboards[source_name] = self
   return self
 end
 
 function Clipboard.copy(self, nodes)
-  self._paths = nodes
+  self._nodes = nodes
   self._has_cut = false
 end
 
@@ -30,10 +30,10 @@ function Clipboard.cut(self, nodes)
 end
 
 function Clipboard.pop(self)
-  local paths = self._paths
+  local nodes = self._nodes
   local has_cut = self._has_cut
   self:copy({})
-  return paths, has_cut
+  return nodes, has_cut
 end
 
 return M

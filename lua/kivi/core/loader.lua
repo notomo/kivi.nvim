@@ -29,9 +29,9 @@ function Loader.load(self)
 
   local root, ok = result:get()
   if ok then
-    ctx.history:add(root.path, ctx.opts.back)
+    ctx.history:add(root.path:get(), ctx.opts.back)
     ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history)
-    ctx.history:set(root.path)
+    ctx.history:set(root.path:get())
     ctx.source:hook(root.path)
     -- TODO: else job
   end
