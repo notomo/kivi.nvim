@@ -11,15 +11,6 @@ function Node.new(raw, parent)
   return setmetatable(raw, meta)
 end
 
-function Node.all(self)
-  local nodes = {self}
-  for _, child in ipairs(self.children or {}) do
-    local node = Node.new(child, self)
-    vim.list_extend(nodes, node:all())
-  end
-  return nodes
-end
-
 function Node.root(self)
   local current = self
   while true do
@@ -36,6 +27,17 @@ function Node.move_to(self, parent)
   old.parent = nil
   old.__index = nil
   return Node.new(old, parent)
+end
+
+function Node.walk(self, f)
+  return self:_walk(0, f)
+end
+
+function Node._walk(self, depth, f)
+  f(self, depth)
+  for _, child in ipairs(self.children or {}) do
+    Node.new(child, self):_walk(depth + 1, f)
+  end
 end
 
 return M

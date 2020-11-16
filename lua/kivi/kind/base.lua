@@ -50,6 +50,27 @@ M.action_cut = function(_, nodes, ctx)
   ctx.clipboard:cut(nodes)
 end
 
+M.action_toggle_tree = function(self, nodes, ctx)
+  if nodes[1] == nil then
+    return
+  end
+
+  local root = nodes[1]:root()
+  local opts = ctx.opts:clone(root.path)
+  opts.expand = true
+  for _, node in ipairs(nodes) do
+    local path = node.path:get()
+    local already = opts.expanded[path]
+    if already then
+      opts.expanded[path] = nil
+    else
+      opts.expanded[path] = true
+    end
+  end
+
+  self:start_path(opts, ctx.source_name)
+end
+
 M.__index = M
 setmetatable(M, {})
 

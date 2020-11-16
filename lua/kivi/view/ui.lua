@@ -38,16 +38,24 @@ M._close = function(self)
   return windowlib.close(self._window_id)
 end
 
-M._redraw = function(self, root, source, history)
+M._redraw = function(self, root, source, history, is_expand)
+  local lines = {}
+  local nodes = {}
+  root:walk(function(node, depth)
+    local space = ("  "):rep(depth - 1)
+    table.insert(lines, space .. node.value)
+    table.insert(nodes, node)
+  end)
+
   local tbl = {
     bufnr = self.bufnr,
     _selected = {},
     _window_id = self._window_id,
-    _nodes = root:all(),
+    _nodes = nodes,
     _selection_hl_factory = highlights.new_factory("kivi-selection-highlight", self.bufnr),
   }
 
-  M._set_lines(tbl.bufnr, tbl._nodes, source, history, root.path)
+  M._set_lines(tbl._window_id, tbl.bufnr, lines, tbl._nodes, source, history, root.path, is_expand)
 
   return setmetatable(tbl, RenderedUI)
 end
@@ -57,15 +65,19 @@ RenderedUI.close = M._close
 PendingUI.redraw = M._redraw
 RenderedUI.redraw = M._redraw
 
-M._set_lines = function(bufnr, nodes, source, history, current_path)
-  local lines = vim.tbl_map(function(node)
-    return node.value
-  end, nodes)
+M._set_lines = function(window_id, bufnr, lines, nodes, source, history, current_path, is_expand)
+  local origin_row = vim.api.nvim_win_get_cursor(window_id)[1]
+
   vim.bo[bufnr].modifiable = true
   vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
   vim.bo[bufnr].modifiable = false
 
   source:highlight(bufnr, nodes)
+
+  if is_expand then
+    cursorlib.set_row(origin_row)
+    return
+  end
 
   local latest_path = source:init_path() or history.latest_path
   local ok = false

@@ -20,8 +20,12 @@ function History.new(key)
   return self
 end
 
-function History.add(self, path, is_back)
-  vim.validate({path = {path, "string"}, is_back = {is_back, "boolean"}})
+function History.add(self, path, is_back, is_expand)
+  vim.validate({
+    path = {path, "string"},
+    is_back = {is_back, "boolean"},
+    is_expand = {is_expand, "boolean"},
+  })
   if self.latest_path == nil or self.latest_path == path then
     return
   end
@@ -32,9 +36,11 @@ function History.add(self, path, is_back)
   end
 end
 
-function History.set(self, path)
-  vim.validate({path = {path, "string"}})
-  self.latest_path = path
+function History.set(self, path, is_expand)
+  vim.validate({path = {path, "string"}, is_expand = {is_expand, "boolean"}})
+  if not is_expand then
+    self.latest_path = path
+  end
 end
 
 function History.pop(self)

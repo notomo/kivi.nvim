@@ -131,4 +131,22 @@ describe("kivi", function()
     assert.current_line("file2")
   end)
 
+  it("can toggle tree", function()
+    helper.new_directory("dir")
+    helper.new_file("dir/file")
+
+    command("Kivi")
+
+    helper.search("dir")
+    command("KiviDo toggle_tree")
+
+    assert.exists_pattern("  file")
+    assert.current_line("dir/")
+
+    command("KiviDo toggle_tree")
+
+    assert.current_line("dir/")
+    assert.no.exists_pattern("  file")
+  end)
+
 end)

@@ -3,7 +3,7 @@ local vim = vim
 
 local M = {}
 
-M.collect = function(_, opts)
+M.collect = function(self, opts)
   local dir = File.new(opts.path:get())
   if not dir:is_dir() then
     return nil, "does not exist: " .. opts.path:get()
@@ -29,7 +29,13 @@ M.collect = function(_, opts)
     else
       value = path:head()
     end
-    table.insert(root.children, {value = value, path = path, kind_name = kind_name})
+
+    local child = {value = value, path = path, kind_name = kind_name}
+    if kind_name == "directory" and opts.expanded[path:get()] then
+      child.children = self:collect(opts:clone(path)).children
+    end
+
+    table.insert(root.children, child)
   end
   return root
 end
