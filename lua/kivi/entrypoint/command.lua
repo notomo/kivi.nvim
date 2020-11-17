@@ -3,6 +3,7 @@ local messagelib = require("kivi/lib/message")
 local cmdparse = require("kivi/lib/cmdparse")
 local Loader = require("kivi/core/loader").Loader
 local Starter = require("kivi/core/starter").Starter
+local Renamer = require("kivi/view/renamer").Renamer
 
 local M = {}
 
@@ -49,7 +50,16 @@ M.execute = function(has_range, raw_range, raw_args)
 end
 
 M.read = function(bufnr)
-  return Loader.new(bufnr):load()
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    return
+  end
+
+  local path = vim.api.nvim_buf_get_name(bufnr)
+  if path:match("/kivi$") then
+    return Loader.new(bufnr):load()
+  elseif path:match("/kivi%-renamer$") then
+    return Renamer.load(bufnr)
+  end
 end
 
 vim.api.nvim_command("doautocmd User KiviSourceLoad")

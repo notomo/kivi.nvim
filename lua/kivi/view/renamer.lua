@@ -11,22 +11,31 @@ M.Renamer = Renamer
 function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
+  vim.api.nvim_buf_set_option(bufnr, "buftype", "acwrite")
+  vim.api.nvim_buf_set_option(bufnr, "modified", false)
+  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-renamer")
+
+  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi/view/renamer').write(%s)"):format(bufnr, bufnr)
+  vim.api.nvim_command(cmd)
 
   local froms = {}
   for i, item in ipairs(rename_items) do
     froms[i] = item.from
   end
 
-  local lines = vim.tbl_map(function(item)
-    return base_node.path:relative(item.to or item.from)
-  end, rename_items)
-  vim.api.nvim_buf_set_lines(bufnr, 0, 0, true, {""})
-  vim.api.nvim_buf_set_lines(bufnr, 1, -1, true, lines)
-
-  vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {virt_text = {{base_node.path:get(), "Comment"}}})
-  for i, line in ipairs(lines) do
-    vim.api.nvim_buf_set_extmark(bufnr, ns, i, #line, {virt_text = {{"<- " .. line, "Comment"}}})
-  end
+  local tbl = {
+    _bufnr = bufnr,
+    _lines = vim.tbl_map(function(item)
+      return base_node.path:relative(item.to or item.from)
+    end, rename_items),
+    _froms = froms,
+    _base_node = base_node,
+    _has_cut = has_cut,
+    _kind = kind,
+    _loader = loader,
+  }
+  local renamer = setmetatable(tbl, Renamer)
+  renamer:read()
 
   local width = 75
   local height = #rename_items
@@ -44,23 +53,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   vim.api.nvim_win_set_option(window_id, "signcolumn", "yes:1")
   vim.api.nvim_win_set_option(window_id, "winhighlight", "SignColumn:NormalFloat")
   vim.api.nvim_win_set_cursor(window_id, {2, 0})
-  vim.api.nvim_buf_set_option(bufnr, "buftype", "acwrite")
-  vim.api.nvim_buf_set_option(bufnr, "modified", false)
-  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-renamer")
 
-  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi/view/renamer').write(%s)"):format(bufnr, bufnr)
-  vim.api.nvim_command(cmd)
-
-  local tbl = {
-    _bufnr = bufnr,
-    _lines = lines,
-    _froms = froms,
-    _base_node = base_node,
-    _has_cut = has_cut,
-    _kind = kind,
-    _loader = loader,
-  }
-  local renamer = setmetatable(tbl, Renamer)
   persist.renamers[bufnr] = renamer
 end
 
@@ -98,6 +91,28 @@ function Renamer.write(self)
     self._has_cut = true
   end
   self._loader:load()
+end
+
+function Renamer.read(self)
+  vim.api.nvim_buf_set_lines(self._bufnr, 0, 0, true, {""})
+  vim.api.nvim_buf_set_lines(self._bufnr, 1, -1, true, self._lines)
+
+  vim.api.nvim_buf_set_extmark(self._bufnr, ns, 0, 0, {
+    virt_text = {{self._base_node.path:get(), "Comment"}},
+  })
+  for i, line in ipairs(self._lines) do
+    vim.api.nvim_buf_set_extmark(self._bufnr, ns, i, #line, {
+      virt_text = {{"<- " .. line, "Comment"}},
+    })
+  end
+end
+
+function Renamer.load(bufnr)
+  local renamer = persist.renamers[bufnr]
+  if renamer == nil then
+    return
+  end
+  renamer:read()
 end
 
 M.write = function(bufnr)

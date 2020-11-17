@@ -149,4 +149,17 @@ describe("kivi", function()
     assert.no.exists_pattern("  file")
   end)
 
+  it("can reload renamer", function()
+    helper.new_file("file")
+
+    command("Kivi")
+
+    helper.search("file")
+    command("KiviDo rename")
+
+    command("edit!")
+
+    assert.exists_pattern("file")
+  end)
+
 end)
