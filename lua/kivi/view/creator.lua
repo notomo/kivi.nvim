@@ -1,3 +1,5 @@
+local messagelib = require("kivi/lib/message")
+
 local persist = {creators = {}}
 
 local M = {}
@@ -54,6 +56,10 @@ function Creator.write(self)
 
   if #result.already_exists == 0 then
     vim.api.nvim_buf_set_option(self._bufnr, "modified", false)
+  else
+    messagelib.warn("already exists:", vim.tbl_map(function(path)
+      return path:get()
+    end, result.already_exists))
   end
   self._loader:load()
 end

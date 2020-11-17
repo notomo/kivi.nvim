@@ -162,4 +162,31 @@ describe("kivi", function()
     assert.exists_pattern("file")
   end)
 
+  it("shows already exists error on creator", function()
+    helper.new_file("file")
+
+    command("Kivi")
+    command("KiviDo create")
+
+    vim.fn.setline(1, "file")
+    command("w")
+
+    assert.exists_message("already exists: .*/file")
+  end)
+
+  it("shows already exists error on renamer", function()
+    helper.new_file("file1")
+    helper.new_file("file2")
+
+    command("Kivi")
+
+    helper.search("file1")
+    command("KiviDo rename")
+
+    command("s/file1/file2/")
+    command("w")
+
+    assert.exists_message("already exists: .*/file2")
+  end)
+
 end)

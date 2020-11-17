@@ -1,3 +1,5 @@
+local messagelib = require("kivi/lib/message")
+
 local persist = {renamers = {}}
 
 local M = {}
@@ -89,6 +91,10 @@ function Renamer.write(self)
   if #result.already_exists == 0 then
     vim.api.nvim_buf_set_option(self._bufnr, "modified", false)
     self._has_cut = true
+  else
+    messagelib.warn("already exists:", vim.tbl_map(function(item)
+      return item.to:get()
+    end, result.already_exists))
   end
   self._loader:load()
 end
