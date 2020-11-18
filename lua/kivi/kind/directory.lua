@@ -2,13 +2,19 @@ local M = {}
 
 M.action_open = function(self, nodes)
   for _, node in ipairs(nodes) do
-    self:start_path({path = node.path})
+    local _, err = self:start_path({path = node.path})
+    if err ~= nil then
+      return nil, err
+    end
   end
 end
 
 M.action_tab_open = function(self, nodes)
   for _, node in ipairs(nodes) do
-    self:start_path({path = node.path, layout = "tab"})
+    local _, err = self:start_path({path = node.path, layout = "tab"})
+    if err ~= nil then
+      return nil, err
+    end
   end
 end
 

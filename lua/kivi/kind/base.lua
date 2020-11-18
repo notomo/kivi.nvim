@@ -10,7 +10,7 @@ M.action_parent = function(self, nodes)
     return
   end
   local root = node:root()
-  self:start_path({path = root.path:parent()})
+  return self:start_path({path = root.path:parent()})
 end
 
 M.action_debug_print = function(_, nodes)
@@ -35,7 +35,7 @@ M.action_back = function(self, _, ctx)
   if path == nil then
     return
   end
-  self:start_path({path = path, back = true}, ctx.source_name)
+  return self:start_path({path = path, back = true}, ctx.source_name)
 end
 
 M.action_toggle_selection = function(_, nodes, ctx)
@@ -68,7 +68,7 @@ M.action_toggle_tree = function(self, nodes, ctx)
     end
   end
 
-  self:start_path(opts, ctx.source_name)
+  return self:start_path(opts, ctx.source_name)
 end
 
 M.__index = M

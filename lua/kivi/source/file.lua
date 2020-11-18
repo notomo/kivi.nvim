@@ -9,7 +9,11 @@ M.collect = function(self, opts)
     return nil, "does not exist: " .. opts.path:get()
   end
 
-  local paths = dir:paths()
+  local paths, err = dir:paths()
+  if err ~= nil then
+    return nil, err
+  end
+
   table.sort(paths, function(a, b)
     local is_dir_a = a:is_dir() and 1 or 0
     local is_dir_b = b:is_dir() and 1 or 0

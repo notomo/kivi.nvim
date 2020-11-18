@@ -38,9 +38,7 @@ function Starter.open(self, source_name, raw_opts)
     history = History.new(key),
     clipboard = Clipboard.new(source.name),
   }
-  repository.set(key, ctx)
-
-  return Loader.new(ui.bufnr):load()
+  return Loader.new(ui.bufnr):load(ctx, key)
 end
 
 function Starter.execute(self, action_name, range, action_opts)

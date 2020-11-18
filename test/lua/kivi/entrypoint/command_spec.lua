@@ -189,4 +189,10 @@ describe("kivi", function()
     assert.exists_message("already exists: .*/file2")
   end)
 
+  it("shows `can't open` error", function()
+    assert.error_message("can't open /root/", function()
+      command("Kivi --path=/root")
+    end)
+  end)
+
 end)

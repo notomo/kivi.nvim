@@ -13,18 +13,24 @@ function Loader.new(bufnr)
   return setmetatable(tbl, Loader)
 end
 
-function Loader.load(self)
-  local ctx, err = repository.get_from_path(self._bufnr)
+function Loader.load(self, new_ctx, key)
+  local ctx, err
+  if new_ctx ~= nil then
+    ctx = new_ctx
+  else
+    ctx, err = repository.get_from_path(self._bufnr)
+  end
   if err ~= nil then
     return nil, err
-  end
-  if ctx.ui == nil then
-    return nil, nil
   end
 
   local result, start_err = Collector.new(ctx.source):start(ctx.opts)
   if start_err ~= nil then
     return nil, start_err
+  end
+
+  if new_ctx ~= nil then
+    repository.set(key, new_ctx)
   end
 
   local root, ok = result:get()

@@ -24,11 +24,15 @@ function File.is_dir(self)
 end
 
 function File.paths(self)
+  if io.open(self.path, "r") == nil then
+    return nil, "can't open " .. self.path
+  end
+
   local paths = {}
   for _, p in ipairs(vim.fn.readdir(self.path)) do
     table.insert(paths, self:join(p))
   end
-  return paths
+  return paths, nil
 end
 
 function File.delete(self)
