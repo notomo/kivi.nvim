@@ -1,4 +1,5 @@
 local File = require("kivi/lib/file").File
+local highlights = require("kivi/lib/highlight")
 local vim = vim
 
 local M = {}
@@ -45,11 +46,19 @@ M.collect = function(self, opts)
 end
 
 vim.api.nvim_command("highlight default link KiviDirectory String")
+highlights.default("KiviDirectoryOpen", {
+  ctermfg = {"KiviDirectory", 150},
+  guifg = {"KiviDirectory", "#a9dd9d"},
+  gui = "bold",
+})
 
-M.highlight = function(self, bufnr, nodes)
+M.highlight = function(self, bufnr, nodes, opts)
   local highlighter = self.highlights:reset(bufnr)
   highlighter:filter("KiviDirectory", nodes, function(node)
     return node.kind_name == "directory"
+  end)
+  highlighter:filter("KiviDirectoryOpen", nodes, function(node)
+    return node.kind_name == "directory" and opts.expanded[node.path:get()]
   end)
 end
 

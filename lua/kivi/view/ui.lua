@@ -38,7 +38,7 @@ M._close = function(self)
   return windowlib.close(self._window_id)
 end
 
-M._redraw = function(self, root, source, history, is_expand)
+M._redraw = function(self, root, source, history, opts)
   local lines = {}
   local nodes = {}
   root:walk(function(node, depth)
@@ -54,10 +54,10 @@ M._redraw = function(self, root, source, history, is_expand)
     _nodes = nodes,
     _selection_hl_factory = highlights.new_factory("kivi-selection-highlight", self.bufnr),
   }
+  local ui = setmetatable(tbl, RenderedUI)
+  ui:_set_lines(lines, source, history, root.path, opts)
 
-  M._set_lines(tbl._window_id, tbl.bufnr, lines, tbl._nodes, source, history, root.path, is_expand)
-
-  return setmetatable(tbl, RenderedUI)
+  return ui
 end
 
 PendingUI.close = M._close
@@ -65,16 +65,16 @@ RenderedUI.close = M._close
 PendingUI.redraw = M._redraw
 RenderedUI.redraw = M._redraw
 
-M._set_lines = function(window_id, bufnr, lines, nodes, source, history, current_path, is_expand)
-  local origin_row = vim.api.nvim_win_get_cursor(window_id)[1]
+function RenderedUI._set_lines(self, lines, source, history, current_path, opts)
+  local origin_row = vim.api.nvim_win_get_cursor(self._window_id)[1]
 
-  vim.bo[bufnr].modifiable = true
-  vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, lines)
-  vim.bo[bufnr].modifiable = false
+  vim.bo[self.bufnr].modifiable = true
+  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, false, lines)
+  vim.bo[self.bufnr].modifiable = false
 
-  source:highlight(bufnr, nodes)
+  source:highlight(self.bufnr, self._nodes, opts)
 
-  if is_expand then
+  if opts.expand then
     cursorlib.set_row(origin_row)
     return
   end
@@ -82,7 +82,7 @@ M._set_lines = function(window_id, bufnr, lines, nodes, source, history, current
   local latest_path = source:init_path() or history.latest_path
   local ok = false
   if latest_path ~= nil then
-    for i, node in ipairs(nodes) do
+    for i, node in ipairs(self._nodes) do
       if node.path:get() == latest_path and i ~= 1 then
         cursorlib.set_row(i)
         ok = true
