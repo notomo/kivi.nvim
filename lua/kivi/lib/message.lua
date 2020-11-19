@@ -4,6 +4,10 @@ M.error = function(err)
   vim.api.nvim_err_write("[kivi] " .. err .. "\n")
 end
 
+M.info = function(msg)
+  vim.api.nvim_out_write("[kivi] " .. msg .. "\n")
+end
+
 M.warn = function(err, strs)
   if #strs <= 1 then
     vim.api.nvim_command("echohl WarningMsg")

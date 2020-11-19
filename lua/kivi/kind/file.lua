@@ -30,6 +30,7 @@ M.action_child = M.action_open
 M.action_delete = function(self, nodes)
   local yes = self:confirm("delete?", nodes)
   if not yes then
+    self.messagelib.info("canceled.")
     return
   end
 

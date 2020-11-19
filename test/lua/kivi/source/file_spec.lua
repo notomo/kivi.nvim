@@ -85,6 +85,19 @@ describe("kivi file source", function()
     assert.exists_pattern("dir2")
   end)
 
+  it("can cancel deleting", function()
+    helper.set_inputs("n")
+
+    helper.new_file("file")
+
+    command("Kivi")
+    helper.search("file")
+    command("KiviDo delete")
+
+    assert.exists_pattern("file")
+    assert.exists_message("canceled.")
+  end)
+
   it("can execute vsplit_open action", function()
     helper.new_file("file1")
 
