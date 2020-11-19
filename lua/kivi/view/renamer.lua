@@ -14,7 +14,6 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
   vim.api.nvim_buf_set_option(bufnr, "buftype", "acwrite")
-  vim.api.nvim_buf_set_option(bufnr, "modified", false)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-renamer")
 
   local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi/view/renamer').write(%s)"):format(bufnr, bufnr)
@@ -38,6 +37,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   }
   local renamer = setmetatable(tbl, Renamer)
   renamer:read()
+  vim.api.nvim_buf_set_option(bufnr, "modified", false)
 
   local width = 75
   local height = #rename_items
@@ -81,9 +81,14 @@ function Renamer.write(self)
 
   for i in pairs(result.success) do
     local line = lines[i]
-    vim.api.nvim_buf_set_extmark(self._bufnr, ns, i, #line, {
-      virt_text = {{"<- " .. line, "Comment"}},
-    })
+    local marks = vim.api.nvim_buf_get_extmarks(self._bufnr, ns, {i, 0}, {i, -1}, {details = true})
+    if marks[1] then
+      local id = marks[1][1]
+      vim.api.nvim_buf_set_extmark(self._bufnr, ns, i, #line, {
+        virt_text = {{"<- " .. line, "Comment"}},
+        id = id,
+      })
+    end
     self._lines[i] = line
     self._froms[i] = nil
   end
