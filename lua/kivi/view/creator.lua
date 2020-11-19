@@ -37,6 +37,8 @@ function Creator.open(kind, loader, base_node)
   local tbl = {_bufnr = bufnr, _base_node = base_node, _kind = kind, _loader = loader}
   local creator = setmetatable(tbl, Creator)
   persist.creators[bufnr] = creator
+
+  vim.api.nvim_command("startinsert")
 end
 
 function Creator.write(self)
