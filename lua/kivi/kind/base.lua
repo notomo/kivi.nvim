@@ -57,7 +57,6 @@ M.action_toggle_tree = function(self, nodes, ctx)
 
   local root = nodes[1]:root()
   local opts = ctx.opts:clone(root.path)
-  opts.expand = true
   for _, node in ipairs(nodes) do
     local path = node.path:get()
     local already = opts.expanded[path]
@@ -68,7 +67,7 @@ M.action_toggle_tree = function(self, nodes, ctx)
     end
   end
 
-  return self:start_path(opts, ctx.source_name)
+  return self:start_path({expanded = opts.expanded, expand = true}, ctx.source_name)
 end
 
 M.__index = M

@@ -149,6 +149,17 @@ describe("kivi", function()
     assert.no.exists_pattern("  file")
   end)
 
+  it("ignores layout on toggle tree", function()
+    helper.new_directory("dir")
+
+    command("Kivi --layout=vertical")
+
+    helper.search("dir")
+    command("KiviDo toggle_tree")
+
+    assert.window_count(2)
+  end)
+
   it("can reload renamer", function()
     helper.new_file("file")
 
