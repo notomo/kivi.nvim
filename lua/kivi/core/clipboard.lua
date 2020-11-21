@@ -1,3 +1,5 @@
+local messagelib = require("kivi/lib/message")
+
 local persist = {clipboards = {}}
 
 local M = {}
@@ -22,17 +24,24 @@ end
 function Clipboard.copy(self, nodes)
   self._nodes = nodes
   self._has_cut = false
+  messagelib.info("copied:", vim.tbl_map(function(node)
+    return node.path:get()
+  end, nodes))
 end
 
 function Clipboard.cut(self, nodes)
-  self:copy(nodes)
+  self._nodes = nodes
   self._has_cut = true
+  messagelib.info("cut:", vim.tbl_map(function(node)
+    return node.path:get()
+  end, nodes))
 end
 
 function Clipboard.pop(self)
   local nodes = self._nodes
   local has_cut = self._has_cut
-  self:copy({})
+  self._nodes = {}
+  self._has_cut = false
   return nodes, has_cut
 end
 

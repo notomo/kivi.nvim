@@ -115,6 +115,7 @@ describe("kivi file source", function()
 
     helper.search("file")
     command("KiviDo copy")
+    assert.exists_message("copied: .*file")
 
     helper.search("dir")
     command("KiviDo child")
@@ -279,6 +280,7 @@ describe("kivi file source", function()
 
     helper.search("file")
     command("KiviDo cut")
+    assert.exists_message("cut: .*file")
 
     helper.search("dir")
     command("KiviDo child")
