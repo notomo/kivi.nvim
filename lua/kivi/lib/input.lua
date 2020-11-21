@@ -9,9 +9,9 @@ local InputReader = {}
 InputReader.__index = InputReader
 
 function InputReader.confirm(self, message)
-  local msg = ("%s Y/n: "):format(message)
+  local msg = ("%s y/n: "):format(message)
   local input = self:get(msg)
-  return input == "Y"
+  return input == "y"
 end
 
 function InputReader.get(_, message)

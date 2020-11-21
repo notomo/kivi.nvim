@@ -58,7 +58,7 @@ describe("kivi file source", function()
   end)
 
   it("can delete file", function()
-    helper.set_inputs("Y")
+    helper.set_inputs("y")
 
     helper.new_file("file1")
     helper.new_file("file2")
@@ -72,7 +72,7 @@ describe("kivi file source", function()
   end)
 
   it("can delete directory", function()
-    helper.set_inputs("Y")
+    helper.set_inputs("y")
 
     helper.new_directory("dir1")
     helper.new_directory("dir2")
