@@ -12,8 +12,8 @@ M.Renamer = Renamer
 
 function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
-  vim.api.nvim_buf_set_option(bufnr, "buftype", "acwrite")
+  vim.bo[bufnr].bufhidden = "wipe"
+  vim.bo[bufnr].buftype = "acwrite"
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-renamer")
 
   local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi/view/renamer').write(%s)"):format(bufnr, bufnr)
@@ -55,6 +55,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   vim.api.nvim_win_set_option(window_id, "signcolumn", "yes:1")
   vim.api.nvim_win_set_option(window_id, "winhighlight", "SignColumn:NormalFloat")
   vim.api.nvim_win_set_cursor(window_id, {2, 0})
+  vim.api.nvim_command("doautocmd BufRead") -- HACK?
 
   persist.renamers[bufnr] = renamer
 end

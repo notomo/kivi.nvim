@@ -10,7 +10,6 @@ M.Creator = Creator
 
 function Creator.open(kind, loader, base_node)
   local bufnr = vim.api.nvim_create_buf(false, true)
-  vim.api.nvim_buf_set_option(bufnr, "bufhidden", "wipe")
 
   local width = 75
   local height = math.floor(vim.o.lines / 2)
@@ -25,11 +24,13 @@ function Creator.open(kind, loader, base_node)
     external = false,
     style = "minimal",
   })
-  vim.api.nvim_win_set_option(window_id, "signcolumn", "yes:1")
-  vim.api.nvim_win_set_option(window_id, "winhighlight", "SignColumn:NormalFloat")
-  vim.api.nvim_buf_set_option(bufnr, "buftype", "acwrite")
-  vim.api.nvim_buf_set_option(bufnr, "modified", false)
+  vim.wo[window_id].signcolumn = "yes:1"
+  vim.wo[window_id].winhighlight = "SignColumn:NormalFloat"
+  vim.bo[bufnr].bufhidden = "wipe"
+  vim.bo[bufnr].buftype = "acwrite"
+  vim.bo[bufnr].modified = false
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-creator")
+  vim.api.nvim_command("doautocmd BufRead") -- HACK?
 
   local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi/view/creator').write(%s)"):format(bufnr, bufnr)
   vim.api.nvim_command(cmd)
