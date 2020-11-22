@@ -58,12 +58,19 @@ function Creator.write(self)
 
   if #result.already_exists == 0 then
     vim.api.nvim_buf_set_option(self._bufnr, "modified", false)
+    vim.api.nvim_command("quit")
   else
     messagelib.warn("already exists:", vim.tbl_map(function(path)
       return path:get()
     end, result.already_exists))
   end
-  self._loader:load()
+
+  local target_path = nil
+  if result.success[1] ~= nil then
+    target_path = result.success[1]:get()
+  end
+
+  self._loader:load(nil, target_path)
 end
 
 M.write = function(bufnr)

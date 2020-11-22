@@ -38,7 +38,7 @@ M._close = function(self)
   return windowlib.close(self._window_id)
 end
 
-M._redraw = function(self, root, source, history, opts)
+M._redraw = function(self, root, source, history, opts, target_path)
   local lines = {}
   local nodes = {}
   root:walk(function(node, depth)
@@ -55,7 +55,7 @@ M._redraw = function(self, root, source, history, opts)
     _selection_hl_factory = highlights.new_factory("kivi-selection-highlight", self.bufnr),
   }
   local ui = setmetatable(tbl, RenderedUI)
-  ui:_set_lines(lines, source, history, root.path, opts)
+  ui:_set_lines(lines, source, history, root.path, opts, target_path)
 
   return ui
 end
@@ -65,7 +65,7 @@ RenderedUI.close = M._close
 PendingUI.redraw = M._redraw
 RenderedUI.redraw = M._redraw
 
-function RenderedUI._set_lines(self, lines, source, history, current_path, opts)
+function RenderedUI._set_lines(self, lines, source, history, current_path, opts, target_path)
   local origin_row = vim.api.nvim_win_get_cursor(self._window_id)[1]
 
   vim.bo[self.bufnr].modifiable = true
@@ -75,26 +75,26 @@ function RenderedUI._set_lines(self, lines, source, history, current_path, opts)
   source:highlight(self.bufnr, self._nodes, opts)
 
   if opts.expand then
-    cursorlib.set_row(origin_row)
+    cursorlib.set_row(origin_row, self._window_id, self.bufnr)
     return
   end
 
-  local latest_path = source:init_path() or history.latest_path
+  local latest_path = target_path or source:init_path() or history.latest_path
   local ok = false
   if latest_path ~= nil then
     for i, node in ipairs(self._nodes) do
       if node.path:get() == latest_path and i ~= 1 then
-        cursorlib.set_row(i)
+        cursorlib.set_row(i, self._window_id, self.bufnr)
         ok = true
         break
       end
     end
   end
   if not ok then
-    ok = history:restore(current_path:get())
+    ok = history:restore(current_path:get(), self._window_id, self.bufnr)
   end
   if not ok and latest_path ~= current_path:get() then
-    cursorlib.set_row(2)
+    cursorlib.set_row(2, self._window_id, self.bufnr)
   end
 end
 

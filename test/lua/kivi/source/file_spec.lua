@@ -403,7 +403,7 @@ describe("kivi file source", function()
     command("KiviDo create")
 
     vim.fn.setline(1, "created")
-    command("wq")
+    command("w")
 
     assert.exists_pattern("created")
   end)
@@ -414,7 +414,7 @@ describe("kivi file source", function()
     command("KiviDo create")
 
     vim.fn.setline(1, "created/")
-    command("wq")
+    command("w")
 
     assert.exists_pattern("created/")
   end)

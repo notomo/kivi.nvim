@@ -13,7 +13,8 @@ function Loader.new(bufnr)
   return setmetatable(tbl, Loader)
 end
 
-function Loader.load(self, new_ctx, key)
+function Loader.load(self, new_ctx, target_path)
+  vim.validate({new_ctx = {new_ctx, "table", true}, target_path = {target_path, "string", true}})
   local ctx, err
   if new_ctx ~= nil then
     ctx = new_ctx
@@ -29,14 +30,10 @@ function Loader.load(self, new_ctx, key)
     return nil, start_err
   end
 
-  if new_ctx ~= nil then
-    repository.set(key, new_ctx)
-  end
-
   local root, ok = result:get()
   if ok then
-    ctx.history:add(root.path:get(), ctx.opts.back, ctx.opts.expand)
-    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts)
+    ctx.history:add(root.path:get(), ctx.opts.back)
+    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, target_path)
     ctx.history:set(root.path:get(), ctx.opts.expand)
     ctx.source:hook(root.path)
     -- TODO: else job

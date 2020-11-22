@@ -20,12 +20,8 @@ function History.new(key)
   return self
 end
 
-function History.add(self, path, is_back, is_expand)
-  vim.validate({
-    path = {path, "string"},
-    is_back = {is_back, "boolean"},
-    is_expand = {is_expand, "boolean"},
-  })
+function History.add(self, path, is_back)
+  vim.validate({path = {path, "string"}, is_back = {is_back, "boolean"}})
   if self.latest_path == nil or self.latest_path == path then
     return
   end
@@ -47,11 +43,15 @@ function History.pop(self)
   return table.remove(self._paths)
 end
 
-function History.restore(self, path)
-  vim.validate({path = {path, "string"}})
+function History.restore(self, path, window_id, bufnr)
+  vim.validate({
+    path = {path, "string"},
+    window_id = {window_id, "number"},
+    bufnr = {bufnr, "number"},
+  })
   local row = self._rows[path]
   if row ~= nil then
-    cursorlib.set_row(row)
+    cursorlib.set_row(row, window_id, bufnr)
     return true
   end
   return false
