@@ -29,7 +29,7 @@ M.start_by_excmd = function(has_range, raw_range, raw_args)
 end
 
 M.execute = function(has_range, raw_range, raw_args)
-  local action_name, _, ex_opts, parse_err = cmdparse.args(raw_args, {})
+  local action_name, opts, ex_opts, parse_err = cmdparse.args(raw_args, {})
   if parse_err ~= nil then
     return nil, messagelib.error(parse_err)
   end
@@ -41,7 +41,7 @@ M.execute = function(has_range, raw_range, raw_args)
 
   local action_opts = ex_opts.x or {}
   local result, err = wraplib.traceback(function()
-    return Starter.new():execute(action_name, range, action_opts)
+    return Starter.new():execute(action_name, range, opts, action_opts)
   end)
   if err ~= nil then
     return nil, messagelib.error(err)

@@ -12,19 +12,20 @@ function Executor.new(starter, ui, source)
   return setmetatable(tbl, Executor)
 end
 
-function Executor._action(self, kind, nodes, action_name, action_opts)
-  local opts = action_opts or {}
+function Executor._action(self, kind, nodes, action_name, opts, action_opts)
+  action_opts = action_opts or {}
 
-  local action, action_err = kind:find_action(action_name, opts)
+  local action, action_err = kind:find_action(action_name, action_opts)
   if action_err ~= nil then
     return nil, action_err
   end
 
   return function(ctx)
-    if action.behavior.quit then
+    local result, err = action:execute(nodes, ctx)
+    if opts.quit then
       self._ui:close()
     end
-    return action:execute(nodes, ctx)
+    return result, err
   end, nil
 end
 

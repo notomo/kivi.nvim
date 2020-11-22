@@ -43,7 +43,7 @@ function Starter.open(self, source_name, raw_opts)
   return result, load_err
 end
 
-function Starter.execute(self, action_name, range, action_opts)
+function Starter.execute(self, action_name, range, opts, action_opts)
   local ctx, err = repository.get_from_path()
   if err ~= nil then
     return nil, err
@@ -51,7 +51,7 @@ function Starter.execute(self, action_name, range, action_opts)
 
   local nodes = ctx.ui:selected_nodes(action_name, range)
   ctx.ui:reset_selections(action_name)
-  return Executor.new(self, ctx.ui, ctx.source):execute(ctx, nodes, action_name, action_opts)
+  return Executor.new(self, ctx.ui, ctx.source):execute(ctx, nodes, action_name, opts, action_opts)
 end
 
 function Starter.rename(self, base_node, rename_items, has_cut)

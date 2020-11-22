@@ -35,6 +35,9 @@ local RenderedUI = {}
 RenderedUI.__index = RenderedUI
 
 M._close = function(self)
+  if not vim.api.nvim_buf_is_valid(self.bufnr) then
+    return
+  end
   return windowlib.close(self._window_id)
 end
 

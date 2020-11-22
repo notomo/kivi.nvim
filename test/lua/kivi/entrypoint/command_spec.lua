@@ -206,4 +206,17 @@ describe("kivi", function()
     end)
   end)
 
+  it("can execute action and close ui by quit option", function()
+    helper.new_file("file1")
+    helper.new_file("file2")
+    command("edit file1")
+
+    command("Kivi --layout=vertical")
+
+    helper.search("file2")
+    command("KiviDo vsplit_open --quit")
+
+    assert.window_count(2)
+  end)
+
 end)
