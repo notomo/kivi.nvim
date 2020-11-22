@@ -27,7 +27,7 @@ end
 
 M.action_child = M.action_open
 
-M.action_delete = function(self, nodes)
+M.action_delete = function(self, nodes, ctx)
   local yes = self:confirm("delete?", nodes)
   if not yes then
     self.messagelib.info("canceled.")
@@ -37,7 +37,7 @@ M.action_delete = function(self, nodes)
   for _, node in ipairs(nodes) do
     node.path:delete()
   end
-  self:start_path()
+  self:start_path({expanded = ctx.opts.expanded, expand = true})
 end
 
 M.action_paste = function(self, nodes, ctx)
@@ -91,7 +91,7 @@ M.action_paste = function(self, nodes, ctx)
     end
   end
 
-  self:start_path()
+  self:start_path({expanded = ctx.opts.expanded, expand = true})
 
   if #rename_items > 0 then
     self:start_renamer(base_node, rename_items, has_cut)

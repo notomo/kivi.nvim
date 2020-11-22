@@ -98,6 +98,45 @@ describe("kivi file source", function()
     assert.exists_message("canceled.")
   end)
 
+  it("saves tree on deleting", function()
+    helper.set_inputs("y")
+
+    helper.new_file("file")
+    helper.new_directory("dir")
+    helper.new_file("dir/in_dir")
+
+    command("Kivi")
+
+    helper.search("dir")
+    command("KiviDo toggle_tree")
+
+    helper.search("file")
+    command("KiviDo delete")
+
+    assert.no.exists_pattern("file")
+    assert.exists_pattern("  in_dir")
+  end)
+
+  it("saves tree on pasting", function()
+    helper.new_file("file")
+    helper.new_directory("dir")
+    helper.new_file("dir/in_dir")
+
+    command("Kivi")
+
+    helper.search("dir")
+    command("KiviDo toggle_tree")
+
+    helper.search("in_dir")
+    command("KiviDo copy")
+
+    helper.search("file")
+    command("KiviDo paste")
+
+    assert.exists_pattern("^in_dir$")
+    assert.exists_pattern("  in_dir$")
+  end)
+
   it("can execute vsplit_open action", function()
     helper.new_file("file1")
 
