@@ -3,7 +3,14 @@ local Path = require("kivi/lib/path").Path
 
 local M = {}
 
-local default_opts = {path = ".", layout = "no", back = false, expanded = {}, expand = false}
+local default_opts = {
+  path = ".",
+  layout = "no",
+  back = false,
+  expanded = {},
+  expand = false,
+  new = false,
+}
 
 local Options = {}
 Options.__index = Options

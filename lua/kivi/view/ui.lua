@@ -10,9 +10,9 @@ local PendingUI = {}
 PendingUI.__index = PendingUI
 M.PendingUI = PendingUI
 
-function PendingUI.open(source, layout)
+function PendingUI.open(source, layout, new)
   local bufnr
-  if vim.bo.filetype == source.filetype then
+  if not new and vim.bo.filetype == source.filetype then
     bufnr = vim.api.nvim_get_current_buf()
   else
     bufnr = vim.api.nvim_create_buf(false, true)

@@ -219,4 +219,21 @@ describe("kivi", function()
     assert.window_count(2)
   end)
 
+  it("can execute tab_open node", function()
+    helper.new_file("file1")
+    helper.new_directory("dir")
+    helper.new_file("dir/file2")
+
+    command("Kivi")
+
+    helper.search("dir")
+    command("KiviDo tab_open")
+
+    assert.tab_count(2)
+    assert.exists_pattern("file2")
+
+    command("tabprevious")
+    assert.exists_pattern("file1")
+  end)
+
 end)

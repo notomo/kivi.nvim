@@ -30,7 +30,7 @@ function Starter.open(self, source_name, raw_opts)
     return nil, err
   end
 
-  local ui, key = PendingUI.open(source, opts.layout)
+  local ui, key = PendingUI.open(source, opts.layout, opts.new)
   local ctx = {
     ui = ui,
     source = source,
