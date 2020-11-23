@@ -37,6 +37,7 @@ describe("kivi file source", function()
     command("KiviDo child")
 
     assert.current_dir("dir")
+    assert.exists_pattern("dir/")
   end)
 
   it("place cursor to the node that has source buffer's file path", function()

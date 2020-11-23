@@ -24,7 +24,7 @@ M.collect = function(self, opts)
     return a:get() < b:get()
   end)
 
-  local root = {value = ".", path = dir:slash(), kind_name = "directory", children = {}}
+  local root = {value = dir:head(), path = dir:slash(), kind_name = "directory", children = {}}
   for _, path in ipairs(paths) do
     local value
     local kind_name = M.kind_name

@@ -4,6 +4,8 @@ local highlights = require("kivi/lib/highlight")
 local layouts = require("kivi/view/layout")
 local vim = vim
 
+local ns = vim.api.nvim_create_namespace("kivi")
+
 local M = {}
 
 local PendingUI = {}
@@ -26,6 +28,7 @@ function PendingUI.open(source, layout, new)
 
   local window_id = layouts.open(layout, bufnr)
   vim.wo[window_id].number = false
+  vim.wo[window_id].list = false
 
   local tbl = {bufnr = bufnr, _window_id = window_id}
   return setmetatable(tbl, PendingUI), key
@@ -76,6 +79,7 @@ function RenderedUI._set_lines(self, lines, source, history, current_path, opts,
   vim.bo[self.bufnr].modifiable = false
 
   source:highlight(self.bufnr, self._nodes, opts)
+  vim.api.nvim_buf_set_extmark(self.bufnr, ns, 0, 0, {end_line = 1, hl_group = "Comment"})
 
   if opts.expand then
     cursorlib.set_row(origin_row, self._window_id, self.bufnr)
