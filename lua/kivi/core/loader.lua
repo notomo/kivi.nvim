@@ -39,6 +39,10 @@ function Loader.load(self, new_ctx, target_path)
     -- TODO: else job
   end
 
+  ctx.opts.expand = false
+  ctx.opts.back = false
+  ctx.opts.new = false
+
   return result, nil
 end
 

@@ -397,7 +397,7 @@ describe("kivi file source", function()
     assert.exists_pattern("renamed/")
   end)
 
-  it("can create file", function()
+  it("can create file in root", function()
     command("Kivi")
 
     command("KiviDo create")
@@ -406,6 +406,24 @@ describe("kivi file source", function()
     command("w")
 
     assert.exists_pattern("created")
+  end)
+
+  it("can create file in expanded tree", function()
+    helper.new_directory("dir")
+    helper.new_file("dir/file1")
+
+    command("Kivi")
+
+    helper.search("dir")
+    command("KiviDo toggle_tree")
+
+    helper.search("file1")
+    command("KiviDo create")
+
+    vim.fn.setline(1, "created")
+    command("w")
+
+    assert.exists_pattern("  created")
   end)
 
   it("can create directory", function()

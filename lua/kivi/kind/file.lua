@@ -45,10 +45,7 @@ M.action_paste = function(self, nodes, ctx)
   if target == nil then
     return
   end
-  local base_node = target:root()
-  if base_node == nil then
-    return
-  end
+  local base_node = target:parent_or_root()
 
   local already_exists = {}
   local copied, has_cut = ctx.clipboard:pop()
@@ -103,11 +100,7 @@ M.action_create = function(self, nodes)
   if target == nil then
     return
   end
-  local base_node = target:root()
-  if base_node == nil then
-    return
-  end
-
+  local base_node = target:parent_or_root()
   self:start_creator(base_node)
 end
 

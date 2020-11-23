@@ -21,6 +21,13 @@ function Node.root(self)
   end
 end
 
+function Node.parent_or_root(self)
+  if self.parent == nil then
+    return self:root()
+  end
+  return self.parent
+end
+
 function Node.move_to(self, parent)
   local old = vim.deepcopy(self)
   old.path = parent.path:join(self.path:head())
