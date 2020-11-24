@@ -116,4 +116,18 @@ function File.create(self)
   io.open(self.path, "w"):close()
 end
 
+M.find_upward_dir = function(child_pattern)
+  local found_file = vim.fn.findfile(child_pattern, ".;")
+  if found_file ~= "" then
+    return vim.fn.fnamemodify(found_file, ":p:h")
+  end
+
+  local found_dir = vim.fn.finddir(child_pattern, ".;")
+  if found_dir ~= "" then
+    return vim.fn.fnamemodify(found_dir, ":p:h:h")
+  end
+
+  return nil
+end
+
 return M
