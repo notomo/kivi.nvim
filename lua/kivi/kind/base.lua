@@ -1,3 +1,5 @@
+local messagelib = require("kivi/lib/message")
+
 local M = {}
 
 M.opts = {yank = {key = "path", register = "+"}}
@@ -23,10 +25,9 @@ M.action_yank = function(self, nodes)
   local values = vim.tbl_map(function(node)
     return tostring(node[self.action_opts.key])
   end, nodes)
-  local value = table.concat(values, "\n")
-  if value ~= "" then
-    vim.fn.setreg(self.action_opts.register, value)
-    print("yank: " .. value)
+  if #values ~= 0 then
+    vim.fn.setreg(self.action_opts.register, table.concat(values, "\n"))
+    messagelib.info("yank:", values)
   end
 end
 

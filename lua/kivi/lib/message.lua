@@ -13,7 +13,10 @@ M._echo = function(msg, strs, hl_group)
     return
   end
   vim.api.nvim_command("echohl " .. hl_group)
-  vim.api.nvim_command(([[echomsg "[kivi] %s\n%s"]]):format(msg, table.concat(strs, "\n")))
+  vim.api.nvim_command(([[echomsg "[kivi] %s"]]):format(msg))
+  for _, str in ipairs(strs) do
+    vim.api.nvim_command(([[echomsg "%s"]]):format(str))
+  end
   vim.api.nvim_command("echohl None")
 end
 

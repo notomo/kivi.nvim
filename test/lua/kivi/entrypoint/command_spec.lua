@@ -48,12 +48,22 @@ describe("kivi", function()
   end)
 
   it("can execute yank action", function()
-    helper.new_file("file")
+    helper.new_file("file1")
+    helper.new_file("file2")
 
     command("Kivi")
+
+    helper.search("file1")
+    command("KiviDo toggle_selection")
+    helper.search("file2")
+    command("KiviDo toggle_selection")
+
     command("KiviDo yank")
 
-    assert.register_value("+", helper.test_data_dir .. "file")
+    assert.register_value("+", helper.test_data_dir .. "file1\n" .. helper.test_data_dir .. "file2")
+    assert.exists_message("yank:$")
+    assert.exists_message("file1$")
+    assert.exists_message("file2$")
   end)
 
   it("can execute back action", function()

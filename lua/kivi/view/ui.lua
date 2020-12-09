@@ -47,9 +47,12 @@ end
 M._redraw = function(self, root, source, history, opts, target_path)
   local lines = {}
   local nodes = {}
+  local index = 1
   root:walk(function(node, depth)
     local space = ("  "):rep(depth - 1)
     table.insert(lines, space .. node.value)
+    node.index = index -- HACK
+    index = index + 1
     table.insert(nodes, node)
   end)
 
@@ -107,8 +110,11 @@ end
 
 function RenderedUI.selected_nodes(self, action_name, range)
   if action_name ~= "toggle_selection" and not vim.tbl_isempty(self._selected) then
-    -- TODO sort by index?
-    return vim.tbl_values(self._selected)
+    local nodes = vim.tbl_values(self._selected)
+    table.sort(nodes, function(a, b)
+      return a.index < b.index
+    end)
+    return nodes
   end
 
   if range ~= nil then
