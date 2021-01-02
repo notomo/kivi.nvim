@@ -23,8 +23,12 @@ function File.is_dir(self)
   return vim.fn.isdirectory(self.path) ~= 0
 end
 
+function File.can_read(self)
+  return vim.loop.fs_access(self.path, "r")
+end
+
 function File.paths(self)
-  if io.open(self.path, "r") == nil then
+  if not self:can_read() then
     return nil, "can't open " .. self.path
   end
 
