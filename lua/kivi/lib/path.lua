@@ -8,7 +8,7 @@ function Path.new(path)
   if type(path) == "table" then
     path = path:get()
   end
-  local tbl = {path = path}
+  local tbl = {path = M.adjust_sep(path)}
   return setmetatable(tbl, Path)
 end
 

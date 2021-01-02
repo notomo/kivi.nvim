@@ -11,7 +11,7 @@ function File.new(path)
   if type(path) == "table" then
     path = path:get()
   end
-  local tbl = {path = vim.fn.fnamemodify(path, ":p")}
+  local tbl = {path = pathlib.adjust_sep(vim.fn.fnamemodify(path, ":p"))}
   return setmetatable(tbl, File)
 end
 

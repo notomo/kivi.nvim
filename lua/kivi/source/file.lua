@@ -72,12 +72,12 @@ M.init_path = function(self)
     return
   end
 
-  local path = vim.api.nvim_buf_get_name(bufnr)
-  if not File.new(path):readable() then
+  local path = File.new(vim.api.nvim_buf_get_name(bufnr))
+  if not path:readable() then
     return
   end
 
-  return path
+  return path:get()
 end
 
 M.hook = function(_, path)

@@ -128,7 +128,7 @@ asserts.create("file_name"):register_eq(function()
 end)
 
 asserts.create("current_dir"):register_eq(function()
-  return vim.fn.getcwd():gsub(M.test_data_dir .. "?", "")
+  return require("kivi/lib/path").adjust_sep(vim.fn.getcwd()):gsub(M.test_data_dir .. "?", "")
 end)
 
 asserts.create("register_value"):register_eq(function(name)

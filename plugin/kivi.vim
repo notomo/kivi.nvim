@@ -26,6 +26,6 @@ endfunction
 if get(g:, 'kivi_debug', v:false)
     augroup kivi_dev
         autocmd!
-        execute 'autocmd BufWritePost' expand('<sfile>:p:h:h') .. '/*' 'lua require("kivi/lib/module").cleanup()'
+        execute 'autocmd BufWritePost' expand('<sfile>:p:h:h:gs?\?\/?') .. '/*' 'lua require("kivi/lib/module").cleanup()'
     augroup END
 endif
