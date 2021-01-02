@@ -96,7 +96,7 @@ function File.vsplit_open(self)
     vim.api.nvim_command("vsplit")
     vim.api.nvim_command("buffer " .. bufnr)
   else
-    vim.api.nvim_command("vsplit" .. self.path)
+    vim.api.nvim_command("vsplit " .. self.path)
   end
 end
 
