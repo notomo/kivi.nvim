@@ -211,6 +211,7 @@ describe("kivi", function()
   end)
 
   it("shows `can't open` error", function()
+    helper.skip_if_win32(pending)
     assert.error_message("can't open /root/", function()
       command("Kivi --path=/root")
     end)

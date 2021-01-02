@@ -47,14 +47,26 @@ function File.rename(self, to)
   return vim.fn.rename(self.path, to:get())
 end
 
-function File.copy(self, to)
-  if self:is_dir() then
+if vim.fn.has("win32") == 1 then
+  function File._copy_dir(self, to)
+    local from_path = self:trim_slash():get():gsub("/", "\\")
+    local to_path = to:trim_slash():get():gsub("/", "\\")
+    local cmd = {"xcopy", "/Y", "/E", "/I", from_path, to_path}
+    vim.fn.systemlist(cmd)
+  end
+else
+  function File._copy_dir(self, to)
     if to:is_dir() then
       vim.fn.system({"cp", "-RT", self.path, to:trim_slash():get()})
     else
       vim.fn.system({"cp", "-R", self.path, to:trim_slash():get()})
     end
-    return
+  end
+end
+
+function File.copy(self, to)
+  if self:is_dir() then
+    return self:_copy_dir(to)
   end
 
   local from_file = io.open(self.path, "r")

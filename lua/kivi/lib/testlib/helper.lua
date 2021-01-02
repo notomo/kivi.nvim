@@ -5,8 +5,6 @@ if find_err ~= nil then
   error(find_err)
 end
 M.root = root
-M.test_data_path = "test/test_data/"
-M.test_data_dir = M.root .. "/" .. M.test_data_path
 
 M.command = function(cmd)
   local _, err = pcall(vim.api.nvim_command, cmd)
@@ -21,6 +19,8 @@ end
 M.before_each = function()
   M.command("filetype on")
   M.command("syntax enable")
+  M.test_data_path = "test/test_data/" .. math.random(1, 2^30) .. "/"
+  M.test_data_dir = M.root .. "/" .. M.test_data_path
   M.new_directory("")
   vim.api.nvim_set_current_dir(M.test_data_dir)
   M.set_inputs()
@@ -36,7 +36,13 @@ M.after_each = function()
   print(" ")
 
   require("kivi/lib/module").cleanup()
-  M.delete("")
+  vim.fn.delete(M.root .. "/test/test_data", "rf")
+end
+
+M.skip_if_win32 = function(pending_fn)
+  if vim.fn.has("win32") == 1 then
+    pending_fn("skip on win32")
+  end
 end
 
 M.buffer_log = function()
