@@ -27,8 +27,9 @@ function PendingUI.open(source, layout, new)
   vim.bo[bufnr].modifiable = false
 
   local window_id = layouts.open(layout, bufnr)
-  vim.wo[window_id].number = false
-  vim.wo[window_id].list = false
+  -- NOTICE: different from vim.wo.option
+  vim.cmd("setlocal nonumber")
+  vim.cmd("setlocal nolist")
 
   local tbl = {bufnr = bufnr, _window_id = window_id}
   return setmetatable(tbl, PendingUI), key
