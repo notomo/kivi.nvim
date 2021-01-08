@@ -438,4 +438,36 @@ describe("kivi file source", function()
     assert.exists_pattern("created/")
   end)
 
+  it("can create directory and file", function()
+    command("Kivi")
+
+    command("KiviDo create")
+
+    vim.fn.setline(1, "created/file")
+    command("w")
+
+    assert.exists_pattern("created/")
+
+    helper.search("created/")
+    command("KiviDo child")
+
+    assert.exists_pattern("file")
+  end)
+
+  it("can't create directory if it exists as file", function()
+    helper.new_file("target")
+
+    command("Kivi")
+
+    command("KiviDo create")
+
+    vim.fn.setline(1, "target/file")
+    command("w")
+
+    assert.exists_message(("can't create: %starget/file"):format(helper.test_data_dir))
+
+    command("wincmd p")
+    assert.no.exists_pattern("target/")
+  end)
+
 end)

@@ -145,19 +145,23 @@ end
 
 M.create = function(_, paths)
   local success = {}
-  local already_exists = {}
+  local errors = {}
   for i, path in ipairs(paths) do
     if path:exists() then
-      table.insert(already_exists, path)
+      table.insert(errors, {path = path, msg = "already exists: " .. path:get()})
       goto continue
     end
 
-    path:create()
+    local err = path:create()
+    if err ~= nil then
+      table.insert(errors, {path = path, msg = err})
+      goto continue
+    end
 
     success[i] = path
     ::continue::
   end
-  return {success = success, already_exists = already_exists}
+  return {success = success, errors = errors}
 end
 
 return M

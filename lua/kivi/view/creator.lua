@@ -53,17 +53,17 @@ function Creator.write(self)
 
   local result = self._kind:create(paths)
 
-  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, false, vim.tbl_map(function(path)
-    return self._base_node.path:relative(path)
-  end, result.already_exists))
+  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, false, vim.tbl_map(function(e)
+    return self._base_node.path:relative(e.path)
+  end, result.errors))
 
-  if #result.already_exists == 0 then
+  if #result.errors == 0 then
     vim.api.nvim_buf_set_option(self._bufnr, "modified", false)
     vim.api.nvim_command("quit")
   else
-    messagelib.warn("already exists:", vim.tbl_map(function(path)
-      return path:get()
-    end, result.already_exists))
+    for _, e in ipairs(result.errors) do
+      messagelib.warn(e.msg)
+    end
   end
 
   local target_path = nil

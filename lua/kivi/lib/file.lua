@@ -129,6 +129,12 @@ function File.create(self)
     vim.fn.mkdir(self.path, "p")
     return
   end
+  local parent = self:parent()
+  if not parent:exists() then
+    parent:slash():create()
+  elseif not parent:is_dir() then
+    return ("can't create: %s (%s is a directory)"):format(self.path, parent)
+  end
   io.open(self.path, "w"):close()
 end
 
