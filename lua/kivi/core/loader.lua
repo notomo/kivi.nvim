@@ -13,7 +13,7 @@ function Loader.new(bufnr)
   return setmetatable(tbl, Loader)
 end
 
-function Loader.load(self, new_ctx, target_path)
+function Loader.load(self, new_ctx, target_path, opts)
   vim.validate({new_ctx = {new_ctx, "table", true}, target_path = {target_path, "string", true}})
   local ctx, err
   if new_ctx ~= nil then
@@ -23,6 +23,10 @@ function Loader.load(self, new_ctx, target_path)
   end
   if err ~= nil then
     return nil, err
+  end
+
+  if opts ~= nil then
+    ctx.opts = ctx.opts:merge(opts)
   end
 
   local result, start_err = Collector.new(ctx.source):start(ctx.opts)

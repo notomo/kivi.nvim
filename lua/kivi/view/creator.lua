@@ -1,3 +1,4 @@
+local wraplib = require("kivi/lib/wrap")
 local messagelib = require("kivi/lib/message")
 
 local persist = {creators = {}}
@@ -67,11 +68,18 @@ function Creator.write(self)
   end
 
   local target_path = nil
-  if result.success[1] ~= nil then
-    target_path = result.success[1]:get()
+  if result.success[#result.success] ~= nil then
+    target_path = result.success[#result.success]:get()
   end
 
-  self._loader:load(nil, target_path)
+  local expanded = {}
+  for _, path in ipairs(result.success) do
+    for _, p in ipairs(path:between(self._base_node.path)) do
+      expanded[p:get()] = true
+    end
+  end
+
+  self._loader:load(nil, target_path, {expanded = expanded})
 end
 
 M.write = function(bufnr)
@@ -79,7 +87,9 @@ M.write = function(bufnr)
   if creator == nil then
     return
   end
-  creator:write()
+  wraplib.traceback(function()
+    return creator:write()
+  end)
 end
 
 return M

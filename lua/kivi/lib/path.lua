@@ -77,6 +77,10 @@ function Path.relative(self, path)
   return path:get():sub(#base + 1)
 end
 
+function Path.depth(self)
+  return #(vim.split(self.path, "/", true))
+end
+
 M.find_root = function(pattern)
   local file = vim.api.nvim_get_runtime_file("lua/" .. pattern, false)[1]
   if file == nil then

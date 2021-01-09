@@ -30,4 +30,16 @@ function Options.clone(self, path)
   return Options.new(opts)
 end
 
+function Options.merge(self, opts)
+  local raw_opts = {}
+  for key in pairs(default_opts) do
+    raw_opts[key] = self[key]
+  end
+  for key, value in pairs(opts) do
+    raw_opts[key] = value
+  end
+  raw_opts.expanded = vim.tbl_deep_extend("force", self.expanded, opts.expanded)
+  return Options.new(raw_opts)
+end
+
 return M

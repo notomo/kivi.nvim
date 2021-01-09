@@ -443,15 +443,12 @@ describe("kivi file source", function()
 
     command("KiviDo create")
 
-    vim.fn.setline(1, "created/file")
+    vim.fn.setline(1, "created1/created2/file")
     command("w")
 
-    assert.exists_pattern("created/")
-
-    helper.search("created/")
-    command("KiviDo child")
-
-    assert.exists_pattern("file")
+    assert.exists_pattern("created1/")
+    assert.exists_pattern("  created2/")
+    assert.exists_pattern("    file")
   end)
 
   it("can't create directory if it exists as file", function()
