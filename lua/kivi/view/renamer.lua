@@ -1,3 +1,4 @@
+local wraplib = require("kivi/lib/wrap")
 local messagelib = require("kivi/lib/message")
 local cursorlib = require("kivi/lib/cursor")
 
@@ -125,7 +126,9 @@ function Renamer.load(bufnr)
   if renamer == nil then
     return
   end
-  renamer:read()
+  wraplib.traceback(function()
+    return renamer:read()
+  end)
 end
 
 M.write = function(bufnr)
@@ -133,7 +136,9 @@ M.write = function(bufnr)
   if renamer == nil then
     return
   end
-  renamer:write()
+  wraplib.traceback(function()
+    return renamer:write()
+  end)
 end
 
 return M

@@ -109,9 +109,7 @@ M.window_count = function()
   return vim.fn.tabpagewinnr(vim.fn.tabpagenr(), "$")
 end
 
-local vassert = require("vusted.assert")
-local asserts = vassert.asserts
-M.assert = vassert.assert
+local asserts = require("vusted.assert").asserts
 
 asserts.create("window_count"):register_eq(function()
   return M.window_count()

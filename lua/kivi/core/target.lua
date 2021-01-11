@@ -7,7 +7,7 @@ Target.__index = Target
 M.Target = Target
 
 function Target.new(name)
-  vim.validate({name = {name, "string", true}})
+  vim.validate({name = {name, "string"}})
   local tbl = {_name = name}
   return setmetatable(tbl, Target)
 end
