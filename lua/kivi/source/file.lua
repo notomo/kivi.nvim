@@ -37,7 +37,7 @@ M.collect = function(self, opts)
 
     local child = {value = value, path = path, kind_name = kind_name}
     if kind_name == "directory" and opts.expanded[path:get()] then
-      child.children = self:collect(opts:clone(path)).children
+      child.children = self:collect(opts:merge({path = path})).children
     end
 
     table.insert(root.children, child)

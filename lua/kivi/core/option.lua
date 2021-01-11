@@ -11,7 +11,7 @@ local default_opts = {
   expanded = {},
   expand = false,
   new = false,
-  target = nil,
+  target = "current",
 }
 
 local Options = {}
@@ -24,12 +24,6 @@ function Options.new(raw_opts)
   return setmetatable(opts, Options)
 end
 
-function Options.clone(self, path)
-  local opts = vim.deepcopy(self)
-  opts.path = path
-  return Options.new(opts)
-end
-
 function Options.merge(self, opts)
   local raw_opts = {}
   for key in pairs(default_opts) do
@@ -38,7 +32,7 @@ function Options.merge(self, opts)
   for key, value in pairs(opts) do
     raw_opts[key] = value
   end
-  raw_opts.expanded = vim.tbl_deep_extend("force", self.expanded, opts.expanded)
+  raw_opts.expanded = vim.tbl_deep_extend("force", self.expanded, opts.expanded or {})
   return Options.new(raw_opts)
 end
 

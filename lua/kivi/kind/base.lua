@@ -57,7 +57,7 @@ M.action_toggle_tree = function(self, nodes, ctx)
   end
 
   local root = nodes[1]:root()
-  local opts = ctx.opts:clone(root.path)
+  local opts = ctx.opts:merge({path = root.path})
   for _, node in ipairs(nodes) do
     local path = node.path:get()
     local already = opts.expanded[path]

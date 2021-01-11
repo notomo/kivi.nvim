@@ -33,4 +33,8 @@ function Target.project()
   return "."
 end
 
+function Target.current()
+  return nil
+end
+
 return M
