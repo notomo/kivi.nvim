@@ -2,7 +2,7 @@ local M = {}
 M.__index = M
 
 local adjust_window = function()
-  vim.api.nvim_command("wincmd w")
+  vim.cmd("wincmd w")
 end
 
 M.action_open = function(_, nodes)

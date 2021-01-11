@@ -7,17 +7,17 @@ end
 M._echo = function(msg, strs, hl_group)
   strs = strs or {}
   if #strs <= 1 then
-    vim.api.nvim_command("echohl " .. hl_group)
-    vim.api.nvim_command(([[echomsg "[kivi] %s %s"]]):format(msg, table.concat(strs, " ")))
-    vim.api.nvim_command("echohl None")
+    vim.cmd("echohl " .. hl_group)
+    vim.cmd(([[echomsg "[kivi] %s %s"]]):format(msg, table.concat(strs, " ")))
+    vim.cmd("echohl None")
     return
   end
-  vim.api.nvim_command("echohl " .. hl_group)
-  vim.api.nvim_command(([[echomsg "[kivi] %s"]]):format(msg))
+  vim.cmd("echohl " .. hl_group)
+  vim.cmd(([[echomsg "[kivi] %s"]]):format(msg))
   for _, str in ipairs(strs) do
-    vim.api.nvim_command(([[echomsg "%s"]]):format(str))
+    vim.cmd(([[echomsg "%s"]]):format(str))
   end
-  vim.api.nvim_command("echohl None")
+  vim.cmd("echohl None")
 end
 
 M.info = function(msg, strs)

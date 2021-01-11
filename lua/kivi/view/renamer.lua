@@ -1,4 +1,5 @@
 local messagelib = require("kivi/lib/message")
+local cursorlib = require("kivi/lib/cursor")
 
 local persist = {renamers = {}}
 
@@ -17,7 +18,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-renamer")
 
   local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi/view/renamer').write(%s)"):format(bufnr, bufnr)
-  vim.api.nvim_command(cmd)
+  vim.cmd(cmd)
 
   local froms = {}
   for i, item in ipairs(rename_items) do
@@ -37,7 +38,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   }
   local renamer = setmetatable(tbl, Renamer)
   renamer:read()
-  vim.api.nvim_buf_set_option(bufnr, "modified", false)
+  vim.bo[bufnr].modified = false
 
   local width = 75
   local height = #rename_items
@@ -52,10 +53,10 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     external = false,
     style = "minimal",
   })
-  vim.api.nvim_win_set_option(window_id, "signcolumn", "yes:1")
-  vim.api.nvim_win_set_option(window_id, "winhighlight", "SignColumn:NormalFloat")
-  vim.api.nvim_win_set_cursor(window_id, {2, 0})
-  vim.api.nvim_command("doautocmd BufRead") -- HACK?
+  vim.wo[window_id].signcolumn = "yes:1"
+  vim.wo[window_id].winhighlight = "SignColumn:NormalFloat"
+  cursorlib.set_row(2, window_id, bufnr)
+  vim.cmd("doautocmd BufRead") -- HACK?
 
   persist.renamers[bufnr] = renamer
 end
@@ -95,7 +96,7 @@ function Renamer.write(self)
   end
 
   if #result.already_exists == 0 then
-    vim.api.nvim_buf_set_option(self._bufnr, "modified", false)
+    vim.bo[self._bufnr].modified = false
     self._has_cut = true
   else
     messagelib.warn("already exists:", vim.tbl_map(function(item)

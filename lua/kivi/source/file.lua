@@ -45,7 +45,7 @@ M.collect = function(self, opts)
   return root
 end
 
-vim.api.nvim_command("highlight default link KiviDirectory String")
+vim.cmd("highlight default link KiviDirectory String")
 highlights.default("KiviDirectoryOpen", {
   ctermfg = {"KiviDirectory", 150},
   guifg = {"KiviDirectory", "#a9dd9d"},
@@ -81,7 +81,7 @@ M.init_path = function(self)
 end
 
 M.hook = function(_, path)
-  vim.api.nvim_command("silent lcd " .. path:get())
+  vim.cmd("silent lcd " .. path:get())
 end
 
 M.kind_name = "file"

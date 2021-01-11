@@ -90,29 +90,29 @@ end
 function File.open(self)
   local bufnr = self:_bufnr()
   if bufnr ~= nil then
-    vim.api.nvim_command("buffer " .. bufnr)
+    vim.cmd("buffer " .. bufnr)
   else
-    vim.api.nvim_command("edit " .. self.path)
+    vim.cmd("edit " .. self.path)
   end
 end
 
 function File.tab_open(self)
   local bufnr = self:_bufnr()
   if bufnr ~= nil then
-    vim.api.nvim_command("tabedit")
-    vim.api.nvim_command("buffer " .. bufnr)
+    vim.cmd("tabedit")
+    vim.cmd("buffer " .. bufnr)
   else
-    vim.api.nvim_command("tabedit " .. self.path)
+    vim.cmd("tabedit " .. self.path)
   end
 end
 
 function File.vsplit_open(self)
   local bufnr = self:_bufnr()
   if bufnr ~= nil then
-    vim.api.nvim_command("vsplit")
-    vim.api.nvim_command("buffer " .. bufnr)
+    vim.cmd("vsplit")
+    vim.cmd("buffer " .. bufnr)
   else
-    vim.api.nvim_command("vsplit " .. self.path)
+    vim.cmd("vsplit " .. self.path)
   end
 end
 

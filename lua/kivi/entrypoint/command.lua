@@ -62,6 +62,6 @@ M.read = function(bufnr)
   end
 end
 
-vim.api.nvim_command("doautocmd User KiviSourceLoad")
+vim.cmd("doautocmd User KiviSourceLoad")
 
 return M

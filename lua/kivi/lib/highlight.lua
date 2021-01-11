@@ -71,7 +71,7 @@ M.default = function(name, attributes)
   end
 
   local cmd = ("highlight default %s %s"):format(name, attr)
-  vim.api.nvim_command(cmd)
+  vim.cmd(cmd)
 end
 
 return M

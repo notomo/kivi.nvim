@@ -152,6 +152,6 @@ function RenderedUI.reset_selections(self, action_name)
   self._selection_hl_factory:reset()
 end
 
-vim.api.nvim_command("highlight default link KiviSelected Statement")
+vim.cmd("highlight default link KiviSelected Statement")
 
 return M

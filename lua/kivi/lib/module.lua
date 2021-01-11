@@ -38,7 +38,7 @@ M.cleanup = function()
       package.loaded[key] = nil
     end
   end
-  vim.api.nvim_command("doautocmd User KiviSourceLoad")
+  vim.cmd("doautocmd User KiviSourceLoad")
 end
 
 return M

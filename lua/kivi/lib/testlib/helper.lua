@@ -7,7 +7,7 @@ end
 M.root = root
 
 M.command = function(cmd)
-  local _, err = pcall(vim.api.nvim_command, cmd)
+  local _, err = pcall(vim.cmd, cmd)
   if err then
     local info = debug.getinfo(2)
     local pos = ("%s:%d"):format(info.source, info.currentline)

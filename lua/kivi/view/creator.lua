@@ -1,5 +1,6 @@
 local wraplib = require("kivi/lib/wrap")
 local messagelib = require("kivi/lib/message")
+local windowlib = require("kivi/lib/window")
 
 local persist = {creators = {}}
 
@@ -31,16 +32,22 @@ function Creator.open(kind, loader, base_node)
   vim.bo[bufnr].buftype = "acwrite"
   vim.bo[bufnr].modified = false
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-creator")
-  vim.api.nvim_command("doautocmd BufRead") -- HACK?
+  vim.cmd("doautocmd BufRead") -- HACK?
 
   local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi/view/creator').write(%s)"):format(bufnr, bufnr)
-  vim.api.nvim_command(cmd)
+  vim.cmd(cmd)
 
-  local tbl = {_bufnr = bufnr, _base_node = base_node, _kind = kind, _loader = loader}
+  local tbl = {
+    _bufnr = bufnr,
+    _base_node = base_node,
+    _kind = kind,
+    _loader = loader,
+    _window_id = window_id,
+  }
   local creator = setmetatable(tbl, Creator)
   persist.creators[bufnr] = creator
 
-  vim.api.nvim_command("startinsert")
+  vim.cmd("startinsert")
 end
 
 function Creator.write(self)
@@ -59,8 +66,8 @@ function Creator.write(self)
   end, result.errors))
 
   if #result.errors == 0 then
-    vim.api.nvim_buf_set_option(self._bufnr, "modified", false)
-    vim.api.nvim_command("quit")
+    vim.bo[self._bufnr].modified = false
+    windowlib.close(self._window_id)
   else
     for _, e in ipairs(result.errors) do
       messagelib.warn(e.msg)
