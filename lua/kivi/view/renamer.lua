@@ -82,6 +82,7 @@ function Renamer.write(self)
 
   local result = self._kind:rename(items, self._has_cut)
 
+  local last_index = 0
   for i in pairs(result.success) do
     local line = lines[i]
     local marks = vim.api.nvim_buf_get_extmarks(self._bufnr, ns, {i, 0}, {i, -1}, {details = true})
@@ -94,6 +95,12 @@ function Renamer.write(self)
     end
     self._lines[i] = line
     self._froms[i] = nil
+    last_index = i
+  end
+
+  local target_path = nil
+  if result.success[last_index] ~= nil then
+    target_path = result.success[last_index].to:get()
   end
 
   if #result.already_exists == 0 then
@@ -104,7 +111,8 @@ function Renamer.write(self)
       return item.to:get()
     end, result.already_exists))
   end
-  self._loader:load()
+
+  self._loader:load(nil, target_path)
 end
 
 function Renamer.read(self)

@@ -267,8 +267,8 @@ describe("kivi file source", function()
     command("write")
     command("wincmd p")
 
+    assert.current_line("renamed")
     assert.exists_pattern("file")
-    assert.exists_pattern("renamed")
 
     command("wincmd w")
     command("s/renamed/again/")

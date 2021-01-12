@@ -74,16 +74,18 @@ function Creator.write(self)
     end
   end
 
-  local target_path = nil
-  if result.success[#result.success] ~= nil then
-    target_path = result.success[#result.success]:get()
-  end
-
+  local last_index = 0
   local expanded = {}
-  for _, path in ipairs(result.success) do
+  for i, path in pairs(result.success) do
     for _, p in ipairs(path:between(self._base_node.path)) do
       expanded[p:get()] = true
     end
+    last_index = i
+  end
+
+  local target_path = nil
+  if result.success[last_index] ~= nil then
+    target_path = result.success[last_index]:get()
   end
 
   self._loader:load(nil, target_path, {expanded = expanded})
