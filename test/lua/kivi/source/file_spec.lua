@@ -466,4 +466,15 @@ describe("kivi file source", function()
     assert.no.exists_pattern("target/")
   end)
 
+  it("can open a file including percent", function()
+    helper.new_file("file%", "content")
+
+    command("Kivi")
+    helper.search("file")
+
+    command("KiviDo child")
+
+    assert.exists_pattern("content")
+  end)
+
 end)

@@ -87,12 +87,16 @@ function File._bufnr(self)
   return nil
 end
 
+function File._escaped_path(self)
+  return self.path:gsub("%%", "\\%%")
+end
+
 function File.open(self)
   local bufnr = self:_bufnr()
   if bufnr ~= nil then
     vim.cmd("buffer " .. bufnr)
   else
-    vim.cmd("edit " .. self.path)
+    vim.cmd("edit " .. self:_escaped_path())
   end
 end
 
@@ -102,7 +106,7 @@ function File.tab_open(self)
     vim.cmd("tabedit")
     vim.cmd("buffer " .. bufnr)
   else
-    vim.cmd("tabedit " .. self.path)
+    vim.cmd("tabedit " .. self:_escaped_path())
   end
 end
 
@@ -112,7 +116,7 @@ function File.vsplit_open(self)
     vim.cmd("vsplit")
     vim.cmd("buffer " .. bufnr)
   else
-    vim.cmd("vsplit " .. self.path)
+    vim.cmd("vsplit " .. self:_escaped_path())
   end
 end
 
