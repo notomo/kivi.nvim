@@ -259,4 +259,23 @@ describe("kivi", function()
     assert.exists_pattern("root_marker/")
   end)
 
+  it("can return whether the node is parent", function()
+    command("Kivi")
+
+    local is_parent = vim.fn["kivi#is_parent"]()
+
+    assert.is_same(true, is_parent)
+  end)
+
+  it("can return whether the node is not parent", function()
+    helper.new_file("file")
+
+    command("Kivi")
+    helper.search("file")
+
+    local is_parent = vim.fn["kivi#is_parent"]()
+
+    assert.is_same(false, is_parent)
+  end)
+
 end)

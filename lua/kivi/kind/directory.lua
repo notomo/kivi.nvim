@@ -29,4 +29,6 @@ end
 
 M.action_child = M.action_open
 
+M.is_parent = true
+
 return setmetatable(M, require("kivi/kind/file"))

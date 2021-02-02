@@ -1,3 +1,5 @@
+local Kind = require("kivi/core/kind").Kind
+local repository = require("kivi/core/repository")
 local wraplib = require("kivi/lib/wrap")
 local messagelib = require("kivi/lib/message")
 local cmdparse = require("kivi/lib/cmdparse")
@@ -60,6 +62,23 @@ M.read = function(bufnr)
   elseif path:match("/kivi%-renamer$") then
     return Renamer.load(bufnr)
   end
+end
+
+M.is_parent = function()
+  local ctx, err = repository.get_from_path()
+  if err ~= nil then
+    return false
+  end
+
+  local nodes = ctx.ui:selected_nodes()
+  local node = nodes[1]
+  local kind_name = node.kind_name or ctx.source.kind_name
+  local kind, kind_err = Kind.new(Starter.new(), kind_name)
+  if kind_err ~= nil then
+    return false, messagelib.error(kind_err)
+  end
+
+  return kind.is_parent == true
 end
 
 vim.cmd("doautocmd User KiviSourceLoad")
