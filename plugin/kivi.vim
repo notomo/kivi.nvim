@@ -22,10 +22,3 @@ function! s:mapping() abort
     nnoremap <buffer> l <Cmd>KiviDo child<CR>
     nnoremap <buffer> q <Cmd>quit<CR>
 endfunction
-
-if get(g:, 'kivi_debug', v:false)
-    augroup kivi_dev
-        autocmd!
-        execute 'autocmd BufWritePost' expand('<sfile>:p:h:h:gs?\?\/?') .. '/*' 'lua require("kivi/lib/module").cleanup()'
-    augroup END
-endif
