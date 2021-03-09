@@ -20,5 +20,5 @@ function! s:mapping() abort
     nnoremap <silent> <buffer> <expr> k line('.') == 1 ? 'G' : 'k'
     nnoremap <buffer> h <Cmd>KiviDo parent<CR>
     nnoremap <buffer> l <Cmd>KiviDo child<CR>
-    nnoremap <buffer> q <Cmd>quit<CR>
+    nnoremap <nowait> <buffer> q <Cmd>quit<CR>
 endfunction
