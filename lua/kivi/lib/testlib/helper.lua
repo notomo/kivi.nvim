@@ -6,7 +6,7 @@ M.root = M.find_plugin_root(plugin_name)
 function M.before_each()
   vim.cmd("filetype on")
   vim.cmd("syntax enable")
-  M.test_data_path = "test/test_data/" .. math.random(1, 2 ^ 30) .. "/"
+  M.test_data_path = "spec/test_data/" .. math.random(1, 2 ^ 30) .. "/"
   M.test_data_dir = M.root .. "/" .. M.test_data_path
   M.new_directory("")
   vim.api.nvim_set_current_dir(M.test_data_dir)
@@ -23,7 +23,7 @@ function M.after_each()
   print(" ")
 
   M.cleanup_loaded_modules(plugin_name)
-  vim.fn.delete(M.root .. "/test/test_data", "rf")
+  vim.fn.delete(M.root .. "/spec/test_data", "rf")
 end
 
 function M.skip_if_win32(pending_fn)

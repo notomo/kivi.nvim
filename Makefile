@@ -1,4 +1,4 @@
 
 test:
-	vusted ./test --shuffle -v
+	vusted --shuffle -v
 .PHONY: test
