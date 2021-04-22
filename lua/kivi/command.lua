@@ -2,6 +2,7 @@ local repository = require("kivi.core.repository")
 local Kind = require("kivi.core.kind").Kind
 local Loader = require("kivi.core.loader").Loader
 local Starter = require("kivi.core.starter").Starter
+local custom = require("kivi.core.custom")
 local Renamer = require("kivi.view.renamer").Renamer
 local messagelib = require("kivi.lib.message")
 local modelib = require("kivi.lib.mode")
@@ -43,6 +44,11 @@ function Command.execute(action_name, opts, action_opts)
   action_opts = action_opts or {}
   local range = modelib.visual_range() or {first = vim.fn.line("."), last = vim.fn.line(".")}
   return Starter.new():execute(action_name, range, opts, action_opts)
+end
+
+function Command.setup(config)
+  vim.validate({config = {config, "table"}})
+  custom.set(config)
 end
 
 function Command.read(bufnr)

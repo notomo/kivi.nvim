@@ -1,4 +1,3 @@
-local custom = require("kivi.custom")
 local Path = require("kivi.lib.path").Path
 local Target = require("kivi.core.target").Target
 
@@ -19,7 +18,7 @@ Options.__index = Options
 M.Options = Options
 
 function Options.new(raw_opts)
-  local opts = vim.tbl_extend("force", default_opts, custom.opts, raw_opts or {})
+  local opts = vim.tbl_extend("force", default_opts, require("kivi.core.custom").config.opts, raw_opts or {})
   opts.path = Path.new(Target.new(opts.target):path() or opts.path)
   return setmetatable(opts, Options)
 end

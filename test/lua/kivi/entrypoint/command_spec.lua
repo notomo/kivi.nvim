@@ -273,4 +273,12 @@ describe("kivi", function()
     assert.is_same(false, kivi.is_parent())
   end)
 
+  it("can config options", function()
+    kivi.setup({opts = {layout = "vertical"}})
+
+    kivi.open("file")
+
+    assert.window_count(2)
+  end)
+
 end)
