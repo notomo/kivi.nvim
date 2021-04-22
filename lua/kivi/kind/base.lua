@@ -71,7 +71,4 @@ function M.action_toggle_tree(self, nodes, ctx)
   return self:start_path({expanded = opts.expanded, expand = true}, ctx.source_name)
 end
 
-M.__index = M
-setmetatable(M, {})
-
 return M
