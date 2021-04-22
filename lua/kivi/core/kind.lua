@@ -4,28 +4,20 @@ local pathlib = require("kivi.lib.path")
 local inputlib = require("kivi.lib.input")
 local messagelib = require("kivi.lib.message")
 local Action = require("kivi.core.action").Action
+local base = require("kivi.kind.base")
 local vim = vim
 
 local M = {}
 
 local Kind = {}
-Kind.__index = Kind
 M.Kind = Kind
-local base = setmetatable(require("kivi.kind.base"), Kind)
 
 function Kind.new(starter, kind_name)
   vim.validate({kind_name = {kind_name, "string"}})
 
-  local origin
-  if kind_name == "base" then
-    origin = base
-  else
-    local found = modulelib.find_kind(kind_name)
-    if found == nil then
-      return nil, "not found kind: " .. kind_name
-    end
-    origin = modulelib.set_base(found, base)
-    origin.__index = origin
+  local kind = modulelib.find("kivi.kind." .. kind_name)
+  if kind == nil then
+    return nil, "not found kind: " .. kind_name
   end
 
   local tbl = {
@@ -33,12 +25,17 @@ function Kind.new(starter, kind_name)
     filelib = filelib,
     pathlib = pathlib,
     messagelib = messagelib,
-    opts = vim.tbl_deep_extend("force", base.opts, origin.opts or {}),
-    behaviors = vim.tbl_deep_extend("force", base.behaviors, origin.behaviors or {}),
+    opts = vim.tbl_deep_extend("force", base.opts, kind.opts or {}),
+    behaviors = vim.tbl_deep_extend("force", base.behaviors, kind.behaviors or {}),
     input_reader = inputlib.reader(),
     _starter = starter,
+    _kind = kind,
   }
-  return setmetatable(tbl, origin), nil
+  return setmetatable(tbl, Kind), nil
+end
+
+function Kind.__index(self, k)
+  return rawget(Kind, k) or self._kind[k] or base[k]
 end
 
 local ACTION_PREFIX = "action_"

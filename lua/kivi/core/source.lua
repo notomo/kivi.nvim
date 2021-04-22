@@ -7,23 +7,15 @@ local base = require("kivi.source.base")
 local M = {}
 
 local Source = {}
-Source.__index = Source
 M.Source = Source
 
 function Source.new(source_name, _)
   vim.validate({source_name = {source_name, "string", true}})
   source_name = source_name or "file"
 
-  local origin
-  if source_name == "base" then
-    origin = base
-  else
-    local found = modulelib.find_source(source_name)
-    if found == nil then
-      return nil, "not found source: " .. source_name
-    end
-    origin = setmetatable(found, base)
-    origin.__index = origin
+  local source = modulelib.find("kivi.source." .. source_name)
+  if source == nil then
+    return nil, "not found source: " .. source_name
   end
 
   local tbl = {
@@ -33,8 +25,13 @@ function Source.new(source_name, _)
     highlights = highlights.new_factory("kivi-highlight"),
     pathlib = pathlib,
     filelib = filelib,
+    _source = source,
   }
-  return setmetatable(tbl, origin), nil
+  return setmetatable(tbl, Source), nil
+end
+
+function Source.__index(self, k)
+  return rawget(Source, k) or self._source[k] or base[k]
 end
 
 return M
