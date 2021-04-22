@@ -1,6 +1,6 @@
 local M = {}
 
-M.close = function(id)
+function M.close(id)
   if not vim.api.nvim_win_is_valid(id) then
     return
   end

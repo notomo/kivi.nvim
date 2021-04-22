@@ -15,7 +15,7 @@ local funcs = {
   end,
 }
 
-M.open = function(layout, bufnr)
+function M.open(layout, bufnr)
   vim.validate({layout = {layout, "string"}, bufnr = {bufnr, "number"}})
   local f = funcs[layout]
   f(bufnr)

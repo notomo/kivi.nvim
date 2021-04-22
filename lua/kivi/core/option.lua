@@ -1,6 +1,6 @@
-local custom = require("kivi/custom")
-local Path = require("kivi/lib/path").Path
-local Target = require("kivi/core/target").Target
+local custom = require("kivi.custom")
+local Path = require("kivi.lib.path").Path
+local Target = require("kivi.core.target").Target
 
 local M = {}
 

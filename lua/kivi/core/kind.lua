@@ -1,9 +1,9 @@
-local modulelib = require("kivi/lib/module")
-local filelib = require("kivi/lib/file")
-local pathlib = require("kivi/lib/path")
-local inputlib = require("kivi/lib/input")
-local messagelib = require("kivi/lib/message")
-local Action = require("kivi/core/action").Action
+local modulelib = require("kivi.lib.module")
+local filelib = require("kivi.lib.file")
+local pathlib = require("kivi.lib.path")
+local inputlib = require("kivi.lib.input")
+local messagelib = require("kivi.lib.message")
+local Action = require("kivi.core.action").Action
 local vim = vim
 
 local M = {}
@@ -11,7 +11,7 @@ local M = {}
 local Kind = {}
 Kind.__index = Kind
 M.Kind = Kind
-local base = setmetatable(require("kivi/kind/base"), Kind)
+local base = setmetatable(require("kivi.kind.base"), Kind)
 
 function Kind.new(starter, kind_name)
   vim.validate({kind_name = {kind_name, "string"}})

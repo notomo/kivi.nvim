@@ -1,6 +1,6 @@
 local M = {}
 
-M.group_by = function(list, make_key)
+function M.group_by(list, make_key)
   local prev = nil
   local groups = {}
   for _, element in ipairs(list) do

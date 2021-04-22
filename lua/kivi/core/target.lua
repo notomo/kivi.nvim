@@ -1,4 +1,4 @@
-local filelib = require("kivi/lib/file")
+local filelib = require("kivi.lib.file")
 
 local M = {}
 

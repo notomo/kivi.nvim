@@ -1,5 +1,5 @@
-local listlib = require "kivi/lib/list"
-local Kind = require("kivi/core/kind").Kind
+local listlib = require "kivi.lib.list"
+local Kind = require("kivi.core.kind").Kind
 
 local M = {}
 

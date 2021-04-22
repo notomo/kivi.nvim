@@ -1,16 +1,16 @@
 local M = {}
 
-M.collect = function()
+function M.collect()
   return {}
 end
 
-M.highlight = function()
+function M.highlight()
 end
 
-M.init_path = function()
+function M.init_path()
 end
 
-M.hook = function()
+function M.hook()
 end
 
 M.kind_name = "base"

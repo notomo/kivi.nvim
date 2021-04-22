@@ -1,7 +1,7 @@
-local windowlib = require("kivi/lib/window")
-local cursorlib = require("kivi/lib/cursor")
-local highlights = require("kivi/lib/highlight")
-local layouts = require("kivi/view/layout")
+local windowlib = require("kivi.lib.window")
+local cursorlib = require("kivi.lib.cursor")
+local highlights = require("kivi.lib.highlight")
+local layouts = require("kivi.view.layout")
 local vim = vim
 
 local ns = vim.api.nvim_create_namespace("kivi")
@@ -38,14 +38,14 @@ end
 local RenderedUI = {}
 RenderedUI.__index = RenderedUI
 
-M._close = function(self)
+function M._close(self)
   if not vim.api.nvim_buf_is_valid(self.bufnr) then
     return
   end
   return windowlib.close(self._window_id)
 end
 
-M._redraw = function(self, root, source, history, opts, target_path)
+function M._redraw(self, root, source, history, opts, target_path)
   local lines = {}
   local nodes = {}
   local index = 1

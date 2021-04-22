@@ -1,10 +1,10 @@
 local M = {}
 
-M.error = function(err)
+function M.error(err)
   vim.api.nvim_err_write("[kivi] " .. err .. "\n")
 end
 
-M._echo = function(msg, strs, hl_group)
+function M._echo(msg, strs, hl_group)
   strs = strs or {}
   if #strs <= 1 then
     local str = ("[kivi] %s %s"):format(msg, table.concat(strs, " "))
@@ -15,11 +15,11 @@ M._echo = function(msg, strs, hl_group)
   vim.api.nvim_echo({{"[kivi] " .. msg .. "\n", hl_group}, {str, hl_group}}, true, {})
 end
 
-M.info = function(msg, strs)
+function M.info(msg, strs)
   M._echo(msg, strs)
 end
 
-M.warn = function(err, strs)
+function M.warn(err, strs)
   M._echo(err, strs, "WarningMsg")
 end
 

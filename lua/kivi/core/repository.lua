@@ -3,15 +3,15 @@ local vim = vim
 
 local M = {}
 
-M.set = function(key, values)
+function M.set(key, values)
   persist[key] = values
 end
 
-M.get = function(key)
+function M.get(key)
   return persist[key] or {}
 end
 
-M.get_from_path = function(bufnr)
+function M.get_from_path(bufnr)
   local path = vim.api.nvim_buf_get_name(bufnr or 0)
   local key = path:match("kivi://(.+)/kivi")
   if key == nil then

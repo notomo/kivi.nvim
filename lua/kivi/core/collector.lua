@@ -1,4 +1,4 @@
-local Node = require("kivi/core/node").Node
+local Node = require("kivi.core.node").Node
 
 local M = {}
 

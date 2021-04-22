@@ -1,4 +1,4 @@
-local helper = require("kivi/lib/testlib/helper")
+local helper = require("kivi.lib.testlib.helper")
 local command = helper.command
 
 describe("kivi", function()
@@ -247,7 +247,7 @@ describe("kivi", function()
   end)
 
   it("can open project root", function()
-    require("kivi/core/target").project_root_patterns = {"root_marker"}
+    require("kivi.core.target").project_root_patterns = {"root_marker"}
 
     helper.new_directory("root_marker")
     helper.new_directory("root_marker/dir1")

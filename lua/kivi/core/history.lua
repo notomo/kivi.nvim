@@ -1,4 +1,4 @@
-local cursorlib = require("kivi/lib/cursor")
+local cursorlib = require("kivi.lib.cursor")
 local persist = {histories = {}}
 
 local M = {}

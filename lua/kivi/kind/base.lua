@@ -1,4 +1,4 @@
-local messagelib = require("kivi/lib/message")
+local messagelib = require("kivi.lib.message")
 
 local M = {}
 
@@ -6,7 +6,7 @@ M.opts = {yank = {key = "path", register = "+"}}
 
 M.behaviors = {}
 
-M.action_parent = function(self, nodes)
+function M.action_parent(self, nodes)
   local node = nodes[1]
   if node == nil then
     return
@@ -15,13 +15,13 @@ M.action_parent = function(self, nodes)
   return self:start_path({path = root.path:parent()})
 end
 
-M.action_debug_print = function(_, nodes)
+function M.action_debug_print(_, nodes)
   for _, node in ipairs(nodes) do
     print(vim.inspect(node))
   end
 end
 
-M.action_yank = function(self, nodes)
+function M.action_yank(self, nodes)
   local values = vim.tbl_map(function(node)
     return tostring(node[self.action_opts.key])
   end, nodes)
@@ -31,7 +31,7 @@ M.action_yank = function(self, nodes)
   end
 end
 
-M.action_back = function(self, _, ctx)
+function M.action_back(self, _, ctx)
   local path = ctx.history:pop()
   if path == nil then
     return
@@ -39,19 +39,19 @@ M.action_back = function(self, _, ctx)
   return self:start_path({path = path, back = true}, ctx.source_name)
 end
 
-M.action_toggle_selection = function(_, nodes, ctx)
+function M.action_toggle_selection(_, nodes, ctx)
   ctx.ui:toggle_selections(nodes)
 end
 
-M.action_copy = function(_, nodes, ctx)
+function M.action_copy(_, nodes, ctx)
   ctx.clipboard:copy(nodes)
 end
 
-M.action_cut = function(_, nodes, ctx)
+function M.action_cut(_, nodes, ctx)
   ctx.clipboard:cut(nodes)
 end
 
-M.action_toggle_tree = function(self, nodes, ctx)
+function M.action_toggle_tree(self, nodes, ctx)
   if nodes[1] == nil then
     return
   end

@@ -1,5 +1,5 @@
-local repository = require("kivi/core/repository")
-local Collector = require("kivi/core/collector").Collector
+local repository = require("kivi.core.repository")
+local Collector = require("kivi.core.collector").Collector
 
 local M = {}
 

@@ -1,4 +1,4 @@
-local messagelib = require("kivi/lib/message")
+local messagelib = require("kivi.lib.message")
 
 local persist = {clipboards = {}}
 

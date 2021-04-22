@@ -1,14 +1,14 @@
-local repository = require("kivi/core/repository")
-local Source = require("kivi/core/source").Source
-local History = require("kivi/core/history").History
-local Clipboard = require("kivi/core/clipboard").Clipboard
-local Loader = require("kivi/core/loader").Loader
-local Executor = require("kivi/core/executor").Executor
-local Kind = require("kivi/core/kind").Kind
-local Options = require("kivi/core/option").Options
-local PendingUI = require("kivi/view/ui").PendingUI
-local Renamer = require("kivi/view/renamer").Renamer
-local Creator = require("kivi/view/creator").Creator
+local repository = require("kivi.core.repository")
+local Source = require("kivi.core.source").Source
+local History = require("kivi.core.history").History
+local Clipboard = require("kivi.core.clipboard").Clipboard
+local Loader = require("kivi.core.loader").Loader
+local Executor = require("kivi.core.executor").Executor
+local Kind = require("kivi.core.kind").Kind
+local Options = require("kivi.core.option").Options
+local PendingUI = require("kivi.view.ui").PendingUI
+local Renamer = require("kivi.view.renamer").Renamer
+local Creator = require("kivi.view.creator").Creator
 
 local M = {}
 

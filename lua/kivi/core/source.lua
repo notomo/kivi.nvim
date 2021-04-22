@@ -1,8 +1,8 @@
-local modulelib = require("kivi/lib/module")
-local pathlib = require("kivi/lib/path")
-local filelib = require("kivi/lib/file")
-local highlights = require("kivi/lib/highlight")
-local base = require("kivi/source/base")
+local modulelib = require("kivi.lib.module")
+local pathlib = require("kivi.lib.path")
+local filelib = require("kivi.lib.file")
+local highlights = require("kivi.lib.highlight")
+local base = require("kivi.source.base")
 
 local M = {}
 

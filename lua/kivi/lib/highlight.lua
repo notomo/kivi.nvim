@@ -37,7 +37,7 @@ function Factory.reset(self, bufnr)
   return highlighter
 end
 
-M.new_factory = function(key, bufnr)
+function M.new_factory(key, bufnr)
   vim.validate({key = {key, "string"}, bufnr = {bufnr, "number", true}})
   local ns = vim.api.nvim_create_namespace(key)
   local factory = {ns = ns, bufnr = bufnr}
@@ -50,7 +50,7 @@ local attrs = {
   ctermbg = {"bg", "cterm"},
   guibg = {"bg", "gui"},
 }
-M.default = function(name, attributes)
+function M.default(name, attributes)
   local attr = ""
   for key, v in pairs(attributes) do
     local value

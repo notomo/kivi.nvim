@@ -8,11 +8,11 @@ local get_row = function(row, bufnr)
   return row
 end
 
-M.set_row = function(row, window_id, bufnr)
+function M.set_row(row, window_id, bufnr)
   vim.api.nvim_win_set_cursor(window_id or 0, {get_row(row, bufnr), 0})
 end
 
-M.set = function(row, col, window_id, bufnr)
+function M.set(row, col, window_id, bufnr)
   vim.api.nvim_win_set_cursor(window_id or 0, {get_row(row, bufnr), col})
 end
 

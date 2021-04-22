@@ -1,4 +1,4 @@
-local helper = require("kivi/lib/testlib/helper")
+local helper = require("kivi.lib.testlib.helper")
 local command = helper.command
 
 describe("kivi file source", function()

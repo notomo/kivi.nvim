@@ -1,10 +1,10 @@
-local File = require("kivi/lib/file").File
-local highlights = require("kivi/lib/highlight")
+local File = require("kivi.lib.file").File
+local highlights = require("kivi.lib.highlight")
 local vim = vim
 
 local M = {}
 
-M.collect = function(self, opts)
+function M.collect(self, opts)
   local dir = File.new(opts.path:get())
   if not dir:is_dir() then
     return nil, "does not exist: " .. opts.path:get()
@@ -52,7 +52,7 @@ highlights.default("KiviDirectoryOpen", {
   gui = "bold",
 })
 
-M.highlight = function(self, bufnr, nodes, opts)
+function M.highlight(self, bufnr, nodes, opts)
   local highlighter = self.highlights:reset(bufnr)
   highlighter:filter("KiviDirectory", nodes, function(node)
     return node.kind_name == "directory"
@@ -62,7 +62,7 @@ M.highlight = function(self, bufnr, nodes, opts)
   end)
 end
 
-M.init_path = function(self)
+function M.init_path(self)
   local bufnr = self.bufnr
   if vim.bo[bufnr].filetype == self.filetype then
     return
@@ -80,7 +80,7 @@ M.init_path = function(self)
   return path:get()
 end
 
-M.hook = function(_, path)
+function M.hook(_, path)
   vim.cmd("silent lcd " .. path:get())
 end
 

@@ -1,6 +1,6 @@
-local wraplib = require("kivi/lib/wrap")
-local messagelib = require("kivi/lib/message")
-local windowlib = require("kivi/lib/window")
+local wraplib = require("kivi.lib.wrap")
+local messagelib = require("kivi.lib.message")
+local windowlib = require("kivi.lib.window")
 
 local persist = {creators = {}}
 
@@ -34,7 +34,7 @@ function Creator.open(kind, loader, base_node)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-creator")
   vim.cmd("doautocmd BufRead") -- HACK?
 
-  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi/view/creator').write(%s)"):format(bufnr, bufnr)
+  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.view.creator').write(%s)"):format(bufnr, bufnr)
   vim.cmd(cmd)
 
   local tbl = {
@@ -91,7 +91,7 @@ function Creator.write(self)
   self._loader:load(nil, target_path, {expanded = expanded})
 end
 
-M.write = function(bufnr)
+function M.write(bufnr)
   local creator = persist.creators[bufnr]
   if creator == nil then
     return

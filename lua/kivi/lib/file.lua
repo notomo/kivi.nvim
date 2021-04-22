@@ -1,4 +1,4 @@
-local pathlib = require("kivi/lib/path")
+local pathlib = require("kivi.lib.path")
 local vim = vim
 
 local M = {}
@@ -163,7 +163,7 @@ function File.between(self, base)
   return paths
 end
 
-M.find_upward_dir = function(child_pattern)
+function M.find_upward_dir(child_pattern)
   local found_file = vim.fn.findfile(child_pattern, ".;")
   if found_file ~= "" then
     return vim.fn.fnamemodify(found_file, ":p:h")

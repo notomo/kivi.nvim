@@ -1,15 +1,15 @@
-local Kind = require("kivi/core/kind").Kind
-local repository = require("kivi/core/repository")
-local wraplib = require("kivi/lib/wrap")
-local messagelib = require("kivi/lib/message")
-local cmdparse = require("kivi/lib/cmdparse")
-local Loader = require("kivi/core/loader").Loader
-local Starter = require("kivi/core/starter").Starter
-local Renamer = require("kivi/view/renamer").Renamer
+local Kind = require("kivi.core.kind").Kind
+local repository = require("kivi.core.repository")
+local wraplib = require("kivi.lib.wrap")
+local messagelib = require("kivi.lib.message")
+local cmdparse = require("kivi.lib.cmdparse")
+local Loader = require("kivi.core.loader").Loader
+local Starter = require("kivi.core.starter").Starter
+local Renamer = require("kivi.view.renamer").Renamer
 
 local M = {}
 
-M.start_by_excmd = function(has_range, raw_range, raw_args)
+function M.start_by_excmd(has_range, raw_range, raw_args)
   local source_name, opts, _, parse_err = cmdparse.args(raw_args, {})
   if parse_err ~= nil then
     return nil, messagelib.error(parse_err)
@@ -30,7 +30,7 @@ M.start_by_excmd = function(has_range, raw_range, raw_args)
   return result, nil
 end
 
-M.execute = function(has_range, raw_range, raw_args)
+function M.execute(has_range, raw_range, raw_args)
   local action_name, opts, ex_opts, parse_err = cmdparse.args(raw_args, {})
   if parse_err ~= nil then
     return nil, messagelib.error(parse_err)
@@ -51,7 +51,7 @@ M.execute = function(has_range, raw_range, raw_args)
   return result, nil
 end
 
-M.read = function(bufnr)
+function M.read(bufnr)
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return
   end
@@ -64,7 +64,7 @@ M.read = function(bufnr)
   end
 end
 
-M.is_parent = function()
+function M.is_parent()
   local ctx, err = repository.get_from_path()
   if err ~= nil then
     return false

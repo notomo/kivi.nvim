@@ -1,7 +1,7 @@
 local M = {}
 
 -- NOTE: This function is replaced in testing.
-M.read = function(msg)
+function M.read(msg)
   return vim.fn.input(msg)
 end
 
@@ -21,7 +21,7 @@ function InputReader.get(_, message)
   return input
 end
 
-M.reader = function()
+function M.reader()
   return setmetatable({}, InputReader)
 end
 

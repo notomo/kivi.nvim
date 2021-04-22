@@ -5,20 +5,20 @@ local adjust_window = function()
   vim.cmd("wincmd w")
 end
 
-M.action_open = function(_, nodes)
+function M.action_open(_, nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
     node.path:open()
   end
 end
 
-M.action_tab_open = function(_, nodes)
+function M.action_tab_open(_, nodes)
   for _, node in ipairs(nodes) do
     node.path:tab_open()
   end
 end
 
-M.action_vsplit_open = function(_, nodes)
+function M.action_vsplit_open(_, nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
     node.path:vsplit_open()
@@ -27,7 +27,7 @@ end
 
 M.action_child = M.action_open
 
-M.action_delete = function(self, nodes, ctx)
+function M.action_delete(self, nodes, ctx)
   local yes = self:confirm("delete?", nodes)
   if not yes then
     self.messagelib.info("canceled.")
@@ -40,7 +40,7 @@ M.action_delete = function(self, nodes, ctx)
   self:start_path({expanded = ctx.opts.expanded, expand = true})
 end
 
-M.action_paste = function(self, nodes, ctx)
+function M.action_paste(self, nodes, ctx)
   local target = nodes[1]
   if target == nil then
     return
@@ -95,7 +95,7 @@ M.action_paste = function(self, nodes, ctx)
   end
 end
 
-M.action_create = function(self, nodes)
+function M.action_create(self, nodes)
   local target = nodes[1]
   if target == nil then
     return
@@ -104,7 +104,7 @@ M.action_create = function(self, nodes)
   self:start_creator(base_node)
 end
 
-M.action_rename = function(self, nodes)
+function M.action_rename(self, nodes)
   local target = nodes[1]
   if target == nil then
     return
@@ -122,7 +122,7 @@ M.action_rename = function(self, nodes)
   self:start_renamer(base_node, rename_items, has_cut)
 end
 
-M.rename = function(_, items, has_cut)
+function M.rename(_, items, has_cut)
   local success = {}
   local already_exists = {}
   for i, item in ipairs(items) do
@@ -143,7 +143,7 @@ M.rename = function(_, items, has_cut)
   return {success = success, already_exists = already_exists}
 end
 
-M.create = function(_, paths)
+function M.create(_, paths)
   local success = {}
   local errors = {}
   for i, path in ipairs(paths) do

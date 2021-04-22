@@ -1,12 +1,9 @@
-local M = {}
+local plugin_name = vim.split((...):gsub("%.", "/"), "/", true)[1]
+local M = require("vusted.helper")
 
-local root, find_err = require("kivi/lib/path").find_root("kivi/*.lua")
-if find_err ~= nil then
-  error(find_err)
-end
-M.root = root
+M.root = M.find_plugin_root(plugin_name)
 
-M.command = function(cmd)
+function M.command(cmd)
   local _, err = pcall(vim.cmd, cmd)
   if err then
     local info = debug.getinfo(2)
@@ -16,7 +13,7 @@ M.command = function(cmd)
   end
 end
 
-M.before_each = function()
+function M.before_each()
   M.command("filetype on")
   M.command("syntax enable")
   M.test_data_path = "test/test_data/" .. math.random(1, 2 ^ 30) .. "/"
@@ -26,7 +23,7 @@ M.before_each = function()
   M.set_inputs()
 end
 
-M.after_each = function()
+function M.after_each()
   M.command("tabedit")
   M.command("tabonly!")
   M.command("silent! %bwipeout!")
@@ -35,26 +32,26 @@ M.after_each = function()
   M.command("messages clear")
   print(" ")
 
-  require("kivi/lib/module").cleanup()
+  M.cleanup_loaded_modules(plugin_name)
   vim.fn.delete(M.root .. "/test/test_data", "rf")
 end
 
-M.skip_if_win32 = function(pending_fn)
+function M.skip_if_win32(pending_fn)
   if vim.fn.has("win32") == 1 then
     pending_fn("skip on win32")
   end
 end
 
-M.buffer_log = function()
+function M.buffer_log()
   local lines = vim.fn.getbufline("%", 1, "$")
   for _, line in ipairs(lines) do
     print(line)
   end
 end
 
-M.set_inputs = function(...)
+function M.set_inputs(...)
   local answers = vim.fn.reverse({...})
-  require("kivi/lib/input").read = function(msg)
+  require("kivi.lib.input").read = function(msg)
     local answer = table.remove(answers)
     if answer == nil then
       print(msg)
@@ -65,11 +62,11 @@ M.set_inputs = function(...)
   end
 end
 
-M.set_lines = function(lines)
+function M.set_lines(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end
 
-M.search = function(pattern)
+function M.search(pattern)
   local result = vim.fn.search(pattern)
   if result == 0 then
     local info = debug.getinfo(2)
@@ -81,7 +78,7 @@ M.search = function(pattern)
   return result
 end
 
-M.new_file = function(path, ...)
+function M.new_file(path, ...)
   local f = io.open(M.test_data_dir .. path, "w")
   for _, line in ipairs({...}) do
     f:write(line .. "\n")
@@ -89,23 +86,23 @@ M.new_file = function(path, ...)
   f:close()
 end
 
-M.new_directory = function(path)
+function M.new_directory(path)
   vim.fn.mkdir(M.test_data_dir .. path, "p")
 end
 
-M.delete = function(path)
+function M.delete(path)
   vim.fn.delete(M.test_data_dir .. path, "rf")
 end
 
-M.cd = function(path)
+function M.cd(path)
   vim.api.nvim_set_current_dir(M.test_data_dir .. path)
 end
 
-M.path = function(path)
+function M.path(path)
   return M.test_data_dir .. (path or "")
 end
 
-M.window_count = function()
+function M.window_count()
   return vim.fn.tabpagewinnr(vim.fn.tabpagenr(), "$")
 end
 
@@ -132,7 +129,7 @@ asserts.create("file_name"):register_eq(function()
 end)
 
 asserts.create("current_dir"):register_eq(function()
-  return require("kivi/lib/path").adjust_sep(vim.fn.getcwd()):gsub(M.test_data_dir .. "?", "")
+  return require("kivi.lib.path").adjust_sep(vim.fn.getcwd()):gsub(M.test_data_dir .. "?", "")
 end)
 
 asserts.create("register_value"):register_eq(function(name)
