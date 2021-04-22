@@ -1,5 +1,5 @@
 local helper = require("kivi.lib.testlib.helper")
-local command = helper.command
+local kivi = helper.require("kivi")
 
 describe("kivi", function()
 
@@ -7,7 +7,7 @@ describe("kivi", function()
   after_each(helper.after_each)
 
   it("can open ui", function()
-    command("Kivi")
+    kivi.open("file")
 
     assert.filetype("kivi-file")
   end)
@@ -15,8 +15,8 @@ describe("kivi", function()
   it("can reload ui", function()
     helper.new_file("file")
 
-    command("Kivi")
-    command("edit!")
+    kivi.open("file")
+    vim.cmd("edit!")
 
     assert.exists_pattern("file")
   end)
@@ -27,12 +27,12 @@ describe("kivi", function()
     helper.new_file("dir/file2")
     helper.cd("dir")
 
-    command("Kivi")
+    kivi.open("file")
     helper.search("file2")
 
-    command("KiviDo parent")
+    kivi.execute("parent")
 
-    command("KiviDo child")
+    kivi.execute("child")
 
     assert.current_line("file2")
   end)
@@ -41,7 +41,7 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    command("Kivi")
+    kivi.open("file")
 
     assert.current_line("file1")
   end)
@@ -50,14 +50,14 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    command("Kivi")
+    kivi.open("file")
 
     helper.search("file1")
-    command("KiviDo toggle_selection")
+    kivi.execute("toggle_selection")
     helper.search("file2")
-    command("KiviDo toggle_selection")
+    kivi.execute("toggle_selection")
 
-    command("KiviDo yank")
+    kivi.execute("yank")
 
     assert.register_value("+", helper.test_data_dir .. "file1\n" .. helper.test_data_dir .. "file2")
     assert.exists_message("yank:$")
@@ -69,17 +69,17 @@ describe("kivi", function()
     helper.new_directory("dir1")
     helper.new_directory("dir1/dir2")
 
-    command("Kivi --path=dir1/dir2")
-    command("KiviDo parent")
-    command("KiviDo parent")
-    command("KiviDo back")
+    kivi.open("file", {path = "dir1/dir2"})
+    kivi.execute("parent")
+    kivi.execute("parent")
+    kivi.execute("back")
 
     assert.current_dir("dir1")
 
-    command("KiviDo back")
+    kivi.execute("back")
     assert.current_dir("dir1/dir2")
 
-    command("KiviDo back")
+    kivi.execute("back")
     assert.current_dir("dir1/dir2")
   end)
 
@@ -88,12 +88,12 @@ describe("kivi", function()
     helper.new_file("file2")
     helper.new_file("file3")
 
-    command("Kivi")
+    kivi.open("file")
     helper.search("file2")
-    command("KiviDo toggle_selection")
+    kivi.execute("toggle_selection")
     helper.search("file3")
-    command("KiviDo toggle_selection")
-    command("KiviDo tab_open")
+    kivi.execute("toggle_selection")
+    kivi.execute("tab_open")
 
     assert.tab_count(3)
   end)
@@ -102,14 +102,14 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    command("Kivi")
+    kivi.open("file")
     helper.search("file1")
-    command("KiviDo toggle_selection")
-    command("KiviDo tab_open")
+    kivi.execute("toggle_selection")
+    kivi.execute("tab_open")
 
-    command("tabprevious")
+    vim.cmd("tabprevious")
     helper.search("file2")
-    command("KiviDo tab_open")
+    kivi.execute("tab_open")
 
     assert.tab_count(3)
   end)
@@ -118,12 +118,12 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    command("Kivi")
+    kivi.open("file")
     helper.search("file1")
-    command("KiviDo toggle_selection")
-    command("KiviDo toggle_selection")
+    kivi.execute("toggle_selection")
+    kivi.execute("toggle_selection")
     helper.search("file2")
-    command("KiviDo tab_open")
+    kivi.execute("tab_open")
 
     assert.tab_count(2)
     assert.file_name("file2")
@@ -133,9 +133,9 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    command("Kivi")
+    kivi.open("file")
     helper.search("file2")
-    command("Kivi")
+    kivi.open("file")
 
     assert.current_line("file2")
   end)
@@ -144,15 +144,15 @@ describe("kivi", function()
     helper.new_directory("dir")
     helper.new_file("dir/file")
 
-    command("Kivi")
+    kivi.open("file")
 
     helper.search("dir")
-    command("KiviDo toggle_tree")
+    kivi.execute("toggle_tree")
 
     assert.exists_pattern("  file")
     assert.current_line("dir/")
 
-    command("KiviDo toggle_tree")
+    kivi.execute("toggle_tree")
 
     assert.current_line("dir/")
     assert.no.exists_pattern("  file")
@@ -161,10 +161,10 @@ describe("kivi", function()
   it("ignores layout on toggle tree", function()
     helper.new_directory("dir")
 
-    command("Kivi --layout=vertical")
+    kivi.open("file", {layout = "vertical"})
 
     helper.search("dir")
-    command("KiviDo toggle_tree")
+    kivi.execute("toggle_tree")
 
     assert.window_count(2)
   end)
@@ -172,12 +172,12 @@ describe("kivi", function()
   it("can reload renamer", function()
     helper.new_file("file")
 
-    command("Kivi")
+    kivi.open("file")
 
     helper.search("file")
-    command("KiviDo rename")
+    kivi.execute("rename")
 
-    command("edit!")
+    vim.cmd("edit!")
 
     assert.exists_pattern("file")
   end)
@@ -185,11 +185,11 @@ describe("kivi", function()
   it("shows already exists error on creator", function()
     helper.new_file("file")
 
-    command("Kivi")
-    command("KiviDo create")
+    kivi.open("file")
+    kivi.execute("create")
 
     vim.fn.setline(1, "file")
-    command("w")
+    vim.cmd("w")
 
     assert.exists_message("already exists: .*/file")
   end)
@@ -198,33 +198,32 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    command("Kivi")
+    kivi.open("file")
 
     helper.search("file1")
-    command("KiviDo rename")
+    kivi.execute("rename")
 
-    command("s/file1/file2/")
-    command("w")
+    vim.cmd("s/file1/file2/")
+    vim.cmd("w")
 
     assert.exists_message("already exists: .*/file2")
   end)
 
   it("shows `can't open` error", function()
     helper.skip_if_win32(pending)
-    assert.error_message("can't open /root/", function()
-      command("Kivi --path=/root")
-    end)
+    kivi.open("file", {path = "/root"})
+    assert.exists_message("can't open /root/")
   end)
 
   it("can execute action and close ui by quit option", function()
     helper.new_file("file1")
     helper.new_file("file2")
-    command("edit file1")
+    vim.cmd("edit file1")
 
-    command("Kivi --layout=vertical")
+    kivi.open("file", {layout = "vertical"})
 
     helper.search("file2")
-    command("KiviDo vsplit_open --quit")
+    kivi.execute("vsplit_open", {quit = true})
 
     assert.window_count(2)
   end)
@@ -234,15 +233,15 @@ describe("kivi", function()
     helper.new_directory("dir")
     helper.new_file("dir/file2")
 
-    command("Kivi")
+    kivi.open("file")
 
     helper.search("dir")
-    command("KiviDo tab_open")
+    kivi.execute("tab_open")
 
     assert.tab_count(2)
     assert.exists_pattern("file2")
 
-    command("tabprevious")
+    vim.cmd("tabprevious")
     assert.exists_pattern("file1")
   end)
 
@@ -254,28 +253,24 @@ describe("kivi", function()
     helper.new_directory("root_marker/dir1/dir2")
     helper.cd("root_marker/dir1/dir2")
 
-    command("Kivi --target=project")
+    kivi.open("file", {target = "project"})
 
     assert.exists_pattern("root_marker/")
   end)
 
   it("can return whether the node is parent", function()
-    command("Kivi")
+    kivi.open("file")
 
-    local is_parent = vim.fn["kivi#is_parent"]()
-
-    assert.is_same(true, is_parent)
+    assert.is_same(true, kivi.is_parent())
   end)
 
   it("can return whether the node is not parent", function()
     helper.new_file("file")
 
-    command("Kivi")
+    kivi.open("file")
     helper.search("file")
 
-    local is_parent = vim.fn["kivi#is_parent"]()
-
-    assert.is_same(false, is_parent)
+    assert.is_same(false, kivi.is_parent())
   end)
 
 end)

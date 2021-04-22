@@ -3,19 +3,9 @@ local M = require("vusted.helper")
 
 M.root = M.find_plugin_root(plugin_name)
 
-function M.command(cmd)
-  local _, err = pcall(vim.cmd, cmd)
-  if err then
-    local info = debug.getinfo(2)
-    local pos = ("%s:%d"):format(info.source, info.currentline)
-    local msg = ("on %s: failed excmd `%s`\n%s"):format(pos, cmd, err)
-    error(msg)
-  end
-end
-
 function M.before_each()
-  M.command("filetype on")
-  M.command("syntax enable")
+  vim.cmd("filetype on")
+  vim.cmd("syntax enable")
   M.test_data_path = "test/test_data/" .. math.random(1, 2 ^ 30) .. "/"
   M.test_data_dir = M.root .. "/" .. M.test_data_path
   M.new_directory("")
@@ -24,12 +14,12 @@ function M.before_each()
 end
 
 function M.after_each()
-  M.command("tabedit")
-  M.command("tabonly!")
-  M.command("silent! %bwipeout!")
-  M.command("filetype off")
-  M.command("syntax off")
-  M.command("messages clear")
+  vim.cmd("tabedit")
+  vim.cmd("tabonly!")
+  vim.cmd("silent! %bwipeout!")
+  vim.cmd("filetype off")
+  vim.cmd("syntax off")
+  vim.cmd("messages clear")
   print(" ")
 
   M.cleanup_loaded_modules(plugin_name)
