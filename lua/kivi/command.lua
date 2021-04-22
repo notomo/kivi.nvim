@@ -64,6 +64,19 @@ function Command.read(bufnr)
   end
 end
 
+function Command.write(bufnr)
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    return nil
+  end
+
+  local path = vim.api.nvim_buf_get_name(bufnr)
+  if path:match("/kivi%-creator$") then
+    return require("kivi.view.creator").write(bufnr)
+  elseif path:match("/kivi%-renamer$") then
+    return require("kivi.view.renamer").write(bufnr)
+  end
+end
+
 function Command.is_parent()
   local ctx, err = repository.get_from_path()
   if err ~= nil then

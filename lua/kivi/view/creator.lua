@@ -1,4 +1,3 @@
-local wraplib = require("kivi.lib.wrap")
 local messagelib = require("kivi.lib.message")
 local windowlib = require("kivi.lib.window")
 
@@ -34,7 +33,7 @@ function Creator.open(kind, loader, base_node)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-creator")
   vim.cmd("doautocmd BufRead") -- HACK?
 
-  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.view.creator').write(%s)"):format(bufnr, bufnr)
+  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)"):format(bufnr, bufnr)
   vim.cmd(cmd)
 
   local tbl = {
@@ -96,9 +95,7 @@ function M.write(bufnr)
   if creator == nil then
     return
   end
-  wraplib.traceback(function()
-    return creator:write()
-  end)
+  return creator:write()
 end
 
 return M

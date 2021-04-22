@@ -1,4 +1,3 @@
-local wraplib = require("kivi.lib.wrap")
 local messagelib = require("kivi.lib.message")
 local cursorlib = require("kivi.lib.cursor")
 
@@ -18,7 +17,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   vim.bo[bufnr].buftype = "acwrite"
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-renamer")
 
-  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.view.renamer').write(%s)"):format(bufnr, bufnr)
+  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)"):format(bufnr, bufnr)
   vim.cmd(cmd)
 
   local froms = {}
@@ -134,9 +133,7 @@ function Renamer.load(bufnr)
   if renamer == nil then
     return
   end
-  wraplib.traceback(function()
-    return renamer:read()
-  end)
+  return renamer:read()
 end
 
 function M.write(bufnr)
@@ -144,9 +141,7 @@ function M.write(bufnr)
   if renamer == nil then
     return
   end
-  wraplib.traceback(function()
-    return renamer:write()
-  end)
+  return renamer:write()
 end
 
 return M
