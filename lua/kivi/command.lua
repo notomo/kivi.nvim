@@ -1,10 +1,8 @@
 local repository = require("kivi.core.repository")
 local Kind = require("kivi.core.kind").Kind
-local Loader = require("kivi.core.loader").Loader
 local Starter = require("kivi.core.starter").Starter
 local custom = require("kivi.core.custom")
-local Renamer = require("kivi.view.renamer").Renamer
-local Creator = require("kivi.view.creator").Creator
+local Router = require("kivi.view.router").Router
 local messagelib = require("kivi.lib.message")
 local modelib = require("kivi.lib.mode")
 
@@ -41,9 +39,9 @@ function Command.execute(action_name, opts, action_opts)
     opts = {opts, "table", true},
     action_opts = {action_opts, "table", true},
   })
+  local range = modelib.visual_range() or {first = vim.fn.line("."), last = vim.fn.line(".")}
   opts = opts or {}
   action_opts = action_opts or {}
-  local range = modelib.visual_range() or {first = vim.fn.line("."), last = vim.fn.line(".")}
   return Starter.new():execute(action_name, range, opts, action_opts)
 end
 
@@ -53,29 +51,11 @@ function Command.setup(config)
 end
 
 function Command.read(bufnr)
-  if not vim.api.nvim_buf_is_valid(bufnr) then
-    return nil
-  end
-
-  local path = vim.api.nvim_buf_get_name(bufnr)
-  if path:match("/kivi$") then
-    return Loader.new(bufnr):load()
-  elseif path:match("/kivi%-renamer$") then
-    return Renamer.read_from(bufnr)
-  end
+  return Router.read(bufnr)
 end
 
 function Command.write(bufnr)
-  if not vim.api.nvim_buf_is_valid(bufnr) then
-    return nil
-  end
-
-  local path = vim.api.nvim_buf_get_name(bufnr)
-  if path:match("/kivi%-creator$") then
-    return Creator.write_from(bufnr)
-  elseif path:match("/kivi%-renamer$") then
-    return Renamer.write_from(bufnr)
-  end
+  return Router.write(bufnr)
 end
 
 function Command.is_parent()
