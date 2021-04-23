@@ -90,7 +90,7 @@ function Creator.write(self)
   self._loader:load(nil, target_path, {expanded = expanded})
 end
 
-function M.write(bufnr)
+function Creator.write_from(bufnr)
   local creator = persist.creators[bufnr]
   if creator == nil then
     return

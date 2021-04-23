@@ -128,7 +128,7 @@ function Renamer.read(self)
   end
 end
 
-function Renamer.load(bufnr)
+function Renamer.read_from(bufnr)
   local renamer = persist.renamers[bufnr]
   if renamer == nil then
     return
@@ -136,7 +136,7 @@ function Renamer.load(bufnr)
   return renamer:read()
 end
 
-function M.write(bufnr)
+function Renamer.write_from(bufnr)
   local renamer = persist.renamers[bufnr]
   if renamer == nil then
     return

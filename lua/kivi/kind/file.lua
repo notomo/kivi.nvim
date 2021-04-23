@@ -1,5 +1,4 @@
 local M = {}
-M.__index = M
 
 local adjust_window = function()
   vim.cmd("wincmd w")
@@ -80,7 +79,6 @@ function M.action_paste(self, nodes, ctx)
   end
 
   for _, item in ipairs(overwrite_items) do
-
     if has_cut then
       item.from.path:rename(item.to.path)
     else

@@ -4,6 +4,7 @@ local Loader = require("kivi.core.loader").Loader
 local Starter = require("kivi.core.starter").Starter
 local custom = require("kivi.core.custom")
 local Renamer = require("kivi.view.renamer").Renamer
+local Creator = require("kivi.view.creator").Creator
 local messagelib = require("kivi.lib.message")
 local modelib = require("kivi.lib.mode")
 
@@ -60,7 +61,7 @@ function Command.read(bufnr)
   if path:match("/kivi$") then
     return Loader.new(bufnr):load()
   elseif path:match("/kivi%-renamer$") then
-    return Renamer.load(bufnr)
+    return Renamer.read_from(bufnr)
   end
 end
 
@@ -71,9 +72,9 @@ function Command.write(bufnr)
 
   local path = vim.api.nvim_buf_get_name(bufnr)
   if path:match("/kivi%-creator$") then
-    return require("kivi.view.creator").write(bufnr)
+    return Creator.write_from(bufnr)
   elseif path:match("/kivi%-renamer$") then
-    return require("kivi.view.renamer").write(bufnr)
+    return Renamer.write_from(bufnr)
   end
 end
 

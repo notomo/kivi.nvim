@@ -1,5 +1,3 @@
-local messagelib = require("kivi.lib.message")
-
 local M = {}
 
 M.opts = {yank = {key = "path", register = "+"}}
@@ -27,7 +25,7 @@ function M.action_yank(self, nodes)
   end, nodes)
   if #values ~= 0 then
     vim.fn.setreg(self.action_opts.register, table.concat(values, "\n"))
-    messagelib.info("yank:", values)
+    self.messagelib.info("yank:", values)
   end
 end
 
