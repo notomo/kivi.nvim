@@ -8,7 +8,7 @@ LoadOption.__index = LoadOption
 M.LoadOption = LoadOption
 
 function LoadOption.new(raw_opts)
-  local tbl = vim.tbl_extend("force", {back = false, target_path = nil}, raw_opts or {})
+  local tbl = vim.tbl_extend("force", {back = false, expand = false, target_path = nil}, raw_opts or {})
   return setmetatable(tbl, LoadOption)
 end
 
@@ -40,6 +40,11 @@ function Loader.back(self, ctx, path)
   return self:_load(ctx, LoadOption.new({back = true}))
 end
 
+function Loader.expand(self, ctx, expanded)
+  ctx.opts.expanded = expanded
+  return self:_load(ctx, LoadOption.new({expand = true}))
+end
+
 function Loader._load(_, ctx, load_opts)
   load_opts = load_opts or LoadOption.new({})
 
@@ -51,12 +56,11 @@ function Loader._load(_, ctx, load_opts)
   local root, ok = result:get()
   if ok then
     ctx.history:add(root.path:get(), load_opts.back)
-    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts.target_path)
-    ctx.history:set(root.path:get(), ctx.opts.expand)
+    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts)
+    ctx.history:set(root.path:get(), load_opts.expand)
     ctx.source:hook(root.path)
   end
 
-  ctx.opts.expand = false
   ctx.opts.new = false
 
   return result, nil

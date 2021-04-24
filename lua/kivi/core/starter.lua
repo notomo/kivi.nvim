@@ -37,6 +37,10 @@ function Starter.back(_, ctx, path)
   return Loader.new(ctx.ui.bufnr):back(ctx, path)
 end
 
+function Starter.expand(_, ctx, expanded)
+  return Loader.new(ctx.ui.bufnr):expand(ctx, expanded)
+end
+
 function Starter.execute(self, action_name, range, opts, action_opts)
   local ctx, err = Context.get()
   if err ~= nil then

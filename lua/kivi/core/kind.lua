@@ -60,6 +60,10 @@ function Kind.back(self, ctx, path)
   return self._starter:back(ctx, path)
 end
 
+function Kind.expand(self, ctx, expanded)
+  return self._starter:expand(ctx, expanded)
+end
+
 function Kind.start_renamer(self, base_node, rename_items, has_cut)
   return self._starter:rename(base_node, rename_items, has_cut)
 end

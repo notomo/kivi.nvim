@@ -36,7 +36,7 @@ function M.action_delete(self, nodes, ctx)
   for _, node in ipairs(nodes) do
     node.path:delete()
   end
-  self:start_path({expanded = ctx.opts.expanded, expand = true})
+  self:expand(ctx, ctx.opts.expanded)
 end
 
 function M.action_paste(self, nodes, ctx)
@@ -86,7 +86,7 @@ function M.action_paste(self, nodes, ctx)
     end
   end
 
-  self:start_path({expanded = ctx.opts.expanded, expand = true})
+  self:expand(ctx, ctx.opts.expanded)
 
   if #rename_items > 0 then
     self:start_renamer(base_node, rename_items, has_cut)

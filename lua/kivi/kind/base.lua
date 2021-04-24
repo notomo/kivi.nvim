@@ -54,19 +54,17 @@ function M.action_toggle_tree(self, nodes, ctx)
     return
   end
 
-  local root = nodes[1]:root()
-  local opts = ctx.opts:merge({path = root.path})
+  local expanded = ctx.opts.expanded
   for _, node in ipairs(nodes) do
     local path = node.path:get()
-    local already = opts.expanded[path]
-    if already then
-      opts.expanded[path] = nil
+    if expanded[path] then
+      expanded[path] = nil
     else
-      opts.expanded[path] = true
+      expanded[path] = true
     end
   end
 
-  return self:start_path({expanded = opts.expanded, expand = true}, ctx.source_name)
+  return self:expand(ctx, expanded)
 end
 
 return M

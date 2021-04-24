@@ -45,7 +45,7 @@ function M._close(self)
   return windowlib.close(self._window_id)
 end
 
-function M._redraw(self, root, source, history, opts, target_path)
+function M._redraw(self, root, source, history, opts, load_opts)
   local lines = {}
   local nodes = {}
   local index = 1
@@ -65,7 +65,7 @@ function M._redraw(self, root, source, history, opts, target_path)
     _selection_hl_factory = highlights.new_factory("kivi-selection-highlight", self.bufnr),
   }
   local ui = setmetatable(tbl, RenderedUI)
-  ui:_set_lines(lines, source, history, root.path, opts, target_path)
+  ui:_set_lines(lines, source, history, root.path, opts, load_opts)
 
   return ui
 end
@@ -75,7 +75,7 @@ RenderedUI.close = M._close
 PendingUI.redraw = M._redraw
 RenderedUI.redraw = M._redraw
 
-function RenderedUI._set_lines(self, lines, source, history, current_path, opts, target_path)
+function RenderedUI._set_lines(self, lines, source, history, current_path, opts, load_opts)
   local origin_row = vim.api.nvim_win_get_cursor(self._window_id)[1]
 
   vim.bo[self.bufnr].modifiable = true
@@ -85,12 +85,12 @@ function RenderedUI._set_lines(self, lines, source, history, current_path, opts,
   source:highlight(self.bufnr, self._nodes, opts)
   vim.api.nvim_buf_set_extmark(self.bufnr, ns, 0, 0, {end_line = 1, hl_group = "Comment"})
 
-  if opts.expand then
+  if load_opts.expand then
     cursorlib.set_row(origin_row, self._window_id, self.bufnr)
     return
   end
 
-  local latest_path = target_path or source:init_path() or history.latest_path
+  local latest_path = load_opts.target_path or source:init_path() or history.latest_path
   local ok = false
   if latest_path ~= nil then
     for i, node in ipairs(self._nodes) do
