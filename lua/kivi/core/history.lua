@@ -1,4 +1,3 @@
-local repository = require("kivi.lib.repository").Repository.new("history")
 local cursorlib = require("kivi.lib.cursor")
 
 local M = {}
@@ -9,15 +8,8 @@ M.History = History
 
 function History.new(key)
   vim.validate({key = {key, "string"}})
-  local history = repository:get(key)
-  if history ~= nil then
-    return history
-  end
-
-  local tbl = {_rows = {}, _paths = {}, latest_path = nil, _key = key}
-  local self = setmetatable(tbl, History)
-  repository:set(key, self)
-  return self
+  local tbl = {_rows = {}, _paths = {}, latest_path = nil}
+  return setmetatable(tbl, History)
 end
 
 function History.add(self, path, is_back)
@@ -55,10 +47,6 @@ function History.restore(self, path, window_id, bufnr)
     return true
   end
   return false
-end
-
-function History.delete(self)
-  repository:delete(self._key)
 end
 
 return M

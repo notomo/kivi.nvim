@@ -9,11 +9,12 @@ Context.__index = Context
 M.Context = Context
 
 function Context.new(source, ui, key, opts)
+  local old_ctx = repository:get(key) or {}
   local tbl = {
     ui = ui,
     source = source,
     opts = opts,
-    history = History.new(key),
+    history = old_ctx.history or History.new(key),
     clipboard = Clipboard.new(source.name),
     _key = key,
   }
@@ -27,7 +28,6 @@ end
 
 function Context.delete(self)
   repository:delete(self._key)
-  self.history:delete()
 end
 
 function Context.get(bufnr)
