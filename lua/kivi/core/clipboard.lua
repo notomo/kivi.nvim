@@ -1,6 +1,5 @@
+local repository = require("kivi.lib.repository").Repository.new("clipboard")
 local messagelib = require("kivi.lib.message")
-
-local persist = {clipboards = {}}
 
 local M = {}
 
@@ -10,14 +9,14 @@ M.Clipboard = Clipboard
 
 function Clipboard.new(source_name)
   vim.validate({source_name = {source_name, "string"}})
-  local clipboard = persist.clipboards[source_name]
+  local clipboard = repository:get(source_name)
   if clipboard ~= nil then
     return clipboard
   end
 
   local tbl = {_nodes = {}, _has_cut = false}
   local self = setmetatable(tbl, Clipboard)
-  persist.clipboards[source_name] = self
+  repository:set(source_name, self)
   return self
 end
 

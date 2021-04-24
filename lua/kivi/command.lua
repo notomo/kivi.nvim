@@ -1,4 +1,4 @@
-local repository = require("kivi.core.repository")
+local Context = require("kivi.core.context").Context
 local Kind = require("kivi.core.kind").Kind
 local Starter = require("kivi.core.starter").Starter
 local custom = require("kivi.core.custom")
@@ -59,7 +59,7 @@ function Command.write(bufnr)
 end
 
 function Command.is_parent()
-  local ctx, err = repository.get_from_path()
+  local ctx, err = Context.get()
   if err ~= nil then
     return false
   end
@@ -73,6 +73,14 @@ function Command.is_parent()
   end
 
   return kind.is_parent == true, nil
+end
+
+function Command.cleanup(bufnr)
+  local ctx, err = Context.get(bufnr)
+  if err ~= nil then
+    return nil, err
+  end
+  ctx:delete()
 end
 
 return M

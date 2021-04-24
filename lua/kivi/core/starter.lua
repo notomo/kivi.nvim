@@ -1,7 +1,5 @@
-local repository = require("kivi.core.repository")
 local Source = require("kivi.core.source").Source
-local History = require("kivi.core.history").History
-local Clipboard = require("kivi.core.clipboard").Clipboard
+local Context = require("kivi.core.context").Context
 local Loader = require("kivi.core.loader").Loader
 local Executor = require("kivi.core.executor").Executor
 local Kind = require("kivi.core.kind").Kind
@@ -31,20 +29,12 @@ function Starter.open(self, source_name, raw_opts)
   end
 
   local ui, key = PendingUI.open(source, opts.layout, opts.new)
-  local ctx = {
-    ui = ui,
-    source = source,
-    opts = opts,
-    history = History.new(key),
-    clipboard = Clipboard.new(source.name),
-  }
-  local result, load_err = Loader.new(ui.bufnr):load(ctx)
-  repository.set(key, ctx)
-  return result, load_err
+  local ctx = Context.new(source, ui, key, opts)
+  return Loader.new(ui.bufnr):load(ctx)
 end
 
 function Starter.execute(self, action_name, range, opts, action_opts)
-  local ctx, err = repository.get_from_path()
+  local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
   end
@@ -55,7 +45,7 @@ function Starter.execute(self, action_name, range, opts, action_opts)
 end
 
 function Starter.rename(self, base_node, rename_items, has_cut)
-  local ctx, err = repository.get_from_path()
+  local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
   end
@@ -70,7 +60,7 @@ function Starter.rename(self, base_node, rename_items, has_cut)
 end
 
 function Starter.create(self, base_node)
-  local ctx, err = repository.get_from_path()
+  local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
   end

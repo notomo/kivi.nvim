@@ -1,4 +1,4 @@
-local repository = require("kivi.core.repository")
+local Context = require("kivi.core.context").Context
 local Collector = require("kivi.core.collector").Collector
 
 local M = {}
@@ -19,7 +19,7 @@ function Loader.load(self, new_ctx, target_path, opts)
   if new_ctx ~= nil then
     ctx = new_ctx
   else
-    ctx, err = repository.get_from_path(self._bufnr)
+    ctx, err = Context.get(self._bufnr)
   end
   if err ~= nil then
     return nil, err
