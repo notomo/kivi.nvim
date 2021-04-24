@@ -111,7 +111,7 @@ function Renamer.write(self)
     end, result.already_exists))
   end
 
-  self._loader:load(nil, target_path)
+  self._loader:reload({target_path = target_path})
 end
 
 function Renamer.read(self)

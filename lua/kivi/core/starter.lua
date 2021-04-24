@@ -33,6 +33,10 @@ function Starter.open(self, source_name, raw_opts)
   return Loader.new(ui.bufnr):load(ctx)
 end
 
+function Starter.back(_, ctx, path)
+  return Loader.new(ctx.ui.bufnr):back(ctx, path)
+end
+
 function Starter.execute(self, action_name, range, opts, action_opts)
   local ctx, err = Context.get()
   if err ~= nil then

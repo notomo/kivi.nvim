@@ -3,6 +3,15 @@ local Collector = require("kivi.core.collector").Collector
 
 local M = {}
 
+local LoadOption = {}
+LoadOption.__index = LoadOption
+M.LoadOption = LoadOption
+
+function LoadOption.new(raw_opts)
+  local tbl = vim.tbl_extend("force", {back = false, target_path = nil}, raw_opts or {})
+  return setmetatable(tbl, LoadOption)
+end
+
 local Loader = {}
 Loader.__index = Loader
 M.Loader = Loader
@@ -13,38 +22,41 @@ function Loader.new(bufnr)
   return setmetatable(tbl, Loader)
 end
 
-function Loader.load(self, new_ctx, target_path, opts)
-  vim.validate({new_ctx = {new_ctx, "table", true}, target_path = {target_path, "string", true}})
-  local ctx, err
-  if new_ctx ~= nil then
-    ctx = new_ctx
-  else
-    ctx, err = Context.get(self._bufnr)
+function Loader.load(self, ctx)
+  return self:_load(ctx)
+end
+
+function Loader.reload(self, raw_load_opts, raw_opts)
+  local ctx, err = Context.get(self._bufnr)
+  if err ~= nil then
+    return nil, err
   end
+  ctx.opts = ctx.opts:merge(raw_opts or {})
+  return self:_load(ctx, LoadOption.new(raw_load_opts))
+end
+
+function Loader.back(self, ctx, path)
+  ctx.opts = ctx.opts:merge({path = path})
+  return self:_load(ctx, LoadOption.new({back = true}))
+end
+
+function Loader._load(_, ctx, load_opts)
+  load_opts = load_opts or LoadOption.new({})
+
+  local result, err = Collector.new(ctx.source):start(ctx.opts)
   if err ~= nil then
     return nil, err
   end
 
-  if opts ~= nil then
-    ctx.opts = ctx.opts:merge(opts)
-  end
-
-  local result, start_err = Collector.new(ctx.source):start(ctx.opts)
-  if start_err ~= nil then
-    return nil, start_err
-  end
-
   local root, ok = result:get()
   if ok then
-    ctx.history:add(root.path:get(), ctx.opts.back)
-    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, target_path)
+    ctx.history:add(root.path:get(), load_opts.back)
+    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts.target_path)
     ctx.history:set(root.path:get(), ctx.opts.expand)
     ctx.source:hook(root.path)
-    -- TODO: else job
   end
 
   ctx.opts.expand = false
-  ctx.opts.back = false
   ctx.opts.new = false
 
   return result, nil

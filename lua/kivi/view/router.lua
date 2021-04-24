@@ -15,7 +15,7 @@ function Router.read(bufnr)
   end
 
   if path:match("/kivi$") then
-    return Loader.new(bufnr):load()
+    return Loader.new(bufnr):reload()
   elseif path:match("/kivi%-renamer$") then
     return Renamer.read_from(bufnr)
   end

@@ -34,7 +34,7 @@ function M.action_back(self, _, ctx)
   if path == nil then
     return
   end
-  return self:start_path({path = path, back = true}, ctx.source_name)
+  return self:back(ctx, path)
 end
 
 function M.action_toggle_selection(_, nodes, ctx)

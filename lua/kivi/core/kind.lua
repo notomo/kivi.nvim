@@ -56,6 +56,10 @@ function Kind.start_path(self, opts, source_name)
   return self._starter:open(source_name, opts)
 end
 
+function Kind.back(self, ctx, path)
+  return self._starter:back(ctx, path)
+end
+
 function Kind.start_renamer(self, base_node, rename_items, has_cut)
   return self._starter:rename(base_node, rename_items, has_cut)
 end

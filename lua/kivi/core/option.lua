@@ -6,7 +6,6 @@ local M = {}
 local default_opts = {
   path = ".",
   layout = "no",
-  back = false,
   expanded = {},
   expand = false,
   new = false,

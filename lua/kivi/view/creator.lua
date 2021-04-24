@@ -87,7 +87,7 @@ function Creator.write(self)
     target_path = result.success[last_index]:get()
   end
 
-  self._loader:load(nil, target_path, {expanded = expanded})
+  self._loader:reload({target_path = target_path}, {expanded = expanded})
 end
 
 function Creator.write_from(bufnr)
