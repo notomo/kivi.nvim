@@ -25,14 +25,14 @@ function Starter.open(_, raw_opts)
     raw_opts.source = old_ctx.source.name
   end
 
-  local opts = Options.new(raw_opts)
+  local opts, open_opts = Options.new(raw_opts)
 
   local source, err = Source.new(opts.source)
   if err ~= nil then
     return nil, err
   end
 
-  local ui, key = PendingUI.open(source, opts.layout, opts.new)
+  local ui, key = PendingUI.open(source, open_opts)
   local ctx = Context.new(source, ui, key, opts)
   return Loader.new(ui.bufnr):load(ctx)
 end

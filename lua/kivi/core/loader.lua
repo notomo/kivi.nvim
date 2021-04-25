@@ -23,7 +23,7 @@ function Loader.new(bufnr)
 end
 
 function Loader.load(self, ctx)
-  return self:_load(ctx)
+  return self:_load(ctx, LoadOption.new({}))
 end
 
 function Loader.reload(self, raw_load_opts, raw_opts)
@@ -46,8 +46,6 @@ function Loader.expand(self, ctx, expanded)
 end
 
 function Loader._load(_, ctx, load_opts)
-  load_opts = load_opts or LoadOption.new({})
-
   local result, err = Collector.new(ctx.source):start(ctx.opts)
   if err ~= nil then
     return nil, err
@@ -60,8 +58,6 @@ function Loader._load(_, ctx, load_opts)
     ctx.history:set(root.path:get(), load_opts.expand)
     ctx.source:hook(root.path)
   end
-
-  ctx.opts.new = false
 
   return result, nil
 end

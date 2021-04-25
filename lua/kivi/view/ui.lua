@@ -12,9 +12,9 @@ local PendingUI = {}
 PendingUI.__index = PendingUI
 M.PendingUI = PendingUI
 
-function PendingUI.open(source, layout, new)
+function PendingUI.open(source, open_opts)
   local bufnr
-  if not new and vim.bo.filetype == source.filetype then
+  if not open_opts.new and vim.bo.filetype == source.filetype then
     bufnr = vim.api.nvim_get_current_buf()
   else
     bufnr = vim.api.nvim_create_buf(false, true)
@@ -26,7 +26,7 @@ function PendingUI.open(source, layout, new)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
 
-  local window_id = layouts.open(layout, bufnr)
+  local window_id = layouts.open(open_opts.layout, bufnr)
   -- NOTICE: different from vim.wo.option
   vim.cmd("setlocal nonumber")
   vim.cmd("setlocal nolist")
