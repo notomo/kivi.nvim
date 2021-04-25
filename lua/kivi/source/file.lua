@@ -1,11 +1,13 @@
 local File = require("kivi.lib.file").File
 local highlights = require("kivi.lib.highlight")
+local filelib = require("kivi.lib.file")
 local vim = vim
 
 local M = {}
 
 function M.collect(self, opts)
-  local dir = File.new(opts.path:get())
+  local dir_path = M.Target.new(self.opts.target, self.opts.root_patterns):path() or opts.path:get()
+  local dir = File.new(dir_path)
   if not dir:is_dir() then
     return nil, "does not exist: " .. opts.path:get()
   end
@@ -85,5 +87,39 @@ function M.hook(_, path)
 end
 
 M.kind_name = "file"
+
+M.opts = {target = "current", root_patterns = {".git"}}
+
+local Target = {}
+Target.__index = Target
+M.Target = Target
+
+function Target.new(name, root_patterns)
+  vim.validate({name = {name, "string"}})
+  local tbl = {_name = name, _root_patterns = root_patterns}
+  return setmetatable(tbl, Target)
+end
+
+function Target.path(self)
+  local f = self[self._name]
+  if f == nil then
+    return nil
+  end
+  return f(self)
+end
+
+function Target.project(self)
+  for _, pattern in ipairs(self._root_patterns) do
+    local found = filelib.find_upward_dir(pattern)
+    if found ~= nil then
+      return found
+    end
+  end
+  return "."
+end
+
+function Target.current()
+  return nil
+end
 
 return M

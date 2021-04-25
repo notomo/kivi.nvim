@@ -27,7 +27,7 @@ function Starter.open(_, raw_opts)
 
   local opts, open_opts = Options.new(raw_opts)
 
-  local source, err = Source.new(opts.source)
+  local source, err = Source.new(opts.source, raw_opts.source_opts)
   if err ~= nil then
     return nil, err
   end

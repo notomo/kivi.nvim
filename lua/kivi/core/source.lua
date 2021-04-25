@@ -9,8 +9,9 @@ local M = {}
 local Source = {}
 M.Source = Source
 
-function Source.new(source_name, _)
-  vim.validate({source_name = {source_name, "string"}})
+function Source.new(source_name, source_opts)
+  vim.validate({source_name = {source_name, "string"}, source_opts = {source_opts, "table", true}})
+  source_opts = source_opts or {}
 
   local source = modulelib.find("kivi.source." .. source_name)
   if source == nil then
@@ -24,6 +25,7 @@ function Source.new(source_name, _)
     highlights = highlights.new_factory("kivi-highlight"),
     pathlib = pathlib,
     filelib = filelib,
+    opts = vim.tbl_extend("force", source.opts, source_opts),
     _source = source,
   }
   return setmetatable(tbl, Source), nil

@@ -1,10 +1,9 @@
 local Path = require("kivi.lib.path").Path
-local Target = require("kivi.core.target").Target
 local tbllib = require("kivi.lib.table")
 
 local M = {}
 
-local default_opts = {source = "file", path = ".", expanded = {}, target = "current"}
+local default_opts = {source = "file", path = ".", expanded = {}}
 local default_open_opts = {layout = "no", new = false}
 
 local Options = {}
@@ -15,7 +14,7 @@ function Options.new(raw_opts)
   raw_opts = raw_opts or {}
 
   local opts = tbllib.extend(default_opts, require("kivi.core.custom").config.opts, raw_opts)
-  opts.path = Path.new(Target.new(opts.target):path() or opts.path)
+  opts.path = Path.new(opts.path)
 
   local open_opts = tbllib.extend(default_open_opts, require("kivi.core.custom").config.opts, raw_opts)
 
