@@ -27,10 +27,10 @@ function Command.new(name, ...)
   return result
 end
 
-function Command.open(source_name, opts)
-  vim.validate({source_name = {source_name, "string"}, opts = {opts, "table", true}})
-  opts = opts or {}
-  return Starter.new():open(source_name, opts)
+function Command.open(raw_opts)
+  vim.validate({raw_opts = {raw_opts, "table", true}})
+  raw_opts = raw_opts or {}
+  return Starter.new():open(raw_opts)
 end
 
 function Command.execute(action_name, opts, action_opts)

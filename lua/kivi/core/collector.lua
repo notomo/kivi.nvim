@@ -17,12 +17,12 @@ Collector.__index = Collector
 M.Collector = Collector
 
 function Collector.new(source)
-  local tbl = {source = source}
+  local tbl = {_source = source}
   return setmetatable(tbl, Collector)
 end
 
 function Collector.start(self, opts)
-  local root_or_job, err = self.source:collect(opts)
+  local root_or_job, err = self._source:collect(opts)
   if err ~= nil then
     return nil, err
   end

@@ -3,7 +3,14 @@ local Target = require("kivi.core.target").Target
 
 local M = {}
 
-local default_opts = {path = ".", layout = "no", expanded = {}, new = false, target = "current"}
+local default_opts = {
+  source = "file",
+  path = ".",
+  layout = "no",
+  expanded = {},
+  new = false,
+  target = "current",
+}
 
 local Options = {}
 Options.__index = Options

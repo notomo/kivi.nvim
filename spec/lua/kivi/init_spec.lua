@@ -7,7 +7,7 @@ describe("kivi", function()
   after_each(helper.after_each)
 
   it("can open ui", function()
-    kivi.open("file")
+    kivi.open()
 
     assert.filetype("kivi-file")
   end)
@@ -15,7 +15,7 @@ describe("kivi", function()
   it("can reload ui", function()
     helper.new_file("file")
 
-    kivi.open("file")
+    kivi.open()
     vim.cmd("edit!")
 
     assert.exists_pattern("file")
@@ -27,7 +27,7 @@ describe("kivi", function()
     helper.new_file("dir/file2")
     helper.cd("dir")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("file2")
 
     kivi.execute("parent")
@@ -41,7 +41,7 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    kivi.open("file")
+    kivi.open()
 
     assert.current_line("file1")
   end)
@@ -50,7 +50,7 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("file1")
     kivi.execute("toggle_selection")
@@ -69,7 +69,7 @@ describe("kivi", function()
     helper.new_directory("dir1")
     helper.new_directory("dir1/dir2")
 
-    kivi.open("file", {path = "dir1/dir2"})
+    kivi.open({path = "dir1/dir2"})
     kivi.execute("parent")
     kivi.execute("parent")
     kivi.execute("back")
@@ -88,7 +88,7 @@ describe("kivi", function()
     helper.new_file("file2")
     helper.new_file("file3")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("file2")
     kivi.execute("toggle_selection")
     helper.search("file3")
@@ -102,7 +102,7 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("file1")
     kivi.execute("toggle_selection")
     kivi.execute("tab_open")
@@ -118,7 +118,7 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("file1")
     kivi.execute("toggle_selection")
     kivi.execute("toggle_selection")
@@ -133,9 +133,9 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("file2")
-    kivi.open("file")
+    kivi.open()
 
     assert.current_line("file2")
   end)
@@ -144,7 +144,7 @@ describe("kivi", function()
     helper.new_directory("dir")
     helper.new_file("dir/file")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("dir")
     kivi.execute("toggle_tree")
@@ -161,7 +161,7 @@ describe("kivi", function()
   it("ignores layout on toggle tree", function()
     helper.new_directory("dir")
 
-    kivi.open("file", {layout = "vertical"})
+    kivi.open({layout = "vertical"})
 
     helper.search("dir")
     kivi.execute("toggle_tree")
@@ -172,7 +172,7 @@ describe("kivi", function()
   it("can reload renamer", function()
     helper.new_file("file")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("file")
     kivi.execute("rename")
@@ -185,7 +185,7 @@ describe("kivi", function()
   it("shows already exists error on creator", function()
     helper.new_file("file")
 
-    kivi.open("file")
+    kivi.open()
     kivi.execute("create")
 
     vim.fn.setline(1, "file")
@@ -198,7 +198,7 @@ describe("kivi", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("file1")
     kivi.execute("rename")
@@ -211,7 +211,7 @@ describe("kivi", function()
 
   it("shows `can't open` error", function()
     helper.skip_if_win32(pending)
-    kivi.open("file", {path = "/root"})
+    kivi.open({path = "/root"})
     assert.exists_message("can't open /root/")
   end)
 
@@ -220,7 +220,7 @@ describe("kivi", function()
     helper.new_file("file2")
     vim.cmd("edit file1")
 
-    kivi.open("file", {layout = "vertical"})
+    kivi.open({layout = "vertical"})
 
     helper.search("file2")
     kivi.execute("vsplit_open", {quit = true})
@@ -233,7 +233,7 @@ describe("kivi", function()
     helper.new_directory("dir")
     helper.new_file("dir/file2")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("dir")
     kivi.execute("tab_open")
@@ -253,13 +253,13 @@ describe("kivi", function()
     helper.new_directory("root_marker/dir1/dir2")
     helper.cd("root_marker/dir1/dir2")
 
-    kivi.open("file", {target = "project"})
+    kivi.open({target = "project"})
 
     assert.exists_pattern("root_marker/")
   end)
 
   it("can return whether the node is parent", function()
-    kivi.open("file")
+    kivi.open()
 
     assert.is_same(true, kivi.is_parent())
   end)
@@ -267,7 +267,7 @@ describe("kivi", function()
   it("can return whether the node is not parent", function()
     helper.new_file("file")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("file")
 
     assert.is_same(false, kivi.is_parent())
@@ -276,7 +276,7 @@ describe("kivi", function()
   it("can config options", function()
     kivi.setup({opts = {layout = "vertical"}})
 
-    kivi.open("file")
+    kivi.open()
 
     assert.window_count(2)
   end)

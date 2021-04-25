@@ -14,16 +14,20 @@ local Starter = {}
 Starter.__index = Starter
 M.Starter = Starter
 
-function Starter.new(source_name)
-  vim.validate({source_name = {source_name, "string", true}})
-  local tbl = {_source_name = source_name}
+function Starter.new()
+  local tbl = {}
   return setmetatable(tbl, Starter)
 end
 
-function Starter.open(self, source_name, raw_opts)
+function Starter.open(_, raw_opts)
+  local old_ctx = Context.get()
+  if old_ctx and not raw_opts.source then
+    raw_opts.source = old_ctx.source.name
+  end
+
   local opts = Options.new(raw_opts)
 
-  local source, err = Source.new(source_name or self._source_name)
+  local source, err = Source.new(opts.source)
   if err ~= nil then
     return nil, err
   end

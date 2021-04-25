@@ -52,8 +52,8 @@ function Kind.find_action(self, action_name, action_opts)
   return nil, "not found action: " .. action_name
 end
 
-function Kind.start_path(self, opts, source_name)
-  return self._starter:open(source_name, opts)
+function Kind.start_path(self, opts)
+  return self._starter:open(opts)
 end
 
 function Kind.back(self, ctx, path)

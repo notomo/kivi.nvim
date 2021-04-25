@@ -9,7 +9,7 @@ describe("kivi file source", function()
   it("can execute child action", function()
     helper.new_file("file")
 
-    kivi.open("file")
+    kivi.open()
     vim.cmd("normal! G")
     kivi.execute("child")
 
@@ -21,7 +21,7 @@ describe("kivi file source", function()
     helper.new_directory("dir")
     helper.cd("dir")
 
-    kivi.open("file")
+    kivi.open()
     kivi.execute("parent")
 
     assert.exists_pattern("file")
@@ -31,7 +31,7 @@ describe("kivi file source", function()
   it("moves current directory", function()
     helper.new_directory("dir")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("dir")
     kivi.execute("child")
 
@@ -46,13 +46,13 @@ describe("kivi file source", function()
 
     vim.cmd("edit file3")
 
-    kivi.open("file")
+    kivi.open()
 
     assert.current_line("file3")
   end)
 
   it("raise error if path does not exist", function()
-    kivi.open("file", {path = "invalid_file_path"})
+    kivi.open({path = "invalid_file_path"})
     assert.exists_message("does not exist: invalid_file_path")
   end)
 
@@ -62,7 +62,7 @@ describe("kivi file source", function()
     helper.new_file("file1")
     helper.new_file("file2")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("file1")
     kivi.execute("delete")
 
@@ -76,7 +76,7 @@ describe("kivi file source", function()
     helper.new_directory("dir1")
     helper.new_directory("dir2")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("dir1")
     kivi.execute("delete")
 
@@ -89,7 +89,7 @@ describe("kivi file source", function()
 
     helper.new_file("file")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("file")
     kivi.execute("delete")
 
@@ -104,7 +104,7 @@ describe("kivi file source", function()
     helper.new_directory("dir")
     helper.new_file("dir/in_dir")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("dir")
     kivi.execute("toggle_tree")
@@ -121,7 +121,7 @@ describe("kivi file source", function()
     helper.new_directory("dir")
     helper.new_file("dir/in_dir")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("dir")
     kivi.execute("toggle_tree")
@@ -139,7 +139,7 @@ describe("kivi file source", function()
   it("can execute vsplit_open action", function()
     helper.new_file("file1")
 
-    kivi.open("file")
+    kivi.open()
     kivi.execute("vsplit_open")
 
     assert.window_count(2)
@@ -149,7 +149,7 @@ describe("kivi file source", function()
     helper.new_file("file")
     helper.new_directory("dir")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("file")
     kivi.execute("copy")
@@ -171,7 +171,7 @@ describe("kivi file source", function()
     helper.new_file("dir1/file")
     helper.new_directory("dir2")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("dir1")
     kivi.execute("copy")
@@ -197,7 +197,7 @@ describe("kivi file source", function()
     helper.new_directory("dir")
     helper.new_file("dir/file", [[overwrriten]])
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("file")
     kivi.execute("copy")
@@ -227,7 +227,7 @@ describe("kivi file source", function()
     helper.new_directory("dir2/dir1")
     helper.new_file("dir2/dir1/file")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("dir1")
     kivi.execute("copy")
@@ -251,7 +251,7 @@ describe("kivi file source", function()
     helper.new_directory("dir")
     helper.new_file("dir/file", [[ok]])
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("file")
     kivi.execute("copy")
@@ -285,7 +285,7 @@ describe("kivi file source", function()
     helper.new_directory("dir2")
     helper.new_directory("dir2/dir1")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("dir1")
     kivi.execute("copy")
@@ -314,7 +314,7 @@ describe("kivi file source", function()
     helper.new_file("file")
     helper.new_directory("dir")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("file")
     kivi.execute("cut")
@@ -336,7 +336,7 @@ describe("kivi file source", function()
     helper.new_file("dir1/file")
     helper.new_directory("dir2")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("dir1")
     kivi.execute("cut")
@@ -360,7 +360,7 @@ describe("kivi file source", function()
   it("can paste empty", function()
     helper.new_file("file")
 
-    kivi.open("file")
+    kivi.open()
     kivi.execute("paste")
 
     assert.exists_pattern("file")
@@ -369,7 +369,7 @@ describe("kivi file source", function()
   it("can rename file", function()
     helper.new_file("file")
 
-    kivi.open("file")
+    kivi.open()
     kivi.execute("rename")
 
     assert.current_line("file")
@@ -384,7 +384,7 @@ describe("kivi file source", function()
   it("can rename directory", function()
     helper.new_directory("dir")
 
-    kivi.open("file")
+    kivi.open()
     kivi.execute("rename")
 
     assert.current_line("dir/")
@@ -397,7 +397,7 @@ describe("kivi file source", function()
   end)
 
   it("can create file in root", function()
-    kivi.open("file")
+    kivi.open()
 
     kivi.execute("create")
 
@@ -411,7 +411,7 @@ describe("kivi file source", function()
     helper.new_directory("dir")
     helper.new_file("dir/file1")
 
-    kivi.open("file")
+    kivi.open()
 
     helper.search("dir")
     kivi.execute("toggle_tree")
@@ -426,7 +426,7 @@ describe("kivi file source", function()
   end)
 
   it("can create directory", function()
-    kivi.open("file")
+    kivi.open()
 
     kivi.execute("create")
 
@@ -437,7 +437,7 @@ describe("kivi file source", function()
   end)
 
   it("can create directory and file", function()
-    kivi.open("file")
+    kivi.open()
 
     kivi.execute("create")
 
@@ -452,7 +452,7 @@ describe("kivi file source", function()
   it("can't create directory if it exists as file", function()
     helper.new_file("target")
 
-    kivi.open("file")
+    kivi.open()
 
     kivi.execute("create")
 
@@ -468,7 +468,7 @@ describe("kivi file source", function()
   it("can open a file including percent", function()
     helper.new_file("file%", "content")
 
-    kivi.open("file")
+    kivi.open()
     helper.search("file")
 
     kivi.execute("child")

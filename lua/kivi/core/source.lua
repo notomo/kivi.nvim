@@ -10,8 +10,7 @@ local Source = {}
 M.Source = Source
 
 function Source.new(source_name, _)
-  vim.validate({source_name = {source_name, "string", true}})
-  source_name = source_name or "file"
+  vim.validate({source_name = {source_name, "string"}})
 
   local source = modulelib.find("kivi.source." .. source_name)
   if source == nil then
