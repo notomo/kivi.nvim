@@ -281,4 +281,17 @@ describe("kivi", function()
     assert.window_count(2)
   end)
 
+  it("doesn not recall expanded tree", function()
+    helper.new_directory("dir")
+    helper.new_file("dir/file")
+
+    kivi.open({layout = "tab"})
+    helper.search("dir")
+    kivi.execute("toggle_tree")
+    vim.cmd("quit")
+    kivi.open({layout = "tab"})
+
+    assert.no.exists_pattern("file")
+  end)
+
 end)
