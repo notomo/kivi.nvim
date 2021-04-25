@@ -7,6 +7,7 @@ local M = {}
 
 function M.collect(self, opts)
   local dir_path = M.Target.new(self.opts.target, self.opts.root_patterns):path() or opts.path:get()
+  self.opts = M.opts -- TODO fix
   local dir = File.new(dir_path)
   if not dir:is_dir() then
     return nil, "does not exist: " .. opts.path:get()
