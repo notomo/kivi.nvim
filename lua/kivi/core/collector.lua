@@ -22,7 +22,7 @@ function Collector.new(source)
 end
 
 function Collector.start(self, opts)
-  local root_or_job, err = self._source:collect(opts)
+  local root_or_job, err = self._source:start(opts)
   if err ~= nil then
     return nil, err
   end

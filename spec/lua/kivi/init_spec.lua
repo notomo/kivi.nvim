@@ -245,17 +245,6 @@ describe("kivi", function()
     assert.exists_pattern("file1")
   end)
 
-  it("can open project root", function()
-    helper.new_directory("root_marker")
-    helper.new_directory("root_marker/dir1")
-    helper.new_directory("root_marker/dir1/dir2")
-    helper.cd("root_marker/dir1/dir2")
-
-    kivi.open({source_opts = {target = "project", root_patterns = {"root_marker"}}})
-
-    assert.exists_pattern("root_marker/")
-  end)
-
   it("can return whether the node is parent", function()
     kivi.open()
 

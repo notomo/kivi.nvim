@@ -6,9 +6,7 @@ local vim = vim
 local M = {}
 
 function M.collect(self, opts)
-  local dir_path = M.Target.new(self.opts.target, self.opts.root_patterns):path() or opts.path:get()
-  self.opts = M.opts -- TODO fix
-  local dir = File.new(dir_path)
+  local dir = File.new(opts.path:get())
   if not dir:is_dir() then
     return nil, "does not exist: " .. opts.path:get()
   end
@@ -88,8 +86,13 @@ function M.hook(_, path)
 end
 
 M.kind_name = "file"
+M.opts = {}
+M.setup_opts = {target = "current", root_patterns = {".git"}}
 
-M.opts = {target = "current", root_patterns = {".git"}}
+function M.setup(self, opts)
+  local path = M.Target.new(self.setup_opts.target, self.setup_opts.root_patterns):path()
+  return opts:merge({path = path})
+end
 
 local Target = {}
 Target.__index = Target
