@@ -90,7 +90,7 @@ function RenderedUI._set_lines(self, lines, source, history, current_path, opts,
     return
   end
 
-  local latest_path = load_opts.target_path or source:init_path() or history.latest_path
+  local latest_path = load_opts.cursor_line_path or source:init_path() or history.latest_path
   local ok = false
   if latest_path ~= nil then
     for i, node in ipairs(self._nodes) do

@@ -97,9 +97,9 @@ function Renamer.write(self)
     last_index = i
   end
 
-  local target_path = nil
+  local cursor_line_path = nil
   if result.success[last_index] ~= nil then
-    target_path = result.success[last_index].to:get()
+    cursor_line_path = result.success[last_index].to:get()
   end
 
   if #result.already_exists == 0 then
@@ -111,7 +111,7 @@ function Renamer.write(self)
     end, result.already_exists))
   end
 
-  self._loader:reload({target_path = target_path})
+  self._loader:reload({cursor_line_path = cursor_line_path})
 end
 
 function Renamer.read(self)

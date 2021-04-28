@@ -8,7 +8,7 @@ LoadOption.__index = LoadOption
 M.LoadOption = LoadOption
 
 function LoadOption.new(raw_opts)
-  local tbl = vim.tbl_extend("force", {back = false, expand = false, target_path = nil}, raw_opts or {})
+  local tbl = vim.tbl_extend("force", {back = false, expand = false, cursor_line_path = nil}, raw_opts or {})
   return setmetatable(tbl, LoadOption)
 end
 

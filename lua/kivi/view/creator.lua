@@ -82,12 +82,12 @@ function Creator.write(self)
     last_index = i
   end
 
-  local target_path = nil
+  local cursor_line_path = nil
   if result.success[last_index] ~= nil then
-    target_path = result.success[last_index]:get()
+    cursor_line_path = result.success[last_index]:get()
   end
 
-  self._loader:reload({target_path = target_path}, {expanded = expanded})
+  self._loader:reload({cursor_line_path = cursor_line_path}, {expanded = expanded})
 end
 
 function Creator.write_from(bufnr)
