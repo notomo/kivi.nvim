@@ -39,7 +39,7 @@ function Command.execute(action_name, opts, action_opts)
     opts = {opts, "table", true},
     action_opts = {action_opts, "table", true},
   })
-  local range = modelib.visual_range() or {first = vim.fn.line("."), last = vim.fn.line(".")}
+  local range = modelib.current_row_range()
   opts = opts or {}
   action_opts = action_opts or {}
   return Starter.new():execute(action_name, range, opts, action_opts)

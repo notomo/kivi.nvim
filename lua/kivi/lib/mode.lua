@@ -1,3 +1,5 @@
+local vim = vim
+
 local M = {}
 
 local ESC = vim.api.nvim_eval("\"\\<ESC>\"")
@@ -13,6 +15,10 @@ local CTRL_V = vim.api.nvim_eval("\"\\<C-v>\"")
 function M.is_visual()
   local mode = vim.api.nvim_get_mode().mode
   return mode == "v" or mode == "V" or mode == CTRL_V
+end
+
+function M.current_row_range()
+  return M.visual_range() or {first = vim.fn.line("."), last = vim.fn.line(".")}
 end
 
 return M
