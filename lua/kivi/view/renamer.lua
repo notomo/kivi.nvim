@@ -1,7 +1,6 @@
+local repository = require("kivi.lib.repository").Repository.new("renamer")
 local messagelib = require("kivi.lib.message")
 local cursorlib = require("kivi.lib.cursor")
-
-local persist = {renamers = {}}
 
 local M = {}
 
@@ -19,6 +18,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
 
   vim.cmd(([[autocmd BufReadCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('read', %s)]]):format(bufnr, bufnr))
   vim.cmd(([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(bufnr, bufnr))
+  vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").Command.new("delete", %s)]]):format(bufnr, bufnr))
 
   local froms = {}
   for i, item in ipairs(rename_items) do
@@ -58,7 +58,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   cursorlib.set_row(2, window_id, bufnr)
   vim.cmd("doautocmd BufRead") -- HACK?
 
-  persist.renamers[bufnr] = renamer
+  repository:set(bufnr, renamer)
 end
 
 function Renamer.write(self)
@@ -129,7 +129,7 @@ function Renamer.read(self)
 end
 
 function Renamer.read_from(bufnr)
-  local renamer = persist.renamers[bufnr]
+  local renamer = repository:get(bufnr)
   if renamer == nil then
     return
   end
@@ -137,11 +137,15 @@ function Renamer.read_from(bufnr)
 end
 
 function Renamer.write_from(bufnr)
-  local renamer = persist.renamers[bufnr]
+  local renamer = repository:get(bufnr)
   if renamer == nil then
     return
   end
   return renamer:write()
+end
+
+function Renamer.delete_from(bufnr)
+  repository:delete(bufnr)
 end
 
 return M

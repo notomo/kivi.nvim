@@ -58,6 +58,10 @@ function Command.write(bufnr)
   return Router.write(bufnr)
 end
 
+function Command.delete(bufnr)
+  return Router.delete(bufnr)
+end
+
 function Command.is_parent()
   local ctx, err = Context.get()
   if err ~= nil then
@@ -73,14 +77,6 @@ function Command.is_parent()
   end
 
   return kind.is_parent == true, nil
-end
-
-function Command.cleanup(bufnr)
-  local ctx, err = Context.get(bufnr)
-  if err ~= nil then
-    return nil, err
-  end
-  ctx:delete()
 end
 
 return M

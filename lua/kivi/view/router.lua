@@ -1,3 +1,4 @@
+local Context = require("kivi.core.context").Context
 local Loader = require("kivi.core.loader").Loader
 local Renamer = require("kivi.view.renamer").Renamer
 local Creator = require("kivi.view.creator").Creator
@@ -34,10 +35,29 @@ function Router.write(bufnr)
   end
 end
 
+function Router.delete(bufnr)
+  local path = Router._path(bufnr)
+  if not path then
+    return nil
+  end
+
+  if path:match("/kivi$") then
+    local ctx, err = Context.get(bufnr)
+    if err ~= nil then
+      return err
+    end
+    return ctx:delete()
+  elseif path:match("/kivi%-creator$") then
+    return Creator.delete_from(bufnr)
+  elseif path:match("/kivi%-renamer$") then
+    return Renamer.delete_from(bufnr)
+  end
+end
+
 function Router._path(bufnr)
   vim.validate({bufnr = {bufnr, "number"}})
   if not vim.api.nvim_buf_is_valid(bufnr) then
-    return nil
+    return "invalid buffer: " .. bufnr
   end
   return vim.api.nvim_buf_get_name(bufnr)
 end

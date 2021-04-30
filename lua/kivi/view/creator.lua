@@ -1,7 +1,6 @@
+local repository = require("kivi.lib.repository").Repository.new("creator")
 local messagelib = require("kivi.lib.message")
 local windowlib = require("kivi.lib.window")
-
-local persist = {creators = {}}
 
 local M = {}
 
@@ -33,8 +32,8 @@ function Creator.open(kind, loader, base_node)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-creator")
   vim.cmd("doautocmd BufRead") -- HACK?
 
-  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)"):format(bufnr, bufnr)
-  vim.cmd(cmd)
+  vim.cmd(([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(bufnr, bufnr))
+  vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").Command.new("delete", %s)]]):format(bufnr, bufnr))
 
   local tbl = {
     _bufnr = bufnr,
@@ -44,7 +43,7 @@ function Creator.open(kind, loader, base_node)
     _window_id = window_id,
   }
   local creator = setmetatable(tbl, Creator)
-  persist.creators[bufnr] = creator
+  repository:set(bufnr, creator)
 
   vim.cmd("startinsert")
 end
@@ -91,11 +90,15 @@ function Creator.write(self)
 end
 
 function Creator.write_from(bufnr)
-  local creator = persist.creators[bufnr]
+  local creator = repository:get(bufnr)
   if creator == nil then
     return
   end
   return creator:write()
+end
+
+function Creator.delete_from(bufnr)
+  repository:delete(bufnr)
 end
 
 return M
