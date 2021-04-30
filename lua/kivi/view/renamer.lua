@@ -17,8 +17,8 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   vim.bo[bufnr].buftype = "acwrite"
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-renamer")
 
-  local cmd = ("autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)"):format(bufnr, bufnr)
-  vim.cmd(cmd)
+  vim.cmd(([[autocmd BufReadCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('read', %s)]]):format(bufnr, bufnr))
+  vim.cmd(([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(bufnr, bufnr))
 
   local froms = {}
   for i, item in ipairs(rename_items) do

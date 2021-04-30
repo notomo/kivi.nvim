@@ -9,16 +9,25 @@ local ns = vim.api.nvim_create_namespace("kivi")
 
 local M = {}
 
+M.key_mapping_script = [[
+nnoremap <silent> <buffer> <expr> j line('.') == line('$') ? 'gg' : 'j'
+nnoremap <silent> <buffer> <expr> k line('.') == 1 ? 'G' : 'k'
+nnoremap <buffer> h <Cmd>lua require("kivi").execute("parent")<CR>
+nnoremap <buffer> l <Cmd>lua require("kivi").execute("child")<CR>
+nnoremap <nowait> <buffer> q <Cmd>quit<CR>]]
+
 local PendingUI = {}
 PendingUI.__index = PendingUI
 M.PendingUI = PendingUI
 
 function PendingUI.open(source, open_opts)
   local bufnr
+  local new = false
   if not open_opts.new and vim.bo.filetype == source.filetype then
     bufnr = vim.api.nvim_get_current_buf()
   else
     bufnr = vim.api.nvim_create_buf(false, true)
+    new = true
   end
 
   local key = ("%s/%d"):format(source.name, bufnr)
@@ -31,6 +40,10 @@ function PendingUI.open(source, open_opts)
   -- NOTICE: different from vim.wo.option
   vim.cmd("setlocal nonumber")
   vim.cmd("setlocal nolist")
+  if new then
+    vim.cmd(M.key_mapping_script)
+    vim.cmd(([[autocmd BufReadCmd <buffer=%s> lua require("kivi.command").Command.new("read", %s)]]):format(bufnr, bufnr))
+  end
 
   local tbl = {bufnr = bufnr, _window_id = window_id}
   return setmetatable(tbl, PendingUI), key
