@@ -10,18 +10,18 @@ local ns = vim.api.nvim_create_namespace("kivi")
 
 local M = {}
 
-M.key_mapping_script = [[
+local View = {}
+View.__index = View
+M.View = View
+
+View.key_mapping_script = [[
 nnoremap <silent> <buffer> <expr> j line('.') == line('$') ? 'gg' : 'j'
 nnoremap <silent> <buffer> <expr> k line('.') == 1 ? 'G' : 'k'
 nnoremap <buffer> h <Cmd>lua require("kivi").execute("parent")<CR>
 nnoremap <buffer> l <Cmd>lua require("kivi").execute("child")<CR>
 nnoremap <nowait> <buffer> q <Cmd>quit<CR>]]
 
-local PendingUI = {}
-PendingUI.__index = PendingUI
-M.PendingUI = PendingUI
-
-function PendingUI.open(source, open_opts)
+function View.open(source, open_opts)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
   local key = ("%s/%d"):format(source.name, bufnr)
@@ -34,26 +34,20 @@ function PendingUI.open(source, open_opts)
   -- NOTICE: different from vim.wo.option
   vim.cmd("setlocal nonumber")
   vim.cmd("setlocal nolist")
-  vim.cmd(M.key_mapping_script)
+  vim.cmd(View.key_mapping_script)
   vim.cmd(([[autocmd BufReadCmd <buffer=%s> lua require("kivi.command").Command.new("read", %s)]]):format(bufnr, bufnr))
 
-  local tbl = {bufnr = bufnr, _window_id = window_id}
-  return setmetatable(tbl, PendingUI), key
+  local tbl = {
+    bufnr = bufnr,
+    _window_id = window_id,
+    _selected = {},
+    _nodes = {},
+    _selection_hl_factory = highlights.new_factory("kivi-selection-highlight", bufnr),
+  }
+  return setmetatable(tbl, View), key
 end
 
-local RenderedUI = {}
-RenderedUI.__index = RenderedUI
-
-function M._save_cursor(self)
-  local origin_row = vim.api.nvim_win_get_cursor(self._window_id)[1]
-  return Cursor.new(origin_row, self._window_id, self.bufnr)
-end
-
-function M._close(self)
-  return windowlib.close(self._window_id)
-end
-
-function M._redraw(self, root, source, history, opts, load_opts)
+function View.redraw(self, root, source, history, opts, load_opts)
   local lines = {}
   local nodes = {}
   local index = 1
@@ -64,30 +58,12 @@ function M._redraw(self, root, source, history, opts, load_opts)
     index = index + 1
     table.insert(nodes, node)
   end)
-
-  local tbl = {
-    bufnr = self.bufnr,
-    _selected = {},
-    _window_id = self._window_id,
-    _nodes = nodes,
-    _selection_hl_factory = highlights.new_factory("kivi-selection-highlight", self.bufnr),
-  }
-  local ui = setmetatable(tbl, RenderedUI)
-  ui:_set_lines(lines, source, history, root.path, opts, load_opts)
-
+  self._nodes = nodes
+  self:_set_lines(lines, source, history, root.path, opts, load_opts)
   source:hook(root.path)
-
-  return ui
 end
 
-PendingUI.close = M._close
-RenderedUI.close = M._close
-PendingUI.redraw = M._redraw
-RenderedUI.redraw = M._redraw
-PendingUI.save_cursor = M._save_cursor
-RenderedUI.save_cursor = M._save_cursor
-
-function RenderedUI._set_lines(self, lines, source, history, current_path, opts, load_opts)
+function View._set_lines(self, lines, source, history, current_path, opts, load_opts)
   bufferlib.set_lines(self.bufnr, 0, -1, lines)
   source:highlight(self.bufnr, self._nodes, opts)
   vim.api.nvim_buf_set_extmark(self.bufnr, ns, 0, 0, {end_line = 1, hl_group = "Comment"})
@@ -111,7 +87,16 @@ function RenderedUI._set_lines(self, lines, source, history, current_path, opts,
   end
 end
 
-function RenderedUI.selected_nodes(self, action_name, range)
+function View.save_cursor(self)
+  local origin_row = vim.api.nvim_win_get_cursor(self._window_id)[1]
+  return Cursor.new(origin_row, self._window_id, self.bufnr)
+end
+
+function View.close(self)
+  return windowlib.close(self._window_id)
+end
+
+function View.selected_nodes(self, action_name, range)
   if action_name ~= "toggle_selection" and not vim.tbl_isempty(self._selected) then
     local nodes = vim.tbl_values(self._selected)
     table.sort(nodes, function(a, b)
@@ -131,7 +116,7 @@ function RenderedUI.selected_nodes(self, action_name, range)
   return {self._nodes[vim.fn.line(".")]}
 end
 
-function RenderedUI.toggle_selections(self, nodes)
+function View.toggle_selections(self, nodes)
   for _, node in ipairs(nodes) do
     if self._selected[node.path] then
       self._selected[node.path] = nil
@@ -146,7 +131,7 @@ function RenderedUI.toggle_selections(self, nodes)
   end)
 end
 
-function RenderedUI.reset_selections(self, action_name)
+function View.reset_selections(self, action_name)
   if action_name == "toggle_selection" then
     return
   end

@@ -4,7 +4,7 @@ local Loader = require("kivi.core.loader").Loader
 local Executor = require("kivi.core.executor").Executor
 local Kind = require("kivi.core.kind").Kind
 local Options = require("kivi.core.option").Options
-local PendingUI = require("kivi.view.ui").PendingUI
+local View = require("kivi.view").View
 local Renamer = require("kivi.view.renamer").Renamer
 local Creator = require("kivi.view.creator").Creator
 
@@ -32,7 +32,7 @@ function Starter.open(_, raw_opts)
     return nil, err
   end
 
-  local ui, key = PendingUI.open(source, open_opts)
+  local ui, key = View.open(source, open_opts)
   local ctx = Context.new(source, ui, key, opts)
   return Loader.new(ctx.ui.bufnr):load(ctx)
 end

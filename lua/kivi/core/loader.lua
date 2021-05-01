@@ -33,7 +33,7 @@ function Loader.load(_, ctx, load_opts)
   local root, ok = result:get()
   if ok then
     ctx.history:add(root.path:get())
-    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts)
+    ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts)
     ctx.history:set(root.path:get())
   end
   return result, nil
@@ -59,7 +59,7 @@ function Loader.back(_, ctx, path)
   local root, ok = result:get()
   if ok then
     ctx.history:add_current_row()
-    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, LoadOption.new({}))
+    ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, LoadOption.new({}))
     ctx.history:set(root.path:get())
   end
   return result, nil
@@ -77,7 +77,7 @@ function Loader.expand(_, ctx, expanded)
     ctx.history:add(root.path:get())
 
     local cursor = ctx.ui:save_cursor()
-    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, LoadOption.new({}))
+    ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, LoadOption.new({}))
     cursor:restore()
   end
   return result, nil
