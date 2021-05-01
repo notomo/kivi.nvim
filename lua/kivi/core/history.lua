@@ -24,11 +24,9 @@ function History.add(self, path, is_back)
   end
 end
 
-function History.set(self, path, is_expand)
-  vim.validate({path = {path, "string"}, is_expand = {is_expand, "boolean"}})
-  if not is_expand then
-    self.latest_path = path
-  end
+function History.set(self, path)
+  vim.validate({path = {path, "string"}})
+  self.latest_path = path
 end
 
 function History.pop(self)

@@ -8,7 +8,7 @@ LoadOption.__index = LoadOption
 M.LoadOption = LoadOption
 
 function LoadOption.new(raw_opts)
-  local tbl = vim.tbl_extend("force", {back = false, expand = false, cursor_line_path = nil}, raw_opts or {})
+  local tbl = vim.tbl_extend("force", {back = false, cursor_line_path = nil}, raw_opts or {})
   return setmetatable(tbl, LoadOption)
 end
 
@@ -40,9 +40,23 @@ function Loader.back(self, ctx, path)
   return self:_load(ctx, LoadOption.new({back = true}))
 end
 
-function Loader.expand(self, ctx, expanded)
+function Loader.expand(_, ctx, expanded)
   ctx.opts.expanded = expanded
-  return self:_load(ctx, LoadOption.new({expand = true}))
+  local result, err = Collector.new(ctx.source):start(ctx.opts)
+  if err ~= nil then
+    return nil, err
+  end
+
+  local root, ok = result:get()
+  if ok then
+    local load_opts = LoadOption.new({})
+    ctx.history:add(root.path:get(), load_opts.back)
+
+    local cursor = ctx.ui:save_cursor()
+    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts)
+    cursor:restore()
+  end
+  return result, nil
 end
 
 function Loader._load(_, ctx, load_opts)
@@ -55,10 +69,8 @@ function Loader._load(_, ctx, load_opts)
   if ok then
     ctx.history:add(root.path:get(), load_opts.back)
     ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts)
-    ctx.history:set(root.path:get(), load_opts.expand)
-    ctx.source:hook(root.path)
+    ctx.history:set(root.path:get())
   end
-
   return result, nil
 end
 
