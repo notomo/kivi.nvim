@@ -38,18 +38,8 @@ function Kind.__index(self, k)
   return rawget(Kind, k) or self._kind[k] or base[k]
 end
 
-local ACTION_PREFIX = "action_"
 function Kind.find_action(self, action_name, action_opts)
-  local key = ACTION_PREFIX .. action_name
-  local opts = vim.tbl_extend("force", self.opts[action_name] or {}, action_opts)
-  local behavior = vim.tbl_deep_extend("force", {quit = false}, self.behaviors[action_name] or {})
-
-  local action = self[key]
-  if action ~= nil then
-    return Action.new(self, action, opts, behavior), nil
-  end
-
-  return nil, "not found action: " .. action_name
+  return Action.new(self, action_name, action_opts)
 end
 
 function Kind.start_path(self, opts)
