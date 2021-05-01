@@ -12,16 +12,20 @@ function History.new(key)
   return setmetatable(tbl, History)
 end
 
-function History.add(self, path, is_back)
-  vim.validate({path = {path, "string"}, is_back = {is_back, "boolean"}})
+function History.add(self, path)
+  vim.validate({path = {path, "string"}})
   if self.latest_path == nil or self.latest_path == path then
     return
   end
+  self:add_current_row()
+  table.insert(self._paths, self.latest_path)
+end
 
-  self._rows[self.latest_path] = vim.api.nvim_win_get_cursor(0)[1]
-  if not is_back then
-    table.insert(self._paths, self.latest_path)
+function History.add_current_row(self)
+  if self.latest_path == nil then
+    return
   end
+  self._rows[self.latest_path] = vim.api.nvim_win_get_cursor(0)[1]
 end
 
 function History.set(self, path)

@@ -8,7 +8,7 @@ LoadOption.__index = LoadOption
 M.LoadOption = LoadOption
 
 function LoadOption.new(raw_opts)
-  local tbl = vim.tbl_extend("force", {back = false, cursor_line_path = nil}, raw_opts or {})
+  local tbl = vim.tbl_extend("force", {cursor_line_path = nil}, raw_opts or {})
   return setmetatable(tbl, LoadOption)
 end
 
@@ -22,8 +22,21 @@ function Loader.new(bufnr)
   return setmetatable(tbl, Loader)
 end
 
-function Loader.load(self, ctx)
-  return self:_load(ctx, LoadOption.new({}))
+function Loader.load(_, ctx, load_opts)
+  load_opts = load_opts or LoadOption.new({})
+
+  local result, err = Collector.new(ctx.source):start(ctx.opts)
+  if err ~= nil then
+    return nil, err
+  end
+
+  local root, ok = result:get()
+  if ok then
+    ctx.history:add(root.path:get())
+    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts)
+    ctx.history:set(root.path:get())
+  end
+  return result, nil
 end
 
 function Loader.reload(self, raw_load_opts, raw_opts)
@@ -31,13 +44,25 @@ function Loader.reload(self, raw_load_opts, raw_opts)
   if err ~= nil then
     return nil, err
   end
+
   ctx.opts = ctx.opts:merge(raw_opts or {})
-  return self:_load(ctx, LoadOption.new(raw_load_opts))
+  return self:load(ctx, LoadOption.new(raw_load_opts))
 end
 
-function Loader.back(self, ctx, path)
+function Loader.back(_, ctx, path)
   ctx.opts = ctx.opts:merge({path = path})
-  return self:_load(ctx, LoadOption.new({back = true}))
+  local result, err = Collector.new(ctx.source):start(ctx.opts)
+  if err ~= nil then
+    return nil, err
+  end
+
+  local root, ok = result:get()
+  if ok then
+    ctx.history:add_current_row()
+    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, LoadOption.new({}))
+    ctx.history:set(root.path:get())
+  end
+  return result, nil
 end
 
 function Loader.expand(_, ctx, expanded)
@@ -49,27 +74,11 @@ function Loader.expand(_, ctx, expanded)
 
   local root, ok = result:get()
   if ok then
-    local load_opts = LoadOption.new({})
-    ctx.history:add(root.path:get(), load_opts.back)
+    ctx.history:add(root.path:get())
 
     local cursor = ctx.ui:save_cursor()
-    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts)
+    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, LoadOption.new({}))
     cursor:restore()
-  end
-  return result, nil
-end
-
-function Loader._load(_, ctx, load_opts)
-  local result, err = Collector.new(ctx.source):start(ctx.opts)
-  if err ~= nil then
-    return nil, err
-  end
-
-  local root, ok = result:get()
-  if ok then
-    ctx.history:add(root.path:get(), load_opts.back)
-    ctx.ui = ctx.ui:redraw(root, ctx.source, ctx.history, ctx.opts, load_opts)
-    ctx.history:set(root.path:get())
   end
   return result, nil
 end
