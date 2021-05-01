@@ -22,14 +22,7 @@ PendingUI.__index = PendingUI
 M.PendingUI = PendingUI
 
 function PendingUI.open(source, open_opts)
-  local bufnr
-  local new = false
-  if not open_opts.new and vim.bo.filetype == source.filetype then
-    bufnr = vim.api.nvim_get_current_buf()
-  else
-    bufnr = vim.api.nvim_create_buf(false, true)
-    new = true
-  end
+  local bufnr = vim.api.nvim_create_buf(false, true)
 
   local key = ("%s/%d"):format(source.name, bufnr)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. key .. "/kivi")
@@ -41,10 +34,8 @@ function PendingUI.open(source, open_opts)
   -- NOTICE: different from vim.wo.option
   vim.cmd("setlocal nonumber")
   vim.cmd("setlocal nolist")
-  if new then
-    vim.cmd(M.key_mapping_script)
-    vim.cmd(([[autocmd BufReadCmd <buffer=%s> lua require("kivi.command").Command.new("read", %s)]]):format(bufnr, bufnr))
-  end
+  vim.cmd(M.key_mapping_script)
+  vim.cmd(([[autocmd BufReadCmd <buffer=%s> lua require("kivi.command").Command.new("read", %s)]]):format(bufnr, bufnr))
 
   local tbl = {bufnr = bufnr, _window_id = window_id}
   return setmetatable(tbl, PendingUI), key
@@ -101,7 +92,7 @@ function RenderedUI._set_lines(self, lines, source, history, current_path, opts,
   source:highlight(self.bufnr, self._nodes, opts)
   vim.api.nvim_buf_set_extmark(self.bufnr, ns, 0, 0, {end_line = 1, hl_group = "Comment"})
 
-  local latest_path = load_opts.cursor_line_path or source:init_path() or history.latest_path
+  local latest_path = load_opts.cursor_line_path or history.latest_path or source:init_path()
   local ok = false
   if latest_path ~= nil then
     for i, node in ipairs(self._nodes) do

@@ -1,8 +1,8 @@
 local M = {}
 
-function M.action_open(self, nodes)
+function M.action_open(self, nodes, ctx)
   for _, node in ipairs(nodes) do
-    local _, err = self:start_path({path = node.path})
+    local _, err = self:navigate(ctx, node.path)
     if err ~= nil then
       return nil, err
     end
@@ -11,7 +11,7 @@ end
 
 function M.action_tab_open(self, nodes)
   for _, node in ipairs(nodes) do
-    local _, err = self:start_path({path = node.path, layout = "tab", new = true})
+    local _, err = self:open({path = node.path, layout = "tab"})
     if err ~= nil then
       return nil, err
     end
@@ -20,7 +20,7 @@ end
 
 function M.action_vsplit_open(self, nodes)
   for _, node in ipairs(nodes) do
-    local _, err = self:start_path({path = node.path, layout = "vertical", new = true})
+    local _, err = self:open({path = node.path, layout = "vertical"})
     if err ~= nil then
       return nil, err
     end

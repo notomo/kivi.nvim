@@ -129,17 +129,6 @@ describe("kivi", function()
     assert.file_name("file2")
   end)
 
-  it("does not move the cursor on opening the same path", function()
-    helper.new_file("file1")
-    helper.new_file("file2")
-
-    kivi.open()
-    helper.search("file2")
-    kivi.open()
-
-    assert.current_line("file2")
-  end)
-
   it("can toggle tree", function()
     helper.new_directory("dir")
     helper.new_file("dir/file")

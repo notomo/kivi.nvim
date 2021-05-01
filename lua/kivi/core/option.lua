@@ -4,7 +4,7 @@ local tbllib = require("kivi.lib.table")
 local M = {}
 
 local default_opts = {source = "file", path = ".", expanded = {}}
-local default_open_opts = {layout = "no", new = false}
+local default_open_opts = {layout = "no"}
 
 local Options = {}
 Options.__index = Options

@@ -42,7 +42,11 @@ function Kind.find_action(self, action_name, action_opts)
   return Action.new(self, action_name, action_opts)
 end
 
-function Kind.start_path(self, opts)
+function Kind.navigate(self, ctx, path)
+  return self._starter:navigate(ctx, path)
+end
+
+function Kind.open(self, opts)
   return self._starter:open(opts)
 end
 

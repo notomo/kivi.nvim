@@ -34,7 +34,12 @@ function Starter.open(_, raw_opts)
 
   local ui, key = PendingUI.open(source, open_opts)
   local ctx = Context.new(source, ui, key, opts)
-  return Loader.new(ui.bufnr):load(ctx)
+  return Loader.new(ctx.ui.bufnr):load(ctx)
+end
+
+function Starter.navigate(_, ctx, path)
+  ctx.opts = ctx.opts:merge({path = path})
+  return Loader.new(ctx.ui.bufnr):load(ctx)
 end
 
 function Starter.back(_, ctx, path)

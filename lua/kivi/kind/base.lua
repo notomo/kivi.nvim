@@ -4,13 +4,12 @@ M.opts = {yank = {key = "path", register = "+"}}
 
 M.behaviors = {}
 
-function M.action_parent(self, nodes)
+function M.action_parent(self, nodes, ctx)
   local node = nodes[1]
-  if node == nil then
+  if not node then
     return
   end
-  local root = node:root()
-  return self:start_path({path = root.path:parent()})
+  return self:navigate(ctx, node:root().path:parent())
 end
 
 function M.action_debug_print(_, nodes)
@@ -31,7 +30,7 @@ end
 
 function M.action_back(self, _, ctx)
   local path = ctx.history:pop()
-  if path == nil then
+  if not path then
     return
   end
   return self:back(ctx, path)
@@ -50,7 +49,7 @@ function M.action_cut(_, nodes, ctx)
 end
 
 function M.action_toggle_tree(self, nodes, ctx)
-  if nodes[1] == nil then
+  if not nodes[1] then
     return
   end
 
