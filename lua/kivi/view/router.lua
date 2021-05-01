@@ -10,9 +10,9 @@ Router.__index = Router
 M.Router = Router
 
 function Router.read(bufnr)
-  local path = Router._path(bufnr)
-  if not path then
-    return nil
+  local path, err = Router._path(bufnr)
+  if err ~= nil then
+    return err
   end
 
   if path:match("/kivi$") then
@@ -23,9 +23,9 @@ function Router.read(bufnr)
 end
 
 function Router.write(bufnr)
-  local path = Router._path(bufnr)
-  if not path then
-    return nil
+  local path, err = Router._path(bufnr)
+  if err ~= nil then
+    return err
   end
 
   if path:match("/kivi%-creator$") then
@@ -36,17 +36,13 @@ function Router.write(bufnr)
 end
 
 function Router.delete(bufnr)
-  local path = Router._path(bufnr)
-  if not path then
-    return nil
+  local path, err = Router._path(bufnr)
+  if err ~= nil then
+    return err
   end
 
   if path:match("/kivi$") then
-    local ctx, err = Context.get(bufnr)
-    if err ~= nil then
-      return err
-    end
-    return ctx:delete()
+    return Context.delete_from(bufnr)
   elseif path:match("/kivi%-creator$") then
     return Creator.delete_from(bufnr)
   elseif path:match("/kivi%-renamer$") then
@@ -57,9 +53,9 @@ end
 function Router._path(bufnr)
   vim.validate({bufnr = {bufnr, "number"}})
   if not vim.api.nvim_buf_is_valid(bufnr) then
-    return "invalid buffer: " .. bufnr
+    return nil, "invalid buffer: " .. bufnr
   end
-  return vim.api.nvim_buf_get_name(bufnr)
+  return vim.api.nvim_buf_get_name(bufnr), nil
 end
 
 return M

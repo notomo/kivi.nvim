@@ -44,5 +44,13 @@ function Context.get(bufnr)
   return ctx, nil
 end
 
+function Context.delete_from(bufnr)
+  local ctx, err = Context.get(bufnr)
+  if err ~= nil then
+    return err
+  end
+  return ctx:delete()
+end
+
 return M
 
