@@ -1,19 +1,25 @@
 local M = {}
 
 local Action = {}
-Action.__index = Action
 M.Action = Action
 
 function Action.new(kind, fn, action_opts, behavior)
-  kind.__index = kind
-  local tbl = {action_opts = action_opts, behavior = behavior}
-  local action = setmetatable(tbl, kind)
+  vim.validate({
+    kind = {kind, "table"},
+    fn = {fn, "function"},
+    action_opts = {action_opts, "table"},
+    behavior = {behavior, "table"},
+  })
+  local tbl = {action_opts = action_opts, behavior = behavior, _kind = kind, _fn = fn}
+  return setmetatable(tbl, Action)
+end
 
-  action.execute = function(self, nodes, ctx)
-    return fn(self, nodes, ctx)
-  end
+function Action.__index(self, k)
+  return rawget(Action, k) or self._kind[k]
+end
 
-  return action
+function Action.execute(self, nodes, ctx)
+  return self._fn(self, nodes, ctx)
 end
 
 return M
