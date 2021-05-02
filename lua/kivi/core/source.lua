@@ -32,6 +32,9 @@ function Source.new(source_name, source_opts, setup_opts)
     filelib = filelib,
     opts = vim.tbl_extend("force", source.opts, source_opts),
     setup_opts = vim.tbl_extend("force", source.setup_opts, setup_opts),
+    _setup = function(self, opts)
+      return source.setup(self, opts)
+    end,
     _source = source,
   }
   return setmetatable(tbl, Source), nil
@@ -44,6 +47,15 @@ end
 function Source.start(self, opts)
   local new_opts = self:setup(opts)
   return self:collect(new_opts)
+end
+
+function Source.setup(self, opts)
+  local new_opts = self._setup(self, opts)
+  -- for call _setup once
+  self._setup = function(_, o)
+    return o
+  end
+  return new_opts
 end
 
 return M

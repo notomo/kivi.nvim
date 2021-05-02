@@ -487,4 +487,17 @@ describe("kivi file source", function()
     assert.exists_pattern("root_marker/")
   end)
 
+  it("can move from project root", function()
+    helper.new_directory("root_marker")
+    helper.new_directory("root_marker/dir")
+    helper.cd("root_marker/dir")
+
+    kivi.open({source_setup_opts = {target = "project", root_patterns = {"root_marker"}}})
+
+    helper.search("root_marker/")
+    kivi.execute("child")
+
+    assert.exists_pattern("dir/")
+  end)
+
 end)
