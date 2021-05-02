@@ -5,12 +5,14 @@ local M = {}
 local Highlighter = {}
 Highlighter.__index = Highlighter
 
-function Highlighter.add(self, hl_group, row, start_col, end_col)
-  vim.api.nvim_buf_add_highlight(self.bufnr, self.ns, hl_group, row, start_col, end_col)
+function Highlighter.new(ns, bufnr)
+  vim.validate({ns = {ns, "number"}, bufnr = {bufnr, "number"}})
+  local tbl = {_ns = ns, _bufnr = bufnr}
+  return setmetatable(tbl, Highlighter)
 end
 
-function Highlighter.set_virtual_text(self, row, chunks)
-  vim.api.nvim_buf_set_virtual_text(self.bufnr, self.ns, row, chunks, {})
+function Highlighter.add(self, hl_group, row, start_col, end_col)
+  vim.api.nvim_buf_add_highlight(self._bufnr, self._ns, hl_group, row, start_col, end_col)
 end
 
 function Highlighter.filter(self, hl_group, elements, condition)
@@ -21,27 +23,29 @@ function Highlighter.filter(self, hl_group, elements, condition)
   end
 end
 
-local Factory = {}
-Factory.__index = Factory
+local HighlighterFactory = {}
+HighlighterFactory.__index = HighlighterFactory
+M.HighlighterFactory = HighlighterFactory
 
-function Factory.create(self, bufnr)
-  bufnr = bufnr or self.bufnr
-  local highlighter = {bufnr = bufnr, ns = self.ns}
-  return setmetatable(highlighter, Highlighter)
-end
-
-function Factory.reset(self, bufnr)
-  bufnr = bufnr or self.bufnr
-  local highlighter = self:create(bufnr)
-  vim.api.nvim_buf_clear_namespace(bufnr, self.ns, 0, -1)
-  return highlighter
-end
-
-function M.new_factory(key, bufnr)
+function HighlighterFactory.new(key, bufnr)
   vim.validate({key = {key, "string"}, bufnr = {bufnr, "number", true}})
   local ns = vim.api.nvim_create_namespace(key)
-  local factory = {ns = ns, bufnr = bufnr}
-  return setmetatable(factory, Factory)
+  local factory = {_ns = ns, _bufnr = bufnr}
+  return setmetatable(factory, HighlighterFactory)
+end
+
+function HighlighterFactory.create(self, bufnr)
+  vim.validate({bufnr = {bufnr, "number", true}})
+  bufnr = bufnr or self._bufnr
+  return Highlighter.new(self._ns, bufnr)
+end
+
+function HighlighterFactory.reset(self, bufnr)
+  vim.validate({bufnr = {bufnr, "number", true}})
+  bufnr = bufnr or self._bufnr
+  local highlighter = self:create(bufnr)
+  vim.api.nvim_buf_clear_namespace(bufnr, self._ns, 0, -1)
+  return highlighter
 end
 
 local attrs = {

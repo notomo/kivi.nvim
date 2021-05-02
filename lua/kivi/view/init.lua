@@ -1,7 +1,7 @@
 local windowlib = require("kivi.lib.window")
 local cursorlib = require("kivi.lib.cursor")
 local bufferlib = require("kivi.lib.buffer")
-local highlights = require("kivi.lib.highlight")
+local HighlighterFactory = require("kivi.lib.highlight").HighlighterFactory
 local layouts = require("kivi.view.layout")
 local Cursor = require("kivi.view.cursor").Cursor
 local vim = vim
@@ -42,7 +42,7 @@ function View.open(source, open_opts)
     _window_id = window_id,
     _selected = {},
     _nodes = {},
-    _selection_hl_factory = highlights.new_factory("kivi-selection-highlight", bufnr),
+    _selection_hl_factory = HighlighterFactory.new("kivi-selection-highlight", bufnr),
   }
   return setmetatable(tbl, View), key
 end
