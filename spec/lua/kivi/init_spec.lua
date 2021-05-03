@@ -150,7 +150,7 @@ describe("kivi", function()
   it("ignores layout on toggle tree", function()
     helper.new_directory("dir")
 
-    kivi.open({layout = "vertical"})
+    kivi.open({layout = {type = "vertical"}})
 
     helper.search("dir")
     kivi.execute("toggle_tree")
@@ -209,7 +209,7 @@ describe("kivi", function()
     helper.new_file("file2")
     vim.cmd("edit file1")
 
-    kivi.open({layout = "vertical"})
+    kivi.open({layout = {type = "vertical"}})
 
     helper.search("file2")
     kivi.execute("vsplit_open", {quit = true})
@@ -250,7 +250,7 @@ describe("kivi", function()
   end)
 
   it("can config options", function()
-    kivi.setup({opts = {layout = "vertical"}})
+    kivi.setup({opts = {layout = {type = "vertical"}}})
 
     kivi.open()
 
@@ -261,11 +261,11 @@ describe("kivi", function()
     helper.new_directory("dir")
     helper.new_file("dir/file")
 
-    kivi.open({layout = "tab"})
+    kivi.open({layout = {type = "tab"}})
     helper.search("dir")
     kivi.execute("toggle_tree")
     vim.cmd("quit")
-    kivi.open({layout = "tab"})
+    kivi.open({layout = {type = "tab"}})
 
     assert.no.exists_pattern("file")
   end)

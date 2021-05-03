@@ -1,24 +1,50 @@
 local M = {}
 
-local funcs = {
-  vertical = function(bufnr)
-    vim.cmd("vsplit")
-    vim.cmd("buffer " .. bufnr)
-    vim.api.nvim_win_set_width(0, 38)
-  end,
-  no = function(bufnr)
-    vim.cmd("buffer " .. bufnr)
-  end,
-  tab = function(bufnr)
-    vim.cmd("tabedit")
-    vim.cmd("buffer " .. bufnr)
-  end,
-}
+local Layouts = {}
 
-function M.open(layout, bufnr)
-  vim.validate({layout = {layout, "string"}, bufnr = {bufnr, "number"}})
-  local f = funcs[layout]
-  f(bufnr)
+function Layouts.no()
+end
+
+function Layouts.vertical(width)
+  vim.validate({width = {width, "number", true}})
+  width = width or 38
+  return function()
+    vim.cmd("vsplit")
+    vim.api.nvim_win_set_width(0, width)
+  end
+end
+
+function Layouts.tab()
+  vim.cmd("tabedit")
+end
+
+local Layout = {}
+Layout.__index = Layout
+M.Layout = Layout
+
+function Layout.new(opts)
+  opts = opts or {}
+  local typ = opts.type
+
+  local f
+  if typ == "vertical" then
+    f = Layouts.vertical(opts.width)
+  elseif typ == "tab" then
+    f = Layouts.tab
+  elseif typ == "no" then
+    f = Layouts.no
+  else
+    error("unexpected layout type: " .. tostring(typ))
+  end
+
+  local tbl = {_f = f}
+  return setmetatable(tbl, Layout)
+end
+
+function Layout.open(self, bufnr)
+  vim.validate({bufnr = {bufnr, "number"}})
+  self._f()
+  vim.api.nvim_win_set_buf(0, bufnr)
   return vim.api.nvim_get_current_win()
 end
 

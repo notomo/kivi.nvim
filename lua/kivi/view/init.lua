@@ -2,7 +2,7 @@ local windowlib = require("kivi.lib.window")
 local cursorlib = require("kivi.lib.cursor")
 local bufferlib = require("kivi.lib.buffer")
 local HighlighterFactory = require("kivi.lib.highlight").HighlighterFactory
-local layouts = require("kivi.view.layout")
+local Layout = require("kivi.view.layout").Layout
 local Cursor = require("kivi.view.cursor").Cursor
 local vim = vim
 
@@ -30,7 +30,7 @@ function View.open(source, open_opts)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
 
-  local window_id = layouts.open(open_opts.layout, bufnr)
+  local window_id = Layout.new(open_opts.layout):open(bufnr)
   -- NOTICE: different from vim.wo.option
   vim.cmd("setlocal nonumber")
   vim.cmd("setlocal nolist")
