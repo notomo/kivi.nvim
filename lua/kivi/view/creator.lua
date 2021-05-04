@@ -23,9 +23,8 @@ function Creator.open(kind, loader, base_node)
     focusable = true,
     external = false,
     style = "minimal",
+    border = {{" ", "NormalFloat"}},
   })
-  vim.wo[window_id].signcolumn = "yes:1"
-  vim.wo[window_id].winhighlight = "SignColumn:NormalFloat"
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].buftype = "acwrite"
   vim.bo[bufnr].modified = false

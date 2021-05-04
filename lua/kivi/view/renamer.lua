@@ -46,15 +46,14 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     width = width,
     height = height + 1,
     relative = "editor",
-    row = math.floor(vim.o.lines / 2) - math.floor(height / 2),
+    row = math.floor(vim.o.lines / 2) - math.floor((height + 2) / 2) - 2,
     col = math.floor(vim.o.columns / 2) - math.floor(width / 2),
     anchor = "NW",
     focusable = true,
     external = false,
     style = "minimal",
+    border = {{" ", "NormalFloat"}},
   })
-  vim.wo[window_id].signcolumn = "yes:1"
-  vim.wo[window_id].winhighlight = "SignColumn:NormalFloat"
   cursorlib.set_row(2, window_id, bufnr)
   vim.cmd("doautocmd BufRead") -- HACK?
 
