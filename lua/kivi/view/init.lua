@@ -1,12 +1,9 @@
 local windowlib = require("kivi.lib.window")
 local cursorlib = require("kivi.lib.cursor")
 local bufferlib = require("kivi.lib.buffer")
-local HighlighterFactory = require("kivi.lib.highlight").HighlighterFactory
 local Layout = require("kivi.view.layout").Layout
 local Cursor = require("kivi.view.cursor").Cursor
 local vim = vim
-
-local ns = vim.api.nvim_create_namespace("kivi")
 
 local M = {}
 
@@ -37,17 +34,11 @@ function View.open(source, open_opts)
   vim.cmd(View.key_mapping_script)
   vim.cmd(([[autocmd BufReadCmd <buffer=%s> lua require("kivi.command").Command.new("read", %s)]]):format(bufnr, bufnr))
 
-  local tbl = {
-    bufnr = bufnr,
-    _window_id = window_id,
-    _selected = {},
-    _nodes = {},
-    _selection_hl_factory = HighlighterFactory.new("kivi-selection-highlight", bufnr),
-  }
+  local tbl = {bufnr = bufnr, _window_id = window_id, _selected = {}, _nodes = {}}
   return setmetatable(tbl, View), key
 end
 
-function View.redraw(self, root, source, history, opts, load_opts)
+function View.redraw(self, root, source, history, load_opts)
   local lines = {}
   local nodes = {}
   local index = 1
@@ -59,14 +50,12 @@ function View.redraw(self, root, source, history, opts, load_opts)
     table.insert(nodes, node)
   end)
   self._nodes = nodes
-  self:_set_lines(lines, source, history, root.path, opts, load_opts)
+  self:_set_lines(lines, source, history, root.path, load_opts)
   source:hook(root.path)
 end
 
-function View._set_lines(self, lines, source, history, current_path, opts, load_opts)
+function View._set_lines(self, lines, source, history, current_path, load_opts)
   bufferlib.set_lines(self.bufnr, 0, -1, lines)
-  source:highlight(self.bufnr, self._nodes, opts)
-  vim.api.nvim_buf_set_extmark(self.bufnr, ns, 0, 0, {end_line = 1, hl_group = "Comment"})
 
   local latest_path = load_opts.cursor_line_path or history.latest_path or source:init_path()
   local ok = false
@@ -124,11 +113,7 @@ function View.toggle_selections(self, nodes)
       self._selected[node.path] = node
     end
   end
-
-  local highligher = self._selection_hl_factory:reset()
-  highligher:filter("KiviSelected", self._nodes, function(node)
-    return self._selected[node.path] ~= nil
-  end)
+  vim.api.nvim__buf_redraw_range(self.bufnr, nodes[1].index - 1, nodes[#nodes].index - 1)
 end
 
 function View.reset_selections(self, action_name)
@@ -136,9 +121,25 @@ function View.reset_selections(self, action_name)
     return
   end
   self._selected = {}
-  self._selection_hl_factory:reset()
 end
 
 vim.cmd("highlight default link KiviSelected Statement")
+
+function View.highlight(self, source, opts, first_line, last_line)
+  local nodes = {}
+  for i = first_line + 1, last_line, 1 do
+    table.insert(nodes, self._nodes[i])
+  end
+  source:highlight(self.bufnr, first_line, nodes, opts)
+
+  local highlighter = source.highlights:create(self.bufnr)
+  if first_line == 0 then
+    highlighter:add_line("Comment", 0)
+  end
+
+  highlighter:filter("KiviSelected", first_line, nodes, function(node)
+    return self._selected[node.path] ~= nil
+  end)
+end
 
 return M

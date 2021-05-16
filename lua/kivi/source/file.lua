@@ -53,12 +53,12 @@ highlights.default("KiviDirectoryOpen", {
   gui = "bold",
 })
 
-function M.highlight(self, bufnr, nodes, opts)
-  local highlighter = self.highlights:reset(bufnr)
-  highlighter:filter("KiviDirectory", nodes, function(node)
+function M.highlight(self, bufnr, row, nodes, opts)
+  local highlighter = self.highlights:create(bufnr)
+  highlighter:filter("KiviDirectory", row, nodes, function(node)
     return node.kind_name == "directory"
   end)
-  highlighter:filter("KiviDirectoryOpen", nodes, function(node)
+  highlighter:filter("KiviDirectoryOpen", row, nodes, function(node)
     return node.kind_name == "directory" and opts.expanded[node.path:get()]
   end)
 end

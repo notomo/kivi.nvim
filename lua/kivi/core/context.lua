@@ -52,5 +52,18 @@ function Context.delete_from(bufnr)
   return ctx:delete()
 end
 
+function Context._highlight_win(_, _, bufnr, topline, botline_guess)
+  local ctx, err = Context.get(bufnr)
+  if err ~= nil then
+    return false
+  end
+  ctx.ui:highlight(ctx.source, ctx.opts, topline, botline_guess)
+  return false
+end
+
+local ns = vim.api.nvim_create_namespace("kivi-highlight")
+vim.api.nvim_set_decoration_provider(ns, {})
+vim.api.nvim_set_decoration_provider(ns, {on_win = Context._highlight_win})
+
 return M
 

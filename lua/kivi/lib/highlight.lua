@@ -11,14 +11,18 @@ function Highlighter.new(ns, bufnr)
   return setmetatable(tbl, Highlighter)
 end
 
-function Highlighter.add(self, hl_group, row, start_col, end_col)
-  vim.api.nvim_buf_add_highlight(self._bufnr, self._ns, hl_group, row, start_col, end_col)
+function Highlighter.add_line(self, hl_group, row)
+  vim.api.nvim_buf_set_extmark(self._bufnr, self._ns, row, 0, {
+    hl_group = hl_group,
+    end_line = row + 1,
+    ephemeral = true,
+  })
 end
 
-function Highlighter.filter(self, hl_group, elements, condition)
+function Highlighter.filter(self, hl_group, row, elements, condition)
   for i, e in ipairs(elements) do
     if condition(e) then
-      self:add(hl_group, i - 1, 0, -1)
+      self:add_line(hl_group, row + i - 1)
     end
   end
 end
