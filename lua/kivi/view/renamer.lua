@@ -110,7 +110,7 @@ function Renamer.write(self)
     end, result.already_exists))
   end
 
-  self._loader:reload({cursor_line_path = cursor_line_path})
+  self._loader:reload(cursor_line_path)
 end
 
 function Renamer.read(self)

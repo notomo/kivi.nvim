@@ -38,7 +38,7 @@ function View.open(source, open_opts)
   return setmetatable(tbl, View), key
 end
 
-function View.redraw(self, root, source, history, load_opts)
+function View.redraw(self, root, source, history, cursor_line_path)
   local lines = {}
   local nodes = {}
   local index = 1
@@ -50,14 +50,14 @@ function View.redraw(self, root, source, history, load_opts)
     table.insert(nodes, node)
   end)
   self._nodes = nodes
-  self:_set_lines(lines, source, history, root.path, load_opts)
+  self:_set_lines(lines, source, history, root.path, cursor_line_path)
   source:hook(root.path)
 end
 
-function View._set_lines(self, lines, source, history, current_path, load_opts)
+function View._set_lines(self, lines, source, history, current_path, cursor_line_path)
   bufferlib.set_lines(self.bufnr, 0, -1, lines)
 
-  local latest_path = load_opts.cursor_line_path or history.latest_path or source:init_path()
+  local latest_path = cursor_line_path or history.latest_path or source:init_path()
   local ok = false
   if latest_path ~= nil then
     for i, node in ipairs(self._nodes) do

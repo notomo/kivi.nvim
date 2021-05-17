@@ -85,7 +85,7 @@ function Creator.write(self)
     cursor_line_path = result.success[last_index]:get()
   end
 
-  self._loader:reload({cursor_line_path = cursor_line_path}, {expanded = expanded})
+  self._loader:reload(cursor_line_path, expanded)
 end
 
 function Creator.write_from(bufnr)

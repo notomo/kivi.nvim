@@ -34,12 +34,12 @@ function Starter.open(_, raw_opts)
 
   local ui, key = View.open(source, open_opts)
   local ctx = Context.new(source, ui, key, opts)
-  return Loader.new(ctx.ui.bufnr):load(ctx)
+  return Loader.new(ctx.ui.bufnr):open(ctx)
 end
 
 function Starter.navigate(_, ctx, path)
   ctx.opts = ctx.opts:merge({path = path})
-  return Loader.new(ctx.ui.bufnr):load(ctx)
+  return Loader.new(ctx.ui.bufnr):navigate(ctx)
 end
 
 function Starter.back(_, ctx, path)
