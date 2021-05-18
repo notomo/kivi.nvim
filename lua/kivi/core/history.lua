@@ -1,5 +1,3 @@
-local cursorlib = require("kivi.lib.cursor")
-
 local M = {}
 
 local History = {}
@@ -13,18 +11,13 @@ function History.new(key)
 end
 
 function History.add(self, path)
-  vim.validate({path = {path, "string"}})
-  if self.latest_path == nil or self.latest_path == path then
-    return
-  end
-  self:add_current_row()
+  vim.validate({path = {path, "string"}, latest_path = {self.latest_path, "string"}})
+  self:store_current()
   table.insert(self._paths, self.latest_path)
 end
 
-function History.add_current_row(self)
-  if self.latest_path == nil then
-    return
-  end
+function History.store_current(self)
+  vim.validate({latest_path = {self.latest_path, "string"}})
   self._rows[self.latest_path] = vim.api.nvim_win_get_cursor(0)[1]
 end
 
@@ -37,14 +30,9 @@ function History.pop(self)
   return table.remove(self._paths)
 end
 
-function History.restore(self, path, bufnr)
-  vim.validate({path = {path, "string"}, bufnr = {bufnr, "number"}})
-  local row = self._rows[path]
-  if row ~= nil then
-    cursorlib.set_row_by_buffer(row, bufnr)
-    return true
-  end
-  return false
+function History.stored(self, path)
+  vim.validate({path = {path, "string"}})
+  return self._rows[path]
 end
 
 return M

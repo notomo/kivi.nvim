@@ -74,7 +74,12 @@ end
 
 function View.restore_cursor(self, history, path)
   vim.validate({history = {history, "table"}, path = {path, "string"}})
-  return history:restore(path, self.bufnr)
+  local row = history:stored(path)
+  if row ~= nil then
+    cursorlib.set_row_by_buffer(row, self.bufnr)
+    return true
+  end
+  return false
 end
 
 function View.close(self)

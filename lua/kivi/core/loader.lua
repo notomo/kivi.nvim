@@ -51,7 +51,7 @@ end
 function Loader.back(_, ctx, path)
   ctx.opts = ctx.opts:merge({path = path})
   return Collector.new(ctx.source):start(ctx.opts, function(root)
-    ctx.history:add_current_row()
+    ctx.history:store_current()
     ctx.ui:redraw(root)
     ctx.ui:restore_cursor(ctx.history, root.path:get())
     ctx.history:set(root.path:get())
