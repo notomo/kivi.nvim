@@ -68,27 +68,13 @@ function View.move_cursor(self, path)
   return false
 end
 
-function View.init_cursor(self, path)
-  vim.validate({path = {path, "string", true}})
-  if not self:move_cursor(path) then
-    cursorlib.set_row_by_buffer(2, self.bufnr)
-  end
+function View.init_cursor(self)
+  cursorlib.set_row_by_buffer(2, self.bufnr)
 end
 
 function View.restore_cursor(self, history, path)
   vim.validate({history = {history, "table"}, path = {path, "string"}})
   return history:restore(path, self.bufnr)
-end
-
-function View.move_or_restore_cursor(self, history, path)
-  vim.validate({history = {history, "table"}, path = {path, "string"}})
-  if self:move_cursor(history.latest_path) then
-    return
-  end
-  if self:restore_cursor(history, path) then
-    return
-  end
-  self:init_cursor()
 end
 
 function View.close(self)

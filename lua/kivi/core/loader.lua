@@ -14,36 +14,20 @@ function Loader.new(bufnr)
 end
 
 function Loader.open(_, ctx)
-  local result, err = Collector.new(ctx.source):start(ctx.opts)
-  if err ~= nil then
-    return nil, err
-  end
-
-  local root, ok = result:get()
-  if ok then
+  return Collector.new(ctx.source):start(ctx.opts, function(root)
     ctx.ui:redraw(root)
-    ctx.ui:init_cursor(ctx.source:init_path())
-    ctx.source:hook(root.path)
+    local _ = ctx.ui:move_cursor(ctx.source:init_path()) or ctx.ui:init_cursor()
     ctx.history:set(root.path:get())
-  end
-  return result, nil
+  end)
 end
 
 function Loader.navigate(_, ctx)
-  local result, err = Collector.new(ctx.source):start(ctx.opts)
-  if err ~= nil then
-    return nil, err
-  end
-
-  local root, ok = result:get()
-  if ok then
+  return Collector.new(ctx.source):start(ctx.opts, function(root)
     ctx.history:add(root.path:get())
     ctx.ui:redraw(root)
-    ctx.ui:move_or_restore_cursor(ctx.history, root.path:get())
-    ctx.source:hook(root.path)
+    local _ = ctx.ui:move_cursor(ctx.history.latest_path) or ctx.ui:restore_cursor(ctx.history, root.path:get()) or ctx.ui:init_cursor()
     ctx.history:set(root.path:get())
-  end
-  return result, nil
+  end)
 end
 
 function Loader.reload(self, cursor_line_path, expanded)
@@ -58,51 +42,27 @@ function Loader.reload(self, cursor_line_path, expanded)
   end
   ctx.opts = ctx.opts:merge({expanded = expanded or ctx.opts.expanded})
 
-  local result, err = Collector.new(ctx.source):start(ctx.opts)
-  if err ~= nil then
-    return nil, err
-  end
-
-  local root, ok = result:get()
-  if ok then
+  return Collector.new(ctx.source):start(ctx.opts, function(root)
     ctx.ui:redraw(root)
     ctx.ui:move_cursor(cursor_line_path)
-    ctx.source:hook(root.path)
-  end
-  return result, nil
+  end)
 end
 
 function Loader.back(_, ctx, path)
   ctx.opts = ctx.opts:merge({path = path})
-  local result, err = Collector.new(ctx.source):start(ctx.opts)
-  if err ~= nil then
-    return nil, err
-  end
-
-  local root, ok = result:get()
-  if ok then
+  return Collector.new(ctx.source):start(ctx.opts, function(root)
     ctx.history:add_current_row()
     ctx.ui:redraw(root)
     ctx.ui:restore_cursor(ctx.history, root.path:get())
-    ctx.source:hook(root.path)
     ctx.history:set(root.path:get())
-  end
-  return result, nil
+  end)
 end
 
 function Loader.expand(_, ctx, expanded)
   ctx.opts.expanded = expanded
-  local result, err = Collector.new(ctx.source):start(ctx.opts)
-  if err ~= nil then
-    return nil, err
-  end
-
-  local root, ok = result:get()
-  if ok then
+  return Collector.new(ctx.source):start(ctx.opts, function(root)
     ctx.ui:redraw(root)
-    ctx.source:hook(root.path)
-  end
-  return result, nil
+  end)
 end
 
 return M
