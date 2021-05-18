@@ -37,15 +37,11 @@ function History.pop(self)
   return table.remove(self._paths)
 end
 
-function History.restore(self, path, window_id, bufnr)
-  vim.validate({
-    path = {path, "string"},
-    window_id = {window_id, "number"},
-    bufnr = {bufnr, "number"},
-  })
+function History.restore(self, path, bufnr)
+  vim.validate({path = {path, "string"}, bufnr = {bufnr, "number"}})
   local row = self._rows[path]
   if row ~= nil then
-    cursorlib.set_row(row, window_id, bufnr)
+    cursorlib.set_row_by_buffer(row, bufnr)
     return true
   end
   return false

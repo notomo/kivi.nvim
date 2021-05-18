@@ -7,4 +7,23 @@ function M.close(id)
   vim.api.nvim_win_close(id, true)
 end
 
+function M.close_by_buffer(bufnr)
+  local id = M.get_current_or_first(bufnr)
+  if id then
+    M.close(id)
+  end
+end
+
+function M.get_current_or_first(bufnr)
+  vim.validate({bufnr = {bufnr, "number"}})
+  local ids = vim.fn.win_findbuf(bufnr)
+  local current = vim.api.nvim_get_current_win()
+  for _, id in ipairs(ids) do
+    if id == current then
+      return id
+    end
+  end
+  return ids[1]
+end
+
 return M

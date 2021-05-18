@@ -16,4 +16,12 @@ function M.set(row, col, window_id, bufnr)
   vim.api.nvim_win_set_cursor(window_id or 0, {get_row(row, bufnr), col})
 end
 
+function M.set_row_by_buffer(row, bufnr)
+  vim.validate({row = {row, "number"}, bufnr = {bufnr, "number"}})
+  local ids = vim.fn.win_findbuf(bufnr)
+  for _, id in ipairs(ids) do
+    M.set_row(row, id, bufnr)
+  end
+end
+
 return M

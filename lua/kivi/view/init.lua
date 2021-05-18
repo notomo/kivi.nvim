@@ -26,14 +26,14 @@ function View.open(source, open_opts)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
 
-  local window_id = Layout.new(open_opts.layout):open(bufnr)
+  Layout.new(open_opts.layout):open(bufnr)
   -- NOTICE: different from vim.wo.option
   vim.cmd("setlocal nonumber")
   vim.cmd("setlocal nolist")
   vim.cmd(View.key_mapping_script)
   vim.cmd(([[autocmd BufReadCmd <buffer=%s> lua require("kivi.command").Command.new("read", %s)]]):format(bufnr, bufnr))
 
-  local tbl = {bufnr = bufnr, _window_id = window_id, _selected = {}, _nodes = {}}
+  local tbl = {bufnr = bufnr, _selected = {}, _nodes = {}}
   return setmetatable(tbl, View), key
 end
 
@@ -60,7 +60,7 @@ function View.move_cursor(self, path)
 
   for i, node in ipairs(self._nodes) do
     if node.path:get() == path and i ~= 1 then
-      cursorlib.set_row(i, self._window_id, self.bufnr)
+      cursorlib.set_row_by_buffer(i, self.bufnr)
       return true
     end
   end
@@ -71,13 +71,13 @@ end
 function View.init_cursor(self, path)
   vim.validate({path = {path, "string", true}})
   if not self:move_cursor(path) then
-    cursorlib.set_row(2, self._window_id, self.bufnr)
+    cursorlib.set_row_by_buffer(2, self.bufnr)
   end
 end
 
 function View.restore_cursor(self, history, path)
   vim.validate({history = {history, "table"}, path = {path, "string"}})
-  return history:restore(path, self._window_id, self.bufnr)
+  return history:restore(path, self.bufnr)
 end
 
 function View.move_or_restore_cursor(self, history, path)
@@ -92,7 +92,7 @@ function View.move_or_restore_cursor(self, history, path)
 end
 
 function View.close(self)
-  return windowlib.close(self._window_id)
+  return windowlib.close_by_buffer(self.bufnr)
 end
 
 function View.selected_nodes(self, action_name, range)
