@@ -2,7 +2,6 @@ local windowlib = require("kivi.lib.window")
 local cursorlib = require("kivi.lib.cursor")
 local bufferlib = require("kivi.lib.buffer")
 local Layout = require("kivi.view.layout").Layout
-local Cursor = require("kivi.view.cursor").Cursor
 local vim = vim
 
 local M = {}
@@ -38,7 +37,7 @@ function View.open(source, open_opts)
   return setmetatable(tbl, View), key
 end
 
-function View.redraw(self, root, source, history, cursor_line_path)
+function View.redraw(self, root)
   local lines = {}
   local nodes = {}
   local index = 1
@@ -50,35 +49,46 @@ function View.redraw(self, root, source, history, cursor_line_path)
     table.insert(nodes, node)
   end)
   self._nodes = nodes
-  self:_set_lines(lines, source, history, root.path, cursor_line_path)
-  source:hook(root.path)
+  bufferlib.set_lines(self.bufnr, 0, -1, lines)
 end
 
-function View._set_lines(self, lines, source, history, current_path, cursor_line_path)
-  bufferlib.set_lines(self.bufnr, 0, -1, lines)
+function View.move_cursor(self, path)
+  vim.validate({path = {path, "string", true}})
+  if not path then
+    return false
+  end
 
-  local latest_path = cursor_line_path or history.latest_path or source:init_path()
-  local ok = false
-  if latest_path ~= nil then
-    for i, node in ipairs(self._nodes) do
-      if node.path:get() == latest_path and i ~= 1 then
-        cursorlib.set_row(i, self._window_id, self.bufnr)
-        ok = true
-        break
-      end
+  for i, node in ipairs(self._nodes) do
+    if node.path:get() == path and i ~= 1 then
+      cursorlib.set_row(i, self._window_id, self.bufnr)
+      return true
     end
   end
-  if not ok then
-    ok = history:restore(current_path:get(), self._window_id, self.bufnr)
-  end
-  if not ok and latest_path ~= current_path:get() then
+
+  return false
+end
+
+function View.init_cursor(self, path)
+  vim.validate({path = {path, "string", true}})
+  if not self:move_cursor(path) then
     cursorlib.set_row(2, self._window_id, self.bufnr)
   end
 end
 
-function View.save_cursor(self)
-  local origin_row = vim.api.nvim_win_get_cursor(self._window_id)[1]
-  return Cursor.new(origin_row, self._window_id, self.bufnr)
+function View.restore_cursor(self, history, path)
+  vim.validate({history = {history, "table"}, path = {path, "string"}})
+  return history:restore(path, self._window_id, self.bufnr)
+end
+
+function View.move_or_restore_cursor(self, history, path)
+  vim.validate({history = {history, "table"}, path = {path, "string"}})
+  if self:move_cursor(history.latest_path) then
+    return
+  end
+  if self:restore_cursor(history, path) then
+    return
+  end
+  self:init_cursor()
 end
 
 function View.close(self)

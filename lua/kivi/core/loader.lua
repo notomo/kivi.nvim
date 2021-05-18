@@ -21,8 +21,9 @@ function Loader.open(_, ctx)
 
   local root, ok = result:get()
   if ok then
-    ctx.history:add(root.path:get())
-    ctx.ui:redraw(root, ctx.source, ctx.history)
+    ctx.ui:redraw(root)
+    ctx.ui:init_cursor(ctx.source:init_path())
+    ctx.source:hook(root.path)
     ctx.history:set(root.path:get())
   end
   return result, nil
@@ -37,13 +38,20 @@ function Loader.navigate(_, ctx)
   local root, ok = result:get()
   if ok then
     ctx.history:add(root.path:get())
-    ctx.ui:redraw(root, ctx.source, ctx.history)
+    ctx.ui:redraw(root)
+    ctx.ui:move_or_restore_cursor(ctx.history, root.path:get())
+    ctx.source:hook(root.path)
     ctx.history:set(root.path:get())
   end
   return result, nil
 end
 
 function Loader.reload(self, cursor_line_path, expanded)
+  vim.validate({
+    cursor_line_path = {cursor_line_path, "string", true},
+    expanded = {expanded, "table", true},
+  })
+
   local ctx, ctx_err = Context.get(self._bufnr)
   if ctx_err ~= nil then
     return nil, ctx_err
@@ -57,9 +65,9 @@ function Loader.reload(self, cursor_line_path, expanded)
 
   local root, ok = result:get()
   if ok then
-    ctx.history:add(root.path:get())
-    ctx.ui:redraw(root, ctx.source, ctx.history, cursor_line_path)
-    ctx.history:set(root.path:get())
+    ctx.ui:redraw(root)
+    ctx.ui:move_cursor(cursor_line_path)
+    ctx.source:hook(root.path)
   end
   return result, nil
 end
@@ -74,7 +82,9 @@ function Loader.back(_, ctx, path)
   local root, ok = result:get()
   if ok then
     ctx.history:add_current_row()
-    ctx.ui:redraw(root, ctx.source, ctx.history)
+    ctx.ui:redraw(root)
+    ctx.ui:restore_cursor(ctx.history, root.path:get())
+    ctx.source:hook(root.path)
     ctx.history:set(root.path:get())
   end
   return result, nil
@@ -89,11 +99,8 @@ function Loader.expand(_, ctx, expanded)
 
   local root, ok = result:get()
   if ok then
-    ctx.history:add(root.path:get())
-
-    local cursor = ctx.ui:save_cursor()
-    ctx.ui:redraw(root, ctx.source, ctx.history)
-    cursor:restore()
+    ctx.ui:redraw(root)
+    ctx.source:hook(root.path)
   end
   return result, nil
 end
