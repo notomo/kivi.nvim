@@ -257,7 +257,7 @@ describe("kivi", function()
     assert.window_count(2)
   end)
 
-  it("doesn not recall expanded tree", function()
+  it("does not recall expanded tree", function()
     helper.new_directory("dir")
     helper.new_file("dir/file")
 
@@ -268,6 +268,19 @@ describe("kivi", function()
     kivi.open({layout = {type = "tab"}})
 
     assert.no.exists_pattern("file")
+  end)
+
+  it("ignores duplicated path history", function()
+    helper.new_directory("dir1/dir2")
+
+    kivi.open()
+    kivi.navigate(helper.test_data_dir .. "dir1")
+    kivi.navigate(helper.test_data_dir .. "dir1/dir2")
+    kivi.navigate(helper.test_data_dir .. "dir1/dir2")
+    kivi.navigate(helper.test_data_dir .. "dir1/dir2")
+    kivi.execute("back")
+
+    assert.current_dir("dir1")
   end)
 
 end)

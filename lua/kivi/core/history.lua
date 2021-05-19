@@ -12,7 +12,9 @@ end
 function History.add(self, path)
   vim.validate({path = {path, "string"}, latest_path = {self.latest_path, "string"}})
   self:store_current()
-  table.insert(self._paths, self.latest_path)
+  if self.latest_path ~= path then
+    table.insert(self._paths, self.latest_path)
+  end
 end
 
 function History.store_current(self)
