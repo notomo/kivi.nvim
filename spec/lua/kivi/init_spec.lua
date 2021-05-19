@@ -283,4 +283,24 @@ describe("kivi", function()
     assert.current_dir("dir1")
   end)
 
+  it("can close all tree", function()
+    helper.new_directory("dir1")
+    helper.new_file("dir1/file1")
+    helper.new_directory("dir2")
+    helper.new_file("dir2/file2")
+
+    kivi.open()
+
+    helper.search("dir1")
+    kivi.execute("toggle_tree")
+
+    helper.search("dir2")
+    kivi.execute("toggle_tree")
+
+    kivi.execute("close_all_tree")
+
+    assert.no.exists_pattern("file1")
+    assert.no.exists_pattern("file2")
+  end)
+
 end)

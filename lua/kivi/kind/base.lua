@@ -66,4 +66,8 @@ function M.action_toggle_tree(self, nodes, ctx)
   return self:expand(ctx, expanded)
 end
 
+function M.action_close_all_tree(self, _, ctx)
+  return self:expand(ctx, {})
+end
+
 return M
