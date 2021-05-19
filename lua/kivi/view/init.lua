@@ -122,6 +122,8 @@ function View.reset_selections(self, action_name)
     return
   end
   self._selected = {}
+  -- NOTICE: This works only for the current window.
+  vim.api.nvim__buf_redraw_range(self.bufnr, vim.fn.line("w0"), vim.fn.line("w$"))
 end
 
 vim.cmd("highlight default link KiviSelected Statement")
