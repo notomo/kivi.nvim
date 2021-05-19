@@ -9,14 +9,9 @@ local M = {}
 local Source = {}
 M.Source = Source
 
-function Source.new(source_name, source_opts, setup_opts)
-  vim.validate({
-    source_name = {source_name, "string"},
-    source_opts = {source_opts, "table", true},
-    setup_opts = {setup_opts, "table", true},
-  })
+function Source.new(source_name, source_opts)
+  vim.validate({source_name = {source_name, "string"}, source_opts = {source_opts, "table", true}})
   source_opts = source_opts or {}
-  setup_opts = setup_opts or {}
 
   local source = modulelib.find("kivi.source." .. source_name)
   if source == nil then
@@ -31,10 +26,6 @@ function Source.new(source_name, source_opts, setup_opts)
     pathlib = pathlib,
     filelib = filelib,
     opts = vim.tbl_extend("force", source.opts, source_opts),
-    setup_opts = vim.tbl_extend("force", source.setup_opts, setup_opts),
-    _setup = function(self, opts)
-      return source.setup(self, opts)
-    end,
     _source = source,
   }
   return setmetatable(tbl, Source), nil
@@ -44,18 +35,13 @@ function Source.__index(self, k)
   return rawget(Source, k) or self._source[k] or base[k]
 end
 
-function Source.start(self, opts)
-  local new_opts = self:setup(opts)
-  return self:collect(new_opts)
-end
-
-function Source.setup(self, opts)
-  local new_opts = self._setup(self, opts)
-  -- for call _setup once
-  self._setup = function(_, o)
-    return o
+function Source.start(self, opts, setup_opts)
+  vim.validate({opts = {opts, "table"}, setup_opts = {setup_opts, "table", true}})
+  if setup_opts then
+    local new_opts = self:setup(opts, vim.tbl_extend("force", self._source.setup_opts, setup_opts))
+    return self:collect(new_opts)
   end
-  return new_opts
+  return self:collect(opts)
 end
 
 return M

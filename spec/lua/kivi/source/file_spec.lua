@@ -500,4 +500,14 @@ describe("kivi file source", function()
     assert.exists_pattern("dir/")
   end)
 
+  it("can navigate to specific path", function()
+    helper.new_directory("dir1/dir2")
+    helper.new_file("dir1/dir2/file")
+
+    kivi.open()
+    kivi.navigate("./dir1/dir2/")
+
+    assert.exists_pattern("file")
+  end)
+
 end)

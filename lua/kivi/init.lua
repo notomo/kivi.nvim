@@ -6,6 +6,10 @@ function M.open(opts)
   return Command.new("open", opts)
 end
 
+function M.navigate(path, source_setup_opts)
+  return Command.new("navigate", path, source_setup_opts)
+end
+
 function M.execute(action_name, opts, action_opts)
   return Command.new("execute", action_name, opts, action_opts)
 end

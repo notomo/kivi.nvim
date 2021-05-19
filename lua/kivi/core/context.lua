@@ -14,7 +14,7 @@ function Context.new(source, ui, key, opts)
     ui = ui,
     source = source,
     opts = opts,
-    history = old_ctx.history or History.new(key),
+    history = old_ctx.history or History.new(),
     clipboard = Clipboard.new(source.name),
     _key = key,
   }

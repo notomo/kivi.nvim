@@ -4,8 +4,7 @@ local History = {}
 History.__index = History
 M.History = History
 
-function History.new(key)
-  vim.validate({key = {key, "string"}})
+function History.new()
   local tbl = {_rows = {}, _paths = {}, latest_path = nil}
   return setmetatable(tbl, History)
 end

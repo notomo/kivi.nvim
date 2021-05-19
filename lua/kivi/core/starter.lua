@@ -27,19 +27,18 @@ function Starter.open(_, raw_opts)
 
   local opts, open_opts = Options.new(raw_opts)
 
-  local source, err = Source.new(opts.source, raw_opts.source_opts, raw_opts.source_setup_opts)
+  local source, err = Source.new(opts.source, raw_opts.source_opts)
   if err ~= nil then
     return nil, err
   end
 
   local ui, key = View.open(source, open_opts)
   local ctx = Context.new(source, ui, key, opts)
-  return Loader.new(ctx.ui.bufnr):open(ctx)
+  return Loader.new(ctx.ui.bufnr):open(ctx, raw_opts.source_setup_opts)
 end
 
-function Starter.navigate(_, ctx, path)
-  ctx.opts = ctx.opts:merge({path = path})
-  return Loader.new(ctx.ui.bufnr):navigate(ctx)
+function Starter.navigate(_, ctx, path, setup_opts)
+  return Loader.new(ctx.ui.bufnr):navigate(ctx, path, setup_opts)
 end
 
 function Starter.back(_, ctx, path)

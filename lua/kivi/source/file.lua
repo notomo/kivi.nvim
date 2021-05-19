@@ -89,8 +89,8 @@ M.kind_name = "file"
 M.opts = {}
 M.setup_opts = {target = "current", root_patterns = {".git"}}
 
-function M.setup(self, opts)
-  local path = M.Target.new(self.setup_opts.target, self.setup_opts.root_patterns):path()
+function M.setup(_, opts, setup_opts)
+  local path = M.Target.new(setup_opts.target, setup_opts.root_patterns):path()
   return opts:merge({path = path})
 end
 

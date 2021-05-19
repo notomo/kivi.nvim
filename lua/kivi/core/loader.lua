@@ -13,21 +13,23 @@ function Loader.new(bufnr)
   return setmetatable(tbl, Loader)
 end
 
-function Loader.open(_, ctx)
+function Loader.open(_, ctx, source_setup_opts)
   return Collector.new(ctx.source):start(ctx.opts, function(root)
     ctx.ui:redraw(root)
     local _ = ctx.ui:move_cursor(ctx.source:init_path()) or ctx.ui:init_cursor()
     ctx.history:set(root.path:get())
-  end)
+  end, source_setup_opts)
 end
 
-function Loader.navigate(_, ctx)
+function Loader.navigate(_, ctx, path, source_setup_opts)
+  vim.validate({source_setup_opts = {source_setup_opts, "table", true}})
+  ctx.opts = ctx.opts:merge({path = path})
   return Collector.new(ctx.source):start(ctx.opts, function(root)
     ctx.history:add(root.path:get())
     ctx.ui:redraw(root)
     local _ = ctx.ui:move_cursor(ctx.history.latest_path) or ctx.ui:restore_cursor(ctx.history, root.path:get()) or ctx.ui:init_cursor()
     ctx.history:set(root.path:get())
-  end)
+  end, source_setup_opts)
 end
 
 function Loader.reload(self, cursor_line_path, expanded)

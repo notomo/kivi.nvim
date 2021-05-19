@@ -33,6 +33,18 @@ function Command.open(raw_opts)
   return Starter.new():open(raw_opts)
 end
 
+function Command.navigate(path, source_setup_opts)
+  vim.validate({path = {path, "string"}, source_setup_opts = {source_setup_opts, "table", true}})
+  source_setup_opts = source_setup_opts or {}
+
+  local ctx, err = Context.get()
+  if err ~= nil then
+    return nil, err
+  end
+
+  return Starter.new():navigate(ctx, path, source_setup_opts)
+end
+
 function Command.execute(action_name, opts, action_opts)
   vim.validate({
     action_name = {action_name, "string"},

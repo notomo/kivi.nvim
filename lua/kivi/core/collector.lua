@@ -20,9 +20,13 @@ function Collector.new(source)
   return setmetatable(tbl, Collector)
 end
 
-function Collector.start(self, opts, callback)
-  vim.validate({opts = {opts, "table"}, callback = {callback, "function"}})
-  local raw_result, err = self._source:start(opts)
+function Collector.start(self, opts, callback, source_setup_opts)
+  vim.validate({
+    opts = {opts, "table"},
+    callback = {callback, "function"},
+    source_setup_opts = {source_setup_opts, "table", true},
+  })
+  local raw_result, err = self._source:start(opts, source_setup_opts)
   if err ~= nil then
     return nil, err
   end
