@@ -20,13 +20,7 @@ function Starter.new()
 end
 
 function Starter.open(_, raw_opts)
-  local old_ctx = Context.get()
-  if old_ctx and not raw_opts.source then
-    raw_opts.source = old_ctx.source.name
-  end
-
   local opts, open_opts = Options.new(raw_opts)
-
   local source, err = Source.new(opts.source, raw_opts.source_opts)
   if err ~= nil then
     return nil, err
@@ -60,7 +54,7 @@ function Starter.execute(self, action_name, range, opts, action_opts)
   return Executor.new(self, ctx.ui, ctx.source):execute(ctx, nodes, action_name, opts, action_opts)
 end
 
-function Starter.rename(self, base_node, rename_items, has_cut)
+function Starter.open_renamer(self, base_node, rename_items, has_cut)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
@@ -75,7 +69,7 @@ function Starter.rename(self, base_node, rename_items, has_cut)
   Renamer.open(kind, loader, base_node, rename_items, has_cut)
 end
 
-function Starter.create(self, base_node)
+function Starter.open_creator(self, base_node)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err

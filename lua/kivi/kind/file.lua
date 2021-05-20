@@ -89,7 +89,7 @@ function M.action_paste(self, nodes, ctx)
   self:expand(ctx, ctx.opts.expanded)
 
   if #rename_items > 0 then
-    self:start_renamer(base_node, rename_items, has_cut)
+    self:open_renamer(base_node, rename_items, has_cut)
   end
 end
 
@@ -99,7 +99,7 @@ function M.action_create(self, nodes)
     return
   end
   local base_node = target:parent_or_root()
-  self:start_creator(base_node)
+  self:open_creator(base_node)
 end
 
 function M.action_rename(self, nodes)
@@ -117,7 +117,7 @@ function M.action_rename(self, nodes)
   end, nodes)
 
   local has_cut = true
-  self:start_renamer(base_node, rename_items, has_cut)
+  self:open_renamer(base_node, rename_items, has_cut)
 end
 
 function M.rename(_, items, has_cut)

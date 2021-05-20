@@ -42,28 +42,28 @@ function Kind.find_action(self, action_name, action_opts)
   return Action.new(self, action_name, action_opts)
 end
 
-function Kind.navigate(self, ctx, path)
-  return self._starter:navigate(ctx, path)
+function Kind.navigate(self, ...)
+  return self._starter:navigate(...)
 end
 
-function Kind.open(self, opts)
-  return self._starter:open(opts)
+function Kind.open(self, ...)
+  return self._starter:open(...)
 end
 
-function Kind.back(self, ctx, path)
-  return self._starter:back(ctx, path)
+function Kind.back(self, ...)
+  return self._starter:back(...)
 end
 
-function Kind.expand(self, ctx, expanded)
-  return self._starter:expand(ctx, expanded)
+function Kind.expand(self, ...)
+  return self._starter:expand(...)
 end
 
-function Kind.start_renamer(self, base_node, rename_items, has_cut)
-  return self._starter:rename(base_node, rename_items, has_cut)
+function Kind.open_renamer(self, ...)
+  return self._starter:open_renamer(...)
 end
 
-function Kind.start_creator(self, base_node)
-  return self._starter:create(base_node)
+function Kind.open_creator(self, ...)
+  return self._starter:open_creator(...)
 end
 
 function Kind.confirm(self, message, nodes)

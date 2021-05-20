@@ -49,10 +49,6 @@ function M.action_cut(_, nodes, ctx)
 end
 
 function M.action_toggle_tree(self, nodes, ctx)
-  if not nodes[1] then
-    return
-  end
-
   local expanded = ctx.opts.expanded
   for _, node in ipairs(nodes) do
     local path = node.path:get()
