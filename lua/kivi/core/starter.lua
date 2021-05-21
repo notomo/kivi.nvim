@@ -31,8 +31,8 @@ function Starter.open(_, raw_opts)
   return Loader.new(ctx.ui.bufnr):open(ctx, raw_opts.source_setup_opts)
 end
 
-function Starter.navigate(_, ctx, path, setup_opts)
-  return Loader.new(ctx.ui.bufnr):navigate(ctx, path, setup_opts)
+function Starter.navigate(_, ctx, path, source_setup_opts)
+  return Loader.new(ctx.ui.bufnr):navigate(ctx, path, source_setup_opts)
 end
 
 function Starter.back(_, ctx, path)
@@ -54,13 +54,13 @@ function Starter.execute(self, action_name, range, opts, action_opts)
   return Executor.new(self, ctx.ui, ctx.source):execute(ctx, nodes, action_name, opts, action_opts)
 end
 
-function Starter.open_renamer(self, base_node, rename_items, has_cut)
+function Starter.open_renamer(_, base_node, rename_items, has_cut)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
   end
 
-  local kind, kind_err = Kind.new(self, ctx.source.kind_name)
+  local kind, kind_err = Kind.new(ctx.source.kind_name)
   if err ~= nil then
     return nil, kind_err
   end
@@ -69,13 +69,13 @@ function Starter.open_renamer(self, base_node, rename_items, has_cut)
   Renamer.open(kind, loader, base_node, rename_items, has_cut)
 end
 
-function Starter.open_creator(self, base_node)
+function Starter.open_creator(_, base_node)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
   end
 
-  local kind, kind_err = Kind.new(self, ctx.source.kind_name)
+  local kind, kind_err = Kind.new(ctx.source.kind_name)
   if err ~= nil then
     return nil, kind_err
   end

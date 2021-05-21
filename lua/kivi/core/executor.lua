@@ -35,7 +35,7 @@ function Executor.execute(self, ctx, all_nodes, action_name, action_opts)
   for _, node in ipairs(all_nodes) do
     local kind_name = node.kind_name or self._kind_name
     if cache[kind_name] == nil then
-      local kind, err = Kind.new(self._starter, kind_name)
+      local kind, err = Kind.new(kind_name)
       if err ~= nil then
         return nil, err
       end

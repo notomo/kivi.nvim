@@ -83,7 +83,7 @@ function Command.is_parent()
   local nodes = ctx.ui:selected_nodes()
   local node = nodes[1]
   local kind_name = node.kind_name or ctx.source.kind_name
-  local kind, kind_err = Kind.new(Starter.new(), kind_name)
+  local kind, kind_err = Kind.new(kind_name)
   if kind_err ~= nil then
     return false, kind_err
   end
