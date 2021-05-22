@@ -2,6 +2,7 @@ local windowlib = require("kivi.lib.window")
 local cursorlib = require("kivi.lib.cursor")
 local bufferlib = require("kivi.lib.buffer")
 local Layout = require("kivi.view.layout").Layout
+local Nodes = require("kivi.core.node").Nodes
 local vim = vim
 
 local M = {}
@@ -33,23 +34,16 @@ function View.open(source, open_opts)
   vim.cmd(View.key_mapping_script)
   vim.cmd(([[autocmd BufReadCmd <buffer=%s> lua require("kivi.command").Command.new("read", %s)]]):format(bufnr, bufnr))
 
-  local tbl = {bufnr = bufnr, _selected = {}, _nodes = {}}
+  local tbl = {bufnr = bufnr, _nodes = Nodes.new({})}
   return setmetatable(tbl, View), key
 end
 
-function View.redraw(self, root)
-  local lines = {}
-  local nodes = {}
-  local index = 1
-  root:walk(function(node, depth)
-    local space = ("  "):rep(depth - 1)
-    table.insert(lines, space .. node.value)
-    node.index = index -- HACK
-    index = index + 1
-    table.insert(nodes, node)
-  end)
+function View.redraw(self, nodes)
   self._nodes = nodes
-  bufferlib.set_lines(self.bufnr, 0, -1, lines)
+  bufferlib.set_lines(self.bufnr, 0, -1, nodes:map(function(node)
+    local indent = ("  "):rep(node.depth - 1)
+    return indent .. node.value
+  end))
 end
 
 function View.move_cursor(self, path)
@@ -58,11 +52,10 @@ function View.move_cursor(self, path)
     return false
   end
 
-  for i, node in ipairs(self._nodes) do
-    if node.path:get() == path and i ~= 1 then
-      cursorlib.set_row_by_buffer(i, self.bufnr)
-      return true
-    end
+  local node = self._nodes:find(path)
+  if node then
+    cursorlib.set_row_by_buffer(node.index, self.bufnr)
+    return true
   end
 
   return false
@@ -87,33 +80,19 @@ function View.close(self)
 end
 
 function View.selected_nodes(self, action_name, range)
-  if action_name ~= "toggle_selection" and not vim.tbl_isempty(self._selected) then
-    local nodes = vim.tbl_values(self._selected)
-    table.sort(nodes, function(a, b)
-      return a.index < b.index
-    end)
-    return nodes
+  if action_name ~= "toggle_selection" and self._nodes:has_selections() then
+    return self._nodes:selected()
   end
 
   if range ~= nil then
-    local nodes = {}
-    for i = range.first, range.last, 1 do
-      table.insert(nodes, self._nodes[i])
-    end
-    return nodes
+    return self._nodes:range(range.first, range.last)
   end
 
   return {self._nodes[vim.fn.line(".")]}
 end
 
 function View.toggle_selections(self, nodes)
-  for _, node in ipairs(nodes) do
-    if self._selected[node.path] then
-      self._selected[node.path] = nil
-    else
-      self._selected[node.path] = node
-    end
-  end
+  self._nodes = self._nodes:toggle_selections(nodes)
   vim.api.nvim__buf_redraw_range(self.bufnr, nodes[1].index - 1, nodes[#nodes].index - 1)
 end
 
@@ -121,7 +100,7 @@ function View.reset_selections(self, action_name)
   if action_name == "toggle_selection" then
     return
   end
-  self._selected = {}
+  self._nodes = self._nodes:clear_selections()
   -- NOTICE: This works only for the current window.
   vim.api.nvim__buf_redraw_range(self.bufnr, vim.fn.line("w0"), vim.fn.line("w$"))
 end
@@ -129,10 +108,7 @@ end
 vim.cmd("highlight default link KiviSelected Statement")
 
 function View.highlight(self, source, opts, first_line, last_line)
-  local nodes = {}
-  for i = first_line + 1, last_line, 1 do
-    table.insert(nodes, self._nodes[i])
-  end
+  local nodes = self._nodes:range(first_line + 1, last_line)
   source:highlight(self.bufnr, first_line, nodes, opts)
 
   local highlighter = source.highlights:create(self.bufnr)
@@ -141,7 +117,7 @@ function View.highlight(self, source, opts, first_line, last_line)
   end
 
   highlighter:filter("KiviSelected", first_line, nodes, function(node)
-    return self._selected[node.path] ~= nil
+    return self._nodes:is_selected(node.path)
   end)
 end
 

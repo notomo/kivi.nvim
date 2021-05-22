@@ -47,4 +47,109 @@ function Node._walk(self, depth, f)
   end
 end
 
+local FlatNode = {}
+FlatNode.__index = FlatNode
+M.FlatNode = FlatNode
+
+function FlatNode.new(node, index, depth)
+  vim.validate({node = {node, "table"}, index = {index, "number"}, depth = {depth, "number"}})
+  local tbl = {_node = node, index = index, depth = depth}
+  return setmetatable(tbl, FlatNode)
+end
+
+function FlatNode.__index(self, k)
+  return rawget(FlatNode, k) or self._node[k]
+end
+
+local Nodes = {}
+Nodes.__index = Nodes
+M.Nodes = Nodes
+
+function Nodes.new(raw_nodes, selected)
+  vim.validate({raw_nodes = {raw_nodes, "table"}, selected = {selected, "table", true}})
+  local tbl = {_nodes = raw_nodes, _selected = selected or {}}
+  if raw_nodes[1] then
+    tbl.root_path = raw_nodes[1].path
+  end
+  return setmetatable(tbl, Nodes)
+end
+
+function Nodes.from(root)
+  vim.validate({root = {root, "table"}})
+  local raw_nodes = {}
+  local index = 1
+  Node.new(root):walk(function(node, depth)
+    table.insert(raw_nodes, FlatNode.new(node, index, depth))
+    index = index + 1
+  end)
+  return Nodes.new(raw_nodes)
+end
+
+function Nodes.clear_selections(self)
+  return Nodes.new(self._nodes, {})
+end
+
+function Nodes.toggle_selections(self, nodes)
+  local selected = {}
+  for k, v in pairs(self._selected) do
+    selected[k] = v
+  end
+
+  for _, node in ipairs(nodes) do
+    if selected[node.path] then
+      selected[node.path] = nil
+    else
+      selected[node.path] = node
+    end
+  end
+  return Nodes.new(self._nodes, selected)
+end
+
+function Nodes.is_selected(self, path)
+  return self._selected[path] ~= nil
+end
+
+function Nodes.has_selections(self)
+  return not vim.tbl_isempty(self._selected)
+end
+
+function Nodes.selected(self)
+  local nodes = vim.tbl_values(self._selected)
+  table.sort(nodes, function(a, b)
+    return a.index < b.index
+  end)
+  return nodes
+end
+
+function Nodes.map(self, f)
+  vim.validate({f = {f, "function"}})
+  return vim.tbl_map(f, self._nodes)
+end
+
+function Nodes.range(self, s, e)
+  vim.validate({s = {s, "number"}, e = {e, "number"}})
+  local nodes = {}
+  for i = s, e, 1 do
+    table.insert(nodes, self._nodes[i])
+  end
+  return nodes
+end
+
+function Nodes.find(self, path)
+  vim.validate({path = {path, "string"}})
+  for _, node in ipairs(self._nodes) do
+    if node.path:get() == path then
+      return node
+    end
+  end
+  return nil
+end
+
+function Nodes.__index(self, k)
+  if type(k) == "number" then
+    return self._nodes[k]
+  end
+  return Nodes[k]
+end
+
 return M

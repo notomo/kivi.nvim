@@ -1,4 +1,4 @@
-local Node = require("kivi.core.node").Node
+local Nodes = require("kivi.core.node").Nodes
 
 local M = {}
 
@@ -6,7 +6,7 @@ local CollectResult = {}
 CollectResult.__index = CollectResult
 
 function CollectResult.new(root)
-  local tbl = {root = Node.new(root)}
+  local tbl = {nodes = Nodes.from(root)}
   return setmetatable(tbl, CollectResult)
 end
 
@@ -32,8 +32,8 @@ function Collector.start(self, opts, callback, source_setup_opts)
   end
   local result = CollectResult.new(raw_result)
 
-  callback(result.root)
-  self._source:hook(result.root.path)
+  callback(result.nodes)
+  self._source:hook(result.nodes.root_path)
 
   return result, nil
 end
