@@ -10,11 +10,13 @@ local Renamer = {}
 Renamer.__index = Renamer
 M.Renamer = Renamer
 
+Renamer.path = "/kivi-renamer"
+
 function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].buftype = "acwrite"
-  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-renamer")
+  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. Renamer.path)
 
   vim.cmd(([[autocmd BufReadCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('read', %s)]]):format(bufnr, bufnr))
   vim.cmd(([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(bufnr, bufnr))
@@ -125,6 +127,11 @@ function Renamer.read(self)
       virt_text = {{"<- " .. line, "Comment"}},
     })
   end
+end
+
+function Renamer.match(path)
+  local pattern = vim.pesc(Renamer.path) .. "$"
+  return path:match(pattern)
 end
 
 function Renamer.read_from(bufnr)

@@ -1,5 +1,6 @@
 local Context = require("kivi.core.context").Context
 local Loader = require("kivi.core.loader").Loader
+local View = require("kivi.view").View
 local Renamer = require("kivi.view.renamer").Renamer
 local Creator = require("kivi.view.creator").Creator
 
@@ -15,9 +16,9 @@ function Router.read(bufnr)
     return err
   end
 
-  if path:match("/kivi$") then
+  if View.match(path) then
     return Loader.new(bufnr):reload()
-  elseif path:match("/kivi%-renamer$") then
+  elseif Renamer.match(path) then
     return Renamer.read_from(bufnr)
   end
 end
@@ -28,9 +29,9 @@ function Router.write(bufnr)
     return err
   end
 
-  if path:match("/kivi%-creator$") then
+  if Creator.match(path) then
     return Creator.write_from(bufnr)
-  elseif path:match("/kivi%-renamer$") then
+  elseif Renamer.match(path) then
     return Renamer.write_from(bufnr)
   end
 end
@@ -41,11 +42,11 @@ function Router.delete(bufnr)
     return err
   end
 
-  if path:match("/kivi$") then
+  if View.match(path) then
     return Context.delete_from(bufnr)
-  elseif path:match("/kivi%-creator$") then
+  elseif Creator.match(path) then
     return Creator.delete_from(bufnr)
-  elseif path:match("/kivi%-renamer$") then
+  elseif Renamer.match(path) then
     return Renamer.delete_from(bufnr)
   end
 end

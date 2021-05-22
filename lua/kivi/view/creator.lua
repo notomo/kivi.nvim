@@ -8,6 +8,8 @@ local Creator = {}
 Creator.__index = Creator
 M.Creator = Creator
 
+Creator.path = "/kivi-creator"
+
 function Creator.open(kind, loader, base_node)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
@@ -28,7 +30,7 @@ function Creator.open(kind, loader, base_node)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].buftype = "acwrite"
   vim.bo[bufnr].modified = false
-  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-creator")
+  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. Creator.path)
   vim.cmd("doautocmd BufRead") -- HACK?
 
   vim.cmd(([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(bufnr, bufnr))
@@ -86,6 +88,11 @@ function Creator.write(self)
   end
 
   self._loader:reload(cursor_line_path, expanded)
+end
+
+function Creator.match(path)
+  local pattern = vim.pesc(Creator.path) .. "$"
+  return path:match(pattern)
 end
 
 function Creator.write_from(bufnr)
