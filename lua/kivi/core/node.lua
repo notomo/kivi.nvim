@@ -1,14 +1,16 @@
 local M = {}
 
 local Node = {}
-Node.__index = Node
 M.Node = Node
 
-function Node.new(raw, parent)
-  local tbl = {parent = parent}
-  tbl.__index = tbl
-  local meta = setmetatable(tbl, Node)
-  return setmetatable(raw, meta)
+function Node.new(raw_node, parent)
+  vim.validate({raw_node = {raw_node, "table"}, parent = {parent, "table", true}})
+  local tbl = {parent = parent, _node = raw_node}
+  return setmetatable(tbl, Node)
+end
+
+function Node.__index(self, k)
+  return rawget(Node, k) or self._node[k]
 end
 
 function Node.root(self)
@@ -29,10 +31,8 @@ function Node.parent_or_root(self)
 end
 
 function Node.move_to(self, parent)
-  local old = vim.deepcopy(self)
+  local old = vim.deepcopy(self._node)
   old.path = parent.path:join(self.path:head())
-  old.parent = nil
-  old.__index = nil
   return Node.new(old, parent)
 end
 
