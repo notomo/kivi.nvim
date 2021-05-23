@@ -42,6 +42,10 @@ function Starter.expand(_, ctx, expanded)
   return Loader.new(ctx.ui.bufnr):expand(ctx, expanded)
 end
 
+function Starter.reload(_, ctx)
+  return Loader.new(ctx.ui.bufnr):reload()
+end
+
 function Starter.execute(_, action_name, range, opts, action_opts)
   local ctx, err = Context.get()
   if err ~= nil then

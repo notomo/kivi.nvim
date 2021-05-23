@@ -58,6 +58,10 @@ function Kind.expand(self, ...)
   return self._starter:expand(...)
 end
 
+function Kind.reload(self, ...)
+  return self._starter:reload(...)
+end
+
 function Kind.open_renamer(self, ...)
   return self._starter:open_renamer(...)
 end
