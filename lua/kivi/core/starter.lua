@@ -2,7 +2,6 @@ local Source = require("kivi.core.source").Source
 local Context = require("kivi.core.context").Context
 local Loader = require("kivi.core.loader").Loader
 local Executor = require("kivi.core.executor").Executor
-local Kind = require("kivi.core.kind").Kind
 local Options = require("kivi.core.option").Options
 local View = require("kivi.view").View
 local Renamer = require("kivi.view.renamer").Renamer
@@ -43,7 +42,7 @@ function Starter.expand(_, ctx, expanded)
   return Loader.new(ctx.ui.bufnr):expand(ctx, expanded)
 end
 
-function Starter.execute(self, action_name, range, opts, action_opts)
+function Starter.execute(_, action_name, range, opts, action_opts)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
@@ -51,7 +50,7 @@ function Starter.execute(self, action_name, range, opts, action_opts)
 
   local nodes = ctx.ui:selected_nodes(action_name, range)
   ctx.ui:reset_selections(action_name)
-  return Executor.new(self, ctx.ui, ctx.source):execute(ctx, nodes, action_name, opts, action_opts)
+  return Executor.new(ctx.ui):execute(ctx, nodes, action_name, opts, action_opts)
 end
 
 function Starter.open_renamer(_, base_node, rename_items, has_cut)
@@ -60,7 +59,7 @@ function Starter.open_renamer(_, base_node, rename_items, has_cut)
     return nil, err
   end
 
-  local kind, kind_err = Kind.new(ctx.source.kind_name)
+  local kind, kind_err = base_node:kind()
   if err ~= nil then
     return nil, kind_err
   end
@@ -75,7 +74,7 @@ function Starter.open_creator(_, base_node)
     return nil, err
   end
 
-  local kind, kind_err = Kind.new(ctx.source.kind_name)
+  local kind, kind_err = base_node:kind()
   if err ~= nil then
     return nil, kind_err
   end

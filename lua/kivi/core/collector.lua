@@ -6,7 +6,7 @@ local CollectResult = {}
 CollectResult.__index = CollectResult
 
 function CollectResult.new(root)
-  local tbl = {nodes = Nodes.from(root)}
+  local tbl = {nodes = Nodes.from_node(root)}
   return setmetatable(tbl, CollectResult)
 end
 

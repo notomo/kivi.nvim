@@ -82,6 +82,10 @@ function View.close(self)
 end
 
 function View.selected_nodes(self, action_name, range)
+  return Nodes.from_selected(self:_selected_nodes(action_name, range))
+end
+
+function View._selected_nodes(self, action_name, range)
   if action_name ~= "toggle_selection" and self._nodes:has_selections() then
     return self._nodes:selected()
   end

@@ -1,5 +1,4 @@
 local Context = require("kivi.core.context").Context
-local Kind = require("kivi.core.kind").Kind
 local Starter = require("kivi.core.starter").Starter
 local custom = require("kivi.core.custom")
 local Router = require("kivi.view.router").Router
@@ -81,9 +80,7 @@ function Command.is_parent()
   end
 
   local nodes = ctx.ui:selected_nodes()
-  local node = nodes[1]
-  local kind_name = node.kind_name or ctx.source.kind_name
-  local kind, kind_err = Kind.new(kind_name)
+  local kind, kind_err = nodes:kind()
   if kind_err ~= nil then
     return false, kind_err
   end

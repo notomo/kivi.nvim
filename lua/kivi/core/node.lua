@@ -1,3 +1,6 @@
+local Kind = require("kivi.core.kind").Kind
+local listlib = require("kivi.lib.list")
+
 local M = {}
 
 local Node = {}
@@ -47,6 +50,14 @@ function Node._walk(self, depth, f)
   end
 end
 
+function Node.kind(self)
+  local kind, err = Kind.new(self.kind_name)
+  if err ~= nil then
+    return nil, err
+  end
+  return kind, nil
+end
+
 local FlatNode = {}
 FlatNode.__index = FlatNode
 M.FlatNode = FlatNode
@@ -74,7 +85,7 @@ function Nodes.new(raw_nodes, selected)
   return setmetatable(tbl, Nodes)
 end
 
-function Nodes.from(root)
+function Nodes.from_node(root)
   vim.validate({root = {root, "table"}})
   local raw_nodes = {}
   local index = 1
@@ -83,6 +94,14 @@ function Nodes.from(root)
     index = index + 1
   end)
   return Nodes.new(raw_nodes)
+end
+
+function Nodes.from_selected(selected_nodes)
+  local selected = {}
+  for _, node in ipairs(selected_nodes) do
+    selected[node.path] = node
+  end
+  return Nodes.new(selected_nodes, selected)
 end
 
 function Nodes.clear_selections(self)
@@ -150,6 +169,40 @@ function Nodes.__index(self, k)
     return self._nodes[k]
   end
   return Nodes[k]
+end
+
+function Nodes.kind(self)
+  local node = self._nodes[1]
+  return node:kind()
+end
+
+function Nodes.group_by_kind(self)
+  local cache = {}
+  local kinds = {}
+  for _, node in ipairs(self._nodes) do
+    if not cache[node.kind_name] then
+      local kind, err = node:kind()
+      if err ~= nil then
+        return nil, err
+      end
+      cache[node.kind_name] = kind
+    end
+    kinds[node.path] = cache[node.kind_name]
+  end
+
+  local node_groups = listlib.group_by(self._nodes, function(node)
+    return kinds[node.path]
+  end)
+
+  local index = 0
+  return function()
+    index = index + 1
+    local value = node_groups[index]
+    if not value then
+      return nil
+    end
+    return unpack(value)
+  end
 end
 
 return M
