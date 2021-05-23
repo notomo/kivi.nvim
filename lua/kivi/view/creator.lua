@@ -58,24 +58,40 @@ function Creator.write(self)
     end
   end
 
-  local result = self._kind:create(paths)
+  local success = {}
+  local errors = {}
+  for i, path in ipairs(paths) do
+    if path:exists() then
+      table.insert(errors, {path = path, msg = "already exists: " .. path:get()})
+      goto continue
+    end
+
+    local err = self._kind:create(path)
+    if err ~= nil then
+      table.insert(errors, {path = path, msg = err})
+      goto continue
+    end
+
+    success[i] = path
+    ::continue::
+  end
 
   vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, false, vim.tbl_map(function(e)
     return self._base_node.path:relative(e.path)
-  end, result.errors))
+  end, errors))
 
-  if #result.errors == 0 then
+  if #errors == 0 then
     vim.bo[self._bufnr].modified = false
     windowlib.close(self._window_id)
   else
-    for _, e in ipairs(result.errors) do
+    for _, e in ipairs(errors) do
       messagelib.warn(e.msg)
     end
   end
 
   local last_index = 0
   local expanded = {}
-  for i, path in pairs(result.success) do
+  for i, path in pairs(success) do
     for _, p in ipairs(path:between(self._base_node.path)) do
       expanded[p:get()] = true
     end
@@ -83,8 +99,8 @@ function Creator.write(self)
   end
 
   local cursor_line_path = nil
-  if result.success[last_index] ~= nil then
-    cursor_line_path = result.success[last_index]:get()
+  if success[last_index] ~= nil then
+    cursor_line_path = success[last_index]:get()
   end
 
   self._loader:reload(cursor_line_path, expanded)

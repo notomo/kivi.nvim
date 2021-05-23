@@ -80,10 +80,26 @@ function Renamer.write(self)
     ::continue::
   end
 
-  local result = self._kind:rename(items, self._has_cut)
+  local success = {}
+  local already_exists = {}
+  for i, item in ipairs(items) do
+    if item.to:exists() then
+      table.insert(already_exists, item)
+      goto continue
+    end
+
+    if self._has_cut then
+      self._kind:rename(item.from, item.to)
+    else
+      self._kind:copy(item.from, item.to)
+    end
+
+    success[i] = item
+    ::continue::
+  end
 
   local last_index = 0
-  for i in pairs(result.success) do
+  for i in pairs(success) do
     local line = lines[i]
     local marks = vim.api.nvim_buf_get_extmarks(self._bufnr, ns, {i, 0}, {i, -1}, {details = true})
     if marks[1] then
@@ -99,17 +115,17 @@ function Renamer.write(self)
   end
 
   local cursor_line_path = nil
-  if result.success[last_index] ~= nil then
-    cursor_line_path = result.success[last_index].to:get()
+  if success[last_index] ~= nil then
+    cursor_line_path = success[last_index].to:get()
   end
 
-  if #result.already_exists == 0 then
+  if #already_exists == 0 then
     vim.bo[self._bufnr].modified = false
     self._has_cut = true
   else
     messagelib.warn("already exists:", vim.tbl_map(function(item)
       return item.to:get()
-    end, result.already_exists))
+    end, already_exists))
   end
 
   self._loader:reload(cursor_line_path)

@@ -66,4 +66,44 @@ function M.action_close_all_tree(self, _, ctx)
   return self:expand(ctx, {})
 end
 
+function M.action_create(self, nodes)
+  local node = nodes[1]
+  if not node then
+    return
+  end
+  local base_node = node:parent_or_root()
+  return self:open_creator(base_node)
+end
+
+function M.action_rename(self, nodes)
+  local node = nodes[1]
+  if not node then
+    return
+  end
+  local base_node = node:root()
+  if not base_node then
+    return
+  end
+
+  local rename_items = vim.tbl_map(function(n)
+    return {from = n.path}
+  end, nodes)
+
+  local has_cut = true
+  return self:open_renamer(base_node, rename_items, has_cut)
+end
+
+function M.action_delete(self, nodes, ctx)
+  local yes = self:confirm("delete?", nodes)
+  if not yes then
+    self.messagelib.info("canceled.")
+    return
+  end
+
+  for _, node in ipairs(nodes) do
+    self:delete(node.path)
+  end
+  return self:reload(ctx)
+end
+
 return M

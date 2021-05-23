@@ -26,25 +26,12 @@ end
 
 M.action_child = M.action_open
 
-function M.action_delete(self, nodes, ctx)
-  local yes = self:confirm("delete?", nodes)
-  if not yes then
-    self.messagelib.info("canceled.")
-    return
-  end
-
-  for _, node in ipairs(nodes) do
-    node.path:delete()
-  end
-  self:reload(ctx)
-end
-
 function M.action_paste(self, nodes, ctx)
-  local target = nodes[1]
-  if target == nil then
+  local node = nodes[1]
+  if not node then
     return
   end
-  local base_node = target:parent_or_root()
+  local base_node = node:parent_or_root()
 
   local already_exists = {}
   local copied, has_cut = ctx.clipboard:pop()
@@ -56,9 +43,9 @@ function M.action_paste(self, nodes, ctx)
     end
 
     if has_cut then
-      old_node.path:rename(new_node.path)
+      self:rename(old_node.path, new_node.path)
     else
-      old_node.path:copy(new_node.path)
+      self:copy(old_node.path, new_node.path)
     end
 
     ::continue::
@@ -80,86 +67,36 @@ function M.action_paste(self, nodes, ctx)
 
   for _, item in ipairs(overwrite_items) do
     if has_cut then
-      item.from.path:rename(item.to.path)
+      self:rename(item.from.path, item.to.path)
     else
-      item.from.path:copy(item.to.path)
+      self:copy(item.from.path, item.to.path)
     end
   end
 
-  self:reload(ctx)
+  local _, err = self:reload(ctx)
+  if err ~= nil then
+    return nil, err
+  end
 
   if #rename_items > 0 then
-    self:open_renamer(base_node, rename_items, has_cut)
+    return self:open_renamer(base_node, rename_items, has_cut)
   end
 end
 
-function M.action_create(self, nodes)
-  local target = nodes[1]
-  if target == nil then
-    return
-  end
-  local base_node = target:parent_or_root()
-  self:open_creator(base_node)
+function M.create(_, path)
+  return path:create()
 end
 
-function M.action_rename(self, nodes)
-  local target = nodes[1]
-  if target == nil then
-    return
-  end
-  local base_node = target:root()
-  if base_node == nil then
-    return
-  end
-
-  local rename_items = vim.tbl_map(function(node)
-    return {from = node.path}
-  end, nodes)
-
-  local has_cut = true
-  self:open_renamer(base_node, rename_items, has_cut)
+function M.delete(_, path)
+  return path:delete()
 end
 
-function M.rename(_, items, has_cut)
-  local success = {}
-  local already_exists = {}
-  for i, item in ipairs(items) do
-    if item.to:exists() then
-      table.insert(already_exists, item)
-      goto continue
-    end
-
-    if has_cut then
-      item.from:rename(item.to)
-    else
-      item.from:copy(item.to)
-    end
-
-    success[i] = item
-    ::continue::
-  end
-  return {success = success, already_exists = already_exists}
+function M.rename(_, from, to)
+  return from:rename(to)
 end
 
-function M.create(_, paths)
-  local success = {}
-  local errors = {}
-  for i, path in ipairs(paths) do
-    if path:exists() then
-      table.insert(errors, {path = path, msg = "already exists: " .. path:get()})
-      goto continue
-    end
-
-    local err = path:create()
-    if err ~= nil then
-      table.insert(errors, {path = path, msg = err})
-      goto continue
-    end
-
-    success[i] = path
-    ::continue::
-  end
-  return {success = success, errors = errors}
+function M.copy(_, from, to)
+  return from:copy(to)
 end
 
 return M
