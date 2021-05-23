@@ -88,7 +88,11 @@ function File._bufnr(self)
 end
 
 function File._escaped_path(self)
-  return self.path:gsub("%%", "\\%%")
+  return ([[`='%s'`]]):format(self.path:gsub("'", "''"))
+end
+
+function File.lcd(self)
+  vim.cmd("silent lcd " .. self:_escaped_path())
 end
 
 function File.open(self)

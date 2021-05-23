@@ -510,4 +510,16 @@ describe("kivi file source", function()
     assert.exists_pattern("file")
   end)
 
+  it("can deal with strange name", function()
+    local dir = [[dir'"#%!'"]]
+    helper.new_directory(dir)
+    helper.new_file(dir .. "/file")
+
+    kivi.open()
+    helper.search("dir")
+    kivi.execute("child")
+
+    assert.current_dir(dir)
+  end)
+
 end)

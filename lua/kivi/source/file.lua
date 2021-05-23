@@ -82,7 +82,7 @@ function M.init_path(self)
 end
 
 function M.hook(_, path)
-  vim.cmd("silent lcd " .. path:get())
+  File.new(path:get()):lcd()
 end
 
 M.kind_name = "file"
