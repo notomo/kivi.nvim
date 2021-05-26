@@ -46,6 +46,10 @@ function Kind.navigate(self, ...)
   return self._starter:navigate(...)
 end
 
+function Kind.navigate_parent(self, ...)
+  return self._starter:navigate_parent(...)
+end
+
 function Kind.open(self, ...)
   return self._starter:open(...)
 end

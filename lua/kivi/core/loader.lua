@@ -27,9 +27,19 @@ function Loader.navigate(_, ctx, path, source_setup_opts)
   return Collector.new(ctx.source):start(ctx.opts, function(nodes)
     ctx.history:add(nodes.root_path:get())
     ctx.ui:redraw(nodes)
-    local _ = ctx.ui:move_cursor(ctx.history.latest_path) or ctx.ui:restore_cursor(ctx.history, nodes.root_path:get()) or ctx.ui:init_cursor()
+    local _ = ctx.ui:restore_cursor(ctx.history, nodes.root_path:get()) or ctx.ui:init_cursor()
     ctx.history:set(nodes.root_path:get())
   end, source_setup_opts)
+end
+
+function Loader.navigate_parent(_, ctx, path)
+  ctx.opts = ctx.opts:merge({path = path})
+  return Collector.new(ctx.source):start(ctx.opts, function(nodes)
+    ctx.history:add(nodes.root_path:get())
+    ctx.ui:redraw(nodes)
+    local _ = ctx.ui:move_cursor(ctx.history.latest_path) or ctx.ui:init_cursor()
+    ctx.history:set(nodes.root_path:get())
+  end)
 end
 
 function Loader.reload(self, cursor_line_path, expanded)
@@ -72,6 +82,7 @@ function Loader.expand_parent(_, ctx, path, cursor_line_path, expanded)
   return Collector.new(ctx.source):start(ctx.opts, function(nodes)
     ctx.ui:redraw(nodes)
     ctx.ui:move_cursor(cursor_line_path)
+    ctx.history:set(nodes.root_path:get())
   end)
 end
 

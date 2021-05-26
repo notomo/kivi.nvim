@@ -11,7 +11,7 @@ function M.action_parent(self, nodes, ctx)
   if not node then
     return
   end
-  return self:navigate(ctx, node:root().path:parent())
+  return self:navigate_parent(ctx, node:root().path:parent())
 end
 
 function M.action_debug_print(_, nodes)

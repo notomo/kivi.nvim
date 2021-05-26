@@ -537,4 +537,19 @@ describe("kivi file source", function()
     assert.exists_pattern("^    file$")
   end)
 
+  it("saves history on expand_parent", function()
+    helper.new_directory("a")
+    helper.new_directory("b")
+    helper.new_directory("c")
+    helper.new_directory("dir1/marker")
+    helper.new_directory("dir1/dir2/dir3")
+    helper.cd("dir1/dir2/dir3")
+
+    kivi.open()
+    kivi.execute("expand_parent", {}, {root_patterns = {"marker"}})
+    kivi.execute("parent")
+
+    assert.current_line("dir1/")
+  end)
+
 end)

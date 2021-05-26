@@ -34,6 +34,10 @@ function Starter.navigate(_, ctx, path, source_setup_opts)
   return Loader.new(ctx.ui.bufnr):navigate(ctx, path, source_setup_opts)
 end
 
+function Starter.navigate_parent(_, ctx, path)
+  return Loader.new(ctx.ui.bufnr):navigate_parent(ctx, path)
+end
+
 function Starter.back(_, ctx, path)
   return Loader.new(ctx.ui.bufnr):back(ctx, path)
 end
