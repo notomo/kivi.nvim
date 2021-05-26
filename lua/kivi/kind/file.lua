@@ -1,4 +1,9 @@
+local filelib = require("kivi.lib.file")
+local File = require("kivi.lib.file").File
+
 local M = {}
+
+M.opts = {expand_parent = {root_patterns = {".git"}}}
 
 local adjust_window = function()
   vim.cmd("wincmd w")
@@ -97,6 +102,16 @@ end
 
 function M.copy(_, from, to)
   return from:copy(to)
+end
+
+function M.find_upward_marker(self)
+  for _, pattern in ipairs(self.action_opts.root_patterns) do
+    local found = filelib.find_upward_dir(pattern)
+    if found ~= nil then
+      return File.new(found)
+    end
+  end
+  return File.new(".")
 end
 
 return M

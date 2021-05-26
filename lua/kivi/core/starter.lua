@@ -42,6 +42,10 @@ function Starter.expand(_, ctx, expanded)
   return Loader.new(ctx.ui.bufnr):expand(ctx, expanded)
 end
 
+function Starter.expand_parent(_, ctx, path, cursor_line_path, expanded)
+  return Loader.new(ctx.ui.bufnr):expand_parent(ctx, path, cursor_line_path, expanded)
+end
+
 function Starter.reload(_, ctx)
   return Loader.new(ctx.ui.bufnr):reload()
 end

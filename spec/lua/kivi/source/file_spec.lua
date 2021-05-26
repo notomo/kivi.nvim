@@ -522,4 +522,19 @@ describe("kivi file source", function()
     assert.current_dir(dir)
   end)
 
+  it("can expand parent", function()
+    helper.new_directory("marker")
+    helper.new_directory("dir1")
+    helper.new_directory("dir1/dir2")
+    helper.new_file("dir1/dir2/file")
+    helper.cd("dir1/dir2")
+
+    kivi.open()
+    kivi.execute("expand_parent", {}, {root_patterns = {"marker"}})
+
+    assert.exists_pattern("^dir1/$")
+    assert.exists_pattern("^  dir2/$")
+    assert.exists_pattern("^    file$")
+  end)
+
 end)

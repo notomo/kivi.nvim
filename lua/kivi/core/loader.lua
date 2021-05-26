@@ -67,4 +67,12 @@ function Loader.expand(_, ctx, expanded)
   end)
 end
 
+function Loader.expand_parent(_, ctx, path, cursor_line_path, expanded)
+  ctx.opts = ctx.opts:merge({path = path, expanded = expanded})
+  return Collector.new(ctx.source):start(ctx.opts, function(nodes)
+    ctx.ui:redraw(nodes)
+    ctx.ui:move_cursor(cursor_line_path)
+  end)
+end
+
 return M

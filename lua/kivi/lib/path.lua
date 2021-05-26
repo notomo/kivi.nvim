@@ -81,6 +81,31 @@ function Path.depth(self)
   return #(vim.split(self.path, "/", true))
 end
 
+function Path.is_dir(self)
+  return vim.endswith(self.path, "/")
+end
+
+function Path.between(self, base_path)
+  local dir
+  if self:is_dir() then
+    dir = self
+  else
+    dir = self:parent()
+  end
+
+  local paths = {}
+  local depth = base_path:depth()
+  while true do
+    if depth >= dir:depth() then
+      break
+    end
+    table.insert(paths, dir)
+    dir = dir:parent()
+  end
+
+  return paths
+end
+
 if vim.fn.has("win32") == 1 then
   function M.adjust_sep(path)
     return path:gsub("\\", "/")

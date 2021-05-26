@@ -9,7 +9,10 @@ local get_row = function(row, bufnr)
 end
 
 function M.set_row(row, window_id, bufnr)
-  vim.api.nvim_win_set_cursor(window_id or 0, {get_row(row, bufnr), 0})
+  row = get_row(row, bufnr)
+  local line = vim.api.nvim_buf_get_lines(bufnr, row - 1, row, false)[1]
+  local _, e = line:find("^%s*")
+  vim.api.nvim_win_set_cursor(window_id or 0, {row, e})
 end
 
 function M.set(row, col, window_id, bufnr)

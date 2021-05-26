@@ -26,10 +26,10 @@ function Executor._action(self, kind, nodes, action_name, opts, action_opts)
   end, nil
 end
 
-function Executor.execute(self, ctx, all_nodes, action_name, action_opts)
+function Executor.execute(self, ctx, all_nodes, action_name, opts, action_opts)
   local result
   for kind, nodes in all_nodes:group_by_kind() do
-    local action, action_err = self:_action(kind, nodes, action_name, action_opts)
+    local action, action_err = self:_action(kind, nodes, action_name, opts, action_opts)
     if action_err ~= nil then
       return nil, action_err
     end

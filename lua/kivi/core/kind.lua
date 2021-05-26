@@ -58,6 +58,10 @@ function Kind.expand(self, ...)
   return self._starter:expand(...)
 end
 
+function Kind.expand_parent(self, ...)
+  return self._starter:expand_parent(...)
+end
+
 function Kind.reload(self, ...)
   return self._starter:reload(...)
 end

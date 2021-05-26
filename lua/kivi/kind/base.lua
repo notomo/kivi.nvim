@@ -1,3 +1,5 @@
+local Path = require("kivi.lib.path").Path
+
 local M = {}
 
 M.opts = {yank = {key = "path", register = "+"}}
@@ -104,6 +106,28 @@ function M.action_delete(self, nodes, ctx)
     self:delete(node.path)
   end
   return self:reload(ctx)
+end
+
+function M.action_expand_parent(self, nodes, ctx)
+  local node = nodes[1]
+  if not node then
+    return
+  end
+
+  local bottom = node:parent_or_root()
+  local above_path = self:find_upward_marker()
+  local paths = bottom.path:between(above_path)
+
+  local expanded = {}
+  for _, path in ipairs(paths) do
+    expanded[path:get()] = true
+  end
+
+  return self:expand_parent(ctx, above_path, node.path:get(), expanded)
+end
+
+function M.find_upward_marker(_)
+  return Path.new("/")
 end
 
 return M

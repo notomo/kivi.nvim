@@ -146,27 +146,6 @@ function File.create(self)
   io.open(self.path, "w"):close()
 end
 
-function File.between(self, base)
-  local dir
-  if self:is_dir() then
-    dir = self
-  else
-    dir = self:parent()
-  end
-
-  local paths = {}
-  local depth = base:depth()
-  while true do
-    if depth >= dir:depth() then
-      break
-    end
-    table.insert(paths, dir)
-    dir = dir:parent()
-  end
-
-  return paths
-end
-
 function M.find_upward_dir(child_pattern)
   local found_file = vim.fn.findfile(child_pattern, ".;")
   if found_file ~= "" then

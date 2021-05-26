@@ -76,7 +76,7 @@ end
 function Command.is_parent()
   local ctx, err = Context.get()
   if err ~= nil then
-    return false
+    return false, err
   end
 
   local nodes = ctx.ui:selected_nodes()
