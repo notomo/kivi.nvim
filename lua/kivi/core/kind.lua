@@ -26,9 +26,8 @@ function Kind.new(name)
     pathlib = pathlib,
     messagelib = messagelib,
     opts = vim.tbl_deep_extend("force", base.opts, kind.opts or {}),
-    behaviors = vim.tbl_deep_extend("force", base.behaviors, kind.behaviors or {}),
     input_reader = inputlib.reader(),
-    _starter = require("kivi.core.starter").Starter.new(),
+    controller = require("kivi.controller").Controller.new(),
     _kind = kind,
   }
   return setmetatable(tbl, Kind), nil
@@ -40,42 +39,6 @@ end
 
 function Kind.find_action(self, action_name, action_opts)
   return Action.new(self, action_name, action_opts)
-end
-
-function Kind.navigate(self, ...)
-  return self._starter:navigate(...)
-end
-
-function Kind.navigate_parent(self, ...)
-  return self._starter:navigate_parent(...)
-end
-
-function Kind.open(self, ...)
-  return self._starter:open(...)
-end
-
-function Kind.back(self, ...)
-  return self._starter:back(...)
-end
-
-function Kind.expand(self, ...)
-  return self._starter:expand(...)
-end
-
-function Kind.expand_parent(self, ...)
-  return self._starter:expand_parent(...)
-end
-
-function Kind.reload(self, ...)
-  return self._starter:reload(...)
-end
-
-function Kind.open_renamer(self, ...)
-  return self._starter:open_renamer(...)
-end
-
-function Kind.open_creator(self, ...)
-  return self._starter:open_creator(...)
 end
 
 function Kind.confirm(self, message, nodes)

@@ -78,13 +78,13 @@ function M.action_paste(self, nodes, ctx)
     end
   end
 
-  local _, err = self:reload(ctx)
+  local _, err = self.controller:reload(ctx)
   if err ~= nil then
     return nil, err
   end
 
   if #rename_items > 0 then
-    return self:open_renamer(base_node, rename_items, has_cut)
+    return self.controller:open_renamer(base_node, rename_items, has_cut)
   end
 end
 

@@ -19,7 +19,6 @@ function Action.new(kind, name, action_opts)
 
   local tbl = {
     action_opts = vim.tbl_extend("force", kind.opts[name] or {}, action_opts),
-    behavior = vim.tbl_deep_extend("force", {quit = false}, kind.behaviors[name] or {}),
     _kind = kind,
     _action = action,
   }

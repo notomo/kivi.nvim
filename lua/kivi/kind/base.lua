@@ -4,14 +4,12 @@ local M = {}
 
 M.opts = {yank = {key = "path", register = "+"}}
 
-M.behaviors = {}
-
 function M.action_parent(self, nodes, ctx)
   local node = nodes[1]
   if not node then
     return
   end
-  return self:navigate_parent(ctx, node:root().path:parent())
+  return self.controller:navigate_parent(ctx, node:root().path:parent())
 end
 
 function M.action_debug_print(_, nodes)
@@ -35,7 +33,7 @@ function M.action_back(self, _, ctx)
   if not path then
     return
   end
-  return self:back(ctx, path)
+  return self.controller:back(ctx, path)
 end
 
 function M.action_toggle_selection(_, nodes, ctx)
@@ -61,11 +59,11 @@ function M.action_toggle_tree(self, nodes, ctx)
     end
   end
 
-  return self:expand(ctx, expanded)
+  return self.controller:expand(ctx, expanded)
 end
 
 function M.action_close_all_tree(self, _, ctx)
-  return self:expand(ctx, {})
+  return self.controller:expand(ctx, {})
 end
 
 function M.action_create(self, nodes)
@@ -74,7 +72,7 @@ function M.action_create(self, nodes)
     return
   end
   local base_node = node:parent_or_root()
-  return self:open_creator(base_node)
+  return self.controller:open_creator(base_node)
 end
 
 function M.action_rename(self, nodes)
@@ -92,7 +90,7 @@ function M.action_rename(self, nodes)
   end, nodes)
 
   local has_cut = true
-  return self:open_renamer(base_node, rename_items, has_cut)
+  return self.controller:open_renamer(base_node, rename_items, has_cut)
 end
 
 function M.action_delete(self, nodes, ctx)
@@ -105,7 +103,7 @@ function M.action_delete(self, nodes, ctx)
   for _, node in ipairs(nodes) do
     self:delete(node.path)
   end
-  return self:reload(ctx)
+  return self.controller:reload(ctx)
 end
 
 function M.action_expand_parent(self, nodes, ctx)
@@ -123,7 +121,7 @@ function M.action_expand_parent(self, nodes, ctx)
     expanded[path:get()] = true
   end
 
-  return self:expand_parent(ctx, above_path, node.path:get(), expanded)
+  return self.controller:expand_parent(ctx, above_path, node.path:get(), expanded)
 end
 
 function M.find_upward_marker(_)

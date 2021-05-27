@@ -9,16 +9,16 @@ local Creator = require("kivi.view.creator").Creator
 
 local M = {}
 
-local Starter = {}
-Starter.__index = Starter
-M.Starter = Starter
+local Controller = {}
+Controller.__index = Controller
+M.Controller = Controller
 
-function Starter.new()
+function Controller.new()
   local tbl = {}
-  return setmetatable(tbl, Starter)
+  return setmetatable(tbl, Controller)
 end
 
-function Starter.open(_, raw_opts)
+function Controller.open(_, raw_opts)
   local opts, open_opts = Options.new(raw_opts)
   local source, err = Source.new(opts.source, raw_opts.source_opts)
   if err ~= nil then
@@ -30,31 +30,31 @@ function Starter.open(_, raw_opts)
   return Loader.new(ctx.ui.bufnr):open(ctx, raw_opts.source_setup_opts)
 end
 
-function Starter.navigate(_, ctx, path, source_setup_opts)
+function Controller.navigate(_, ctx, path, source_setup_opts)
   return Loader.new(ctx.ui.bufnr):navigate(ctx, path, source_setup_opts)
 end
 
-function Starter.navigate_parent(_, ctx, path)
+function Controller.navigate_parent(_, ctx, path)
   return Loader.new(ctx.ui.bufnr):navigate_parent(ctx, path)
 end
 
-function Starter.back(_, ctx, path)
+function Controller.back(_, ctx, path)
   return Loader.new(ctx.ui.bufnr):back(ctx, path)
 end
 
-function Starter.expand(_, ctx, expanded)
+function Controller.expand(_, ctx, expanded)
   return Loader.new(ctx.ui.bufnr):expand(ctx, expanded)
 end
 
-function Starter.expand_parent(_, ctx, path, cursor_line_path, expanded)
+function Controller.expand_parent(_, ctx, path, cursor_line_path, expanded)
   return Loader.new(ctx.ui.bufnr):expand_parent(ctx, path, cursor_line_path, expanded)
 end
 
-function Starter.reload(_, ctx)
+function Controller.reload(_, ctx)
   return Loader.new(ctx.ui.bufnr):reload()
 end
 
-function Starter.execute(_, action_name, range, opts, action_opts)
+function Controller.execute(_, action_name, range, opts, action_opts)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
@@ -65,7 +65,7 @@ function Starter.execute(_, action_name, range, opts, action_opts)
   return Executor.new(ctx.ui):execute(ctx, nodes, action_name, opts, action_opts)
 end
 
-function Starter.open_renamer(_, base_node, rename_items, has_cut)
+function Controller.open_renamer(_, base_node, rename_items, has_cut)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
@@ -80,7 +80,7 @@ function Starter.open_renamer(_, base_node, rename_items, has_cut)
   Renamer.open(kind, loader, base_node, rename_items, has_cut)
 end
 
-function Starter.open_creator(_, base_node)
+function Controller.open_creator(_, base_node)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err

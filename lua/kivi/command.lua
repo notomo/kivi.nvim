@@ -1,5 +1,5 @@
 local Context = require("kivi.core.context").Context
-local Starter = require("kivi.core.starter").Starter
+local Controller = require("kivi.controller").Controller
 local custom = require("kivi.core.custom")
 local Router = require("kivi.view.router").Router
 local messagelib = require("kivi.lib.message")
@@ -29,7 +29,7 @@ end
 function Command.open(raw_opts)
   vim.validate({raw_opts = {raw_opts, "table", true}})
   raw_opts = raw_opts or {}
-  return Starter.new():open(raw_opts)
+  return Controller.new():open(raw_opts)
 end
 
 function Command.navigate(path, source_setup_opts)
@@ -41,7 +41,7 @@ function Command.navigate(path, source_setup_opts)
     return nil, err
   end
 
-  return Starter.new():navigate(ctx, path, source_setup_opts)
+  return Controller.new():navigate(ctx, path, source_setup_opts)
 end
 
 function Command.execute(action_name, opts, action_opts)
@@ -53,7 +53,7 @@ function Command.execute(action_name, opts, action_opts)
   local range = modelib.current_row_range()
   opts = opts or {}
   action_opts = action_opts or {}
-  return Starter.new():execute(action_name, range, opts, action_opts)
+  return Controller.new():execute(action_name, range, opts, action_opts)
 end
 
 function Command.setup(config)
