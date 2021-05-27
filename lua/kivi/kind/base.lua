@@ -59,11 +59,11 @@ function M.action_toggle_tree(self, nodes, ctx)
     end
   end
 
-  return self.controller:expand(ctx, expanded)
+  return self.controller:expand_child(ctx, expanded)
 end
 
 function M.action_close_all_tree(self, _, ctx)
-  return self.controller:expand(ctx, {})
+  return self.controller:expand_child(ctx, {})
 end
 
 function M.action_create(self, nodes)

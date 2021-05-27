@@ -70,7 +70,7 @@ function Loader.back(_, ctx, path)
   end)
 end
 
-function Loader.expand(_, ctx, expanded)
+function Loader.expand_child(_, ctx, expanded)
   ctx.opts.expanded = expanded
   return Collector.new(ctx.source):start(ctx.opts, function(nodes)
     ctx.ui:redraw(nodes)

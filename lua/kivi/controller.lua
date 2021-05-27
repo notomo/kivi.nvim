@@ -42,8 +42,8 @@ function Controller.back(_, ctx, path)
   return Loader.new(ctx.ui.bufnr):back(ctx, path)
 end
 
-function Controller.expand(_, ctx, expanded)
-  return Loader.new(ctx.ui.bufnr):expand(ctx, expanded)
+function Controller.expand_child(_, ctx, expanded)
+  return Loader.new(ctx.ui.bufnr):expand_child(ctx, expanded)
 end
 
 function Controller.expand_parent(_, ctx, path, cursor_line_path, expanded)
