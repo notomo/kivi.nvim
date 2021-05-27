@@ -3,6 +3,7 @@ local cursorlib = require("kivi.lib.cursor")
 local bufferlib = require("kivi.lib.buffer")
 local Layout = require("kivi.view.layout").Layout
 local Nodes = require("kivi.core.node").Nodes
+local Context = require("kivi.core.context").Context
 local vim = vim
 
 local M = {}
@@ -112,6 +113,19 @@ function View.reset_selections(self, action_name)
 end
 
 vim.cmd("highlight default link KiviSelected Statement")
+
+function View._highlight_win(_, _, bufnr, topline, botline_guess)
+  local ctx, err = Context.get(bufnr)
+  if err ~= nil then
+    return false
+  end
+  ctx.ui:highlight(ctx.source, ctx.opts, topline, botline_guess)
+  return false
+end
+
+local ns = vim.api.nvim_create_namespace("kivi-highlight")
+vim.api.nvim_set_decoration_provider(ns, {})
+vim.api.nvim_set_decoration_provider(ns, {on_win = View._highlight_win})
 
 function View.highlight(self, source, opts, first_line, last_line)
   local nodes = self._nodes:range(first_line + 1, last_line)
