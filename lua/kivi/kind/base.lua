@@ -128,4 +128,13 @@ function M.find_upward_marker(_)
   return Path.new("/")
 end
 
+function M.action_shrink(self, nodes, ctx)
+  local node = nodes[1]
+  if not node then
+    return
+  end
+  local parent = node:parent_or_root()
+  return self.controller:shrink(ctx, parent.path, node.path:get())
+end
+
 return M

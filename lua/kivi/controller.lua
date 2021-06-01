@@ -50,6 +50,10 @@ function Controller.expand_parent(_, ctx, path, cursor_line_path, expanded)
   return Loader.new(ctx.ui.bufnr):expand_parent(ctx, path, cursor_line_path, expanded)
 end
 
+function Controller.shrink(_, ctx, path, cursor_line_path)
+  return Loader.new(ctx.ui.bufnr):shrink(ctx, path, cursor_line_path)
+end
+
 function Controller.reload(_, ctx)
   return Loader.new(ctx.ui.bufnr):reload()
 end

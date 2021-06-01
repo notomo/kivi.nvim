@@ -77,6 +77,17 @@ function Loader.expand_child(_, ctx, expanded)
   end)
 end
 
+function Loader.shrink(_, ctx, path, cursor_line_path)
+  vim.validate({cursor_line_path = {cursor_line_path, "string", true}})
+  ctx.opts = ctx.opts:merge({path = path})
+  return Collector.new(ctx.source):start(ctx.opts, function(nodes)
+    ctx.history:add(nodes.root_path:get())
+    ctx.ui:redraw(nodes)
+    ctx.ui:move_cursor(cursor_line_path)
+    ctx.history:set(nodes.root_path:get())
+  end)
+end
+
 function Loader.expand_parent(_, ctx, path, cursor_line_path, expanded)
   ctx.opts = ctx.opts:merge({path = path, expanded = expanded})
   return Collector.new(ctx.source):start(ctx.opts, function(nodes)
