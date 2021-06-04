@@ -100,7 +100,7 @@ end
 
 function View.toggle_selections(self, nodes)
   self._nodes = self._nodes:toggle_selections(nodes)
-  vim.api.nvim__buf_redraw_range(self.bufnr, nodes[1].index - 1, nodes[#nodes].index - 1)
+  vim.api.nvim__buf_redraw_range(self.bufnr, nodes[1].index - 1, nodes[#nodes].index)
 end
 
 function View.reset_selections(self, action_name)
