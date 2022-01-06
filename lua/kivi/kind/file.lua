@@ -3,7 +3,7 @@ local File = require("kivi.lib.file").File
 
 local M = {}
 
-M.opts = {expand_parent = {root_patterns = {".git"}}}
+M.opts = { expand_parent = { root_patterns = { ".git" } } }
 
 local adjust_window = function()
   vim.cmd("wincmd w")
@@ -43,7 +43,7 @@ function M.action_paste(self, nodes, ctx)
   for _, old_node in ipairs(copied) do
     local new_node = old_node:move_to(base_node)
     if new_node.path:exists() then
-      table.insert(already_exists, {from = old_node, to = new_node})
+      table.insert(already_exists, { from = old_node, to = new_node })
       goto continue
     end
 
@@ -63,7 +63,7 @@ function M.action_paste(self, nodes, ctx)
     if answer == "n" then
       goto continue
     elseif answer == "r" then
-      table.insert(rename_items, {from = item.from.path, to = item.to.path})
+      table.insert(rename_items, { from = item.from.path, to = item.to.path })
     elseif answer == "f" then
       table.insert(overwrite_items, item)
     end

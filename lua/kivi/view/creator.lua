@@ -25,7 +25,7 @@ function Creator.open(kind, loader, base_node)
     focusable = true,
     external = false,
     style = "minimal",
-    border = {{" ", "NormalFloat"}},
+    border = { { " ", "NormalFloat" } },
   })
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].buftype = "acwrite"
@@ -33,8 +33,15 @@ function Creator.open(kind, loader, base_node)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. Creator.path)
   vim.cmd("doautocmd BufRead") -- HACK?
 
-  vim.cmd(([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(bufnr, bufnr))
-  vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").Command.new("delete", %s)]]):format(bufnr, bufnr))
+  vim.cmd(
+    ([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(
+      bufnr,
+      bufnr
+    )
+  )
+  vim.cmd(
+    ([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").Command.new("delete", %s)]]):format(bufnr, bufnr)
+  )
 
   local tbl = {
     _bufnr = bufnr,
@@ -62,13 +69,13 @@ function Creator.write(self)
   local errors = {}
   for i, path in ipairs(paths) do
     if path:exists() then
-      table.insert(errors, {path = path, msg = "already exists: " .. path:get()})
+      table.insert(errors, { path = path, msg = "already exists: " .. path:get() })
       goto continue
     end
 
     local err = self._kind:create(path)
     if err ~= nil then
-      table.insert(errors, {path = path, msg = err})
+      table.insert(errors, { path = path, msg = err })
       goto continue
     end
 
@@ -76,9 +83,15 @@ function Creator.write(self)
     ::continue::
   end
 
-  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, false, vim.tbl_map(function(e)
-    return self._base_node.path:relative(e.path)
-  end, errors))
+  vim.api.nvim_buf_set_lines(
+    self._bufnr,
+    0,
+    -1,
+    false,
+    vim.tbl_map(function(e)
+      return self._base_node.path:relative(e.path)
+    end, errors)
+  )
 
   if #errors == 0 then
     vim.bo[self._bufnr].modified = false

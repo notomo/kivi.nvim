@@ -12,11 +12,11 @@ local echo = function(msg, strs, hl_group)
   msg = prefix .. msg
   if #strs <= 1 then
     local str = ("%s %s"):format(msg, table.concat(strs, " "))
-    return vim.api.nvim_echo({{str, hl_group}}, true, {})
+    return vim.api.nvim_echo({ { str, hl_group } }, true, {})
   end
 
   local str = table.concat(strs, "\n")
-  vim.api.nvim_echo({{msg .. "\n", hl_group}, {str, hl_group}}, true, {})
+  vim.api.nvim_echo({ { msg .. "\n", hl_group }, { str, hl_group } }, true, {})
 end
 
 function M.info(msg, strs)

@@ -6,7 +6,7 @@ local CollectResult = {}
 CollectResult.__index = CollectResult
 
 function CollectResult.new(root)
-  local tbl = {nodes = Nodes.from_node(root)}
+  local tbl = { nodes = Nodes.from_node(root) }
   return setmetatable(tbl, CollectResult)
 end
 
@@ -15,16 +15,16 @@ Collector.__index = Collector
 M.Collector = Collector
 
 function Collector.new(source)
-  vim.validate({source = {source, "table"}})
-  local tbl = {_source = source}
+  vim.validate({ source = { source, "table" } })
+  local tbl = { _source = source }
   return setmetatable(tbl, Collector)
 end
 
 function Collector.start(self, opts, callback, source_setup_opts)
   vim.validate({
-    opts = {opts, "table"},
-    callback = {callback, "function"},
-    source_setup_opts = {source_setup_opts, "table", true},
+    opts = { opts, "table" },
+    callback = { callback, "function" },
+    source_setup_opts = { source_setup_opts, "table", true },
   })
   local raw_result, err = self._source:start(opts, source_setup_opts)
   if err ~= nil then

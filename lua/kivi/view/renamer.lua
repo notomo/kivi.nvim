@@ -18,9 +18,21 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   vim.bo[bufnr].buftype = "acwrite"
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. Renamer.path)
 
-  vim.cmd(([[autocmd BufReadCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('read', %s)]]):format(bufnr, bufnr))
-  vim.cmd(([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(bufnr, bufnr))
-  vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").Command.new("delete", %s)]]):format(bufnr, bufnr))
+  vim.cmd(
+    ([[autocmd BufReadCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('read', %s)]]):format(
+      bufnr,
+      bufnr
+    )
+  )
+  vim.cmd(
+    ([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(
+      bufnr,
+      bufnr
+    )
+  )
+  vim.cmd(
+    ([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").Command.new("delete", %s)]]):format(bufnr, bufnr)
+  )
 
   local froms = {}
   for i, item in ipairs(rename_items) do
@@ -54,7 +66,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     focusable = true,
     external = false,
     style = "minimal",
-    border = {{" ", "NormalFloat"}},
+    border = { { " ", "NormalFloat" } },
   })
   cursorlib.set_row(2, window_id, bufnr)
   vim.cmd("doautocmd BufRead") -- HACK?
@@ -101,11 +113,11 @@ function Renamer.write(self)
   local last_index = 0
   for i in pairs(success) do
     local line = lines[i]
-    local marks = vim.api.nvim_buf_get_extmarks(self._bufnr, ns, {i, 0}, {i, -1}, {details = true})
+    local marks = vim.api.nvim_buf_get_extmarks(self._bufnr, ns, { i, 0 }, { i, -1 }, { details = true })
     if marks[1] then
       local id = marks[1][1]
       vim.api.nvim_buf_set_extmark(self._bufnr, ns, i, #line, {
-        virt_text = {{"<- " .. line, "Comment"}},
+        virt_text = { { "<- " .. line, "Comment" } },
         id = id,
       })
     end
@@ -123,24 +135,27 @@ function Renamer.write(self)
     vim.bo[self._bufnr].modified = false
     self._has_cut = true
   else
-    messagelib.warn("already exists:", vim.tbl_map(function(item)
-      return item.to:get()
-    end, already_exists))
+    messagelib.warn(
+      "already exists:",
+      vim.tbl_map(function(item)
+        return item.to:get()
+      end, already_exists)
+    )
   end
 
   self._loader:reload(cursor_line_path)
 end
 
 function Renamer.read(self)
-  vim.api.nvim_buf_set_lines(self._bufnr, 0, 0, true, {""})
+  vim.api.nvim_buf_set_lines(self._bufnr, 0, 0, true, { "" })
   vim.api.nvim_buf_set_lines(self._bufnr, 1, -1, true, self._lines)
 
   vim.api.nvim_buf_set_extmark(self._bufnr, ns, 0, 0, {
-    virt_text = {{self._base_node.path:get(), "Comment"}},
+    virt_text = { { self._base_node.path:get(), "Comment" } },
   })
   for i, line in ipairs(self._lines) do
     vim.api.nvim_buf_set_extmark(self._bufnr, ns, i, #line, {
-      virt_text = {{"<- " .. line, "Comment"}},
+      virt_text = { { "<- " .. line, "Comment" } },
     })
   end
 end

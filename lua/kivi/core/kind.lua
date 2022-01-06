@@ -13,7 +13,7 @@ local Kind = {}
 M.Kind = Kind
 
 function Kind.new(name)
-  vim.validate({name = {name, "string"}})
+  vim.validate({ name = { name, "string" } })
 
   local kind = modulelib.find("kivi.kind." .. name)
   if not kind then

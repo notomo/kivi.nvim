@@ -31,25 +31,30 @@ function View.open(source, open_opts)
   vim.bo[bufnr].modifiable = false
 
   Layout.new(open_opts.layout):open(bufnr)
-  vim.api.nvim_set_option_value("number", false, {scope = "local"})
-  vim.api.nvim_set_option_value("list", false, {scope = "local"})
+  vim.api.nvim_set_option_value("number", false, { scope = "local" })
+  vim.api.nvim_set_option_value("list", false, { scope = "local" })
   vim.cmd(View.key_mapping_script)
   vim.cmd(([[autocmd BufReadCmd <buffer=%s> lua require("kivi.command").Command.new("read", %s)]]):format(bufnr, bufnr))
 
-  local tbl = {bufnr = bufnr, _nodes = Nodes.new({})}
+  local tbl = { bufnr = bufnr, _nodes = Nodes.new({}) }
   return setmetatable(tbl, View), key
 end
 
 function View.redraw(self, nodes)
   self._nodes = nodes
-  bufferlib.set_lines(self.bufnr, 0, -1, nodes:map(function(node)
-    local indent = ("  "):rep(node.depth - 1)
-    return indent .. node.value
-  end))
+  bufferlib.set_lines(
+    self.bufnr,
+    0,
+    -1,
+    nodes:map(function(node)
+      local indent = ("  "):rep(node.depth - 1)
+      return indent .. node.value
+    end)
+  )
 end
 
 function View.move_cursor(self, path)
-  vim.validate({path = {path, "string", true}})
+  vim.validate({ path = { path, "string", true } })
   if not path then
     return false
   end
@@ -68,7 +73,7 @@ function View.init_cursor(self)
 end
 
 function View.restore_cursor(self, history, path)
-  vim.validate({history = {history, "table"}, path = {path, "string"}})
+  vim.validate({ history = { history, "table" }, path = { path, "string" } })
   local row = history:stored(path)
   if row ~= nil then
     cursorlib.set_row_by_buffer(row, self.bufnr)
@@ -94,7 +99,7 @@ function View._selected_nodes(self, action_name, range)
     return self._nodes:range(range.first, range.last)
   end
 
-  return {self._nodes[vim.fn.line(".")]}
+  return { self._nodes[vim.fn.line(".")] }
 end
 
 function View.toggle_selections(self, nodes)
@@ -124,7 +129,7 @@ end
 
 local ns = vim.api.nvim_create_namespace("kivi-highlight")
 vim.api.nvim_set_decoration_provider(ns, {})
-vim.api.nvim_set_decoration_provider(ns, {on_win = View._highlight_win})
+vim.api.nvim_set_decoration_provider(ns, { on_win = View._highlight_win })
 
 function View.highlight(self, source, opts, first_line, last_line)
   local nodes = self._nodes:range(first_line + 1, last_line)

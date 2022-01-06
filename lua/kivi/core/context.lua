@@ -20,7 +20,12 @@ function Context.new(source, ui, key, opts)
   }
   local self = setmetatable(tbl, Context)
   if not repository:get(key) then
-    vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").Command.new("delete", %s)]]):format(ui.bufnr, ui.bufnr))
+    vim.cmd(
+      ([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").Command.new("delete", %s)]]):format(
+        ui.bufnr,
+        ui.bufnr
+      )
+    )
   end
   repository:set(key, self)
   return self
@@ -31,7 +36,7 @@ function Context.delete(self)
 end
 
 function Context.get(bufnr)
-  vim.validate({bufnr = {bufnr, "number", true}})
+  vim.validate({ bufnr = { bufnr, "number", true } })
   local path = vim.api.nvim_buf_get_name(bufnr or 0)
   local key = path:match("^kivi://(.+)/kivi")
   if key == nil then
@@ -53,4 +58,3 @@ function Context.delete_from(bufnr)
 end
 
 return M
-

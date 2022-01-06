@@ -8,13 +8,13 @@ Clipboard.__index = Clipboard
 M.Clipboard = Clipboard
 
 function Clipboard.new(source_name)
-  vim.validate({source_name = {source_name, "string"}})
+  vim.validate({ source_name = { source_name, "string" } })
   local clipboard = repository:get(source_name)
   if clipboard ~= nil then
     return clipboard
   end
 
-  local tbl = {_nodes = {}, _has_cut = false}
+  local tbl = { _nodes = {}, _has_cut = false }
   local self = setmetatable(tbl, Clipboard)
   repository:set(source_name, self)
   return self
@@ -23,17 +23,23 @@ end
 function Clipboard.copy(self, nodes)
   self._nodes = nodes
   self._has_cut = false
-  messagelib.info("copied:", vim.tbl_map(function(node)
-    return node.path:get()
-  end, nodes))
+  messagelib.info(
+    "copied:",
+    vim.tbl_map(function(node)
+      return node.path:get()
+    end, nodes)
+  )
 end
 
 function Clipboard.cut(self, nodes)
   self._nodes = nodes
   self._has_cut = true
-  messagelib.info("cut:", vim.tbl_map(function(node)
-    return node.path:get()
-  end, nodes))
+  messagelib.info(
+    "cut:",
+    vim.tbl_map(function(node)
+      return node.path:get()
+    end, nodes)
+  )
 end
 
 function Clipboard.pop(self)

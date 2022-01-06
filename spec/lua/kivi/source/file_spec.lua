@@ -2,7 +2,6 @@ local helper = require("kivi.lib.testlib.helper")
 local kivi = helper.require("kivi")
 
 describe("kivi file source", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -52,7 +51,7 @@ describe("kivi file source", function()
   end)
 
   it("raise error if path does not exist", function()
-    kivi.open({path = "invalid_file_path"})
+    kivi.open({ path = "invalid_file_path" })
     assert.exists_message("does not exist: invalid_file_path")
   end)
 
@@ -482,7 +481,7 @@ describe("kivi file source", function()
     helper.new_directory("root_marker/dir1/dir2")
     helper.cd("root_marker/dir1/dir2")
 
-    kivi.open({source_setup_opts = {target = "project", root_patterns = {"root_marker"}}})
+    kivi.open({ source_setup_opts = { target = "project", root_patterns = { "root_marker" } } })
 
     assert.exists_pattern("root_marker/")
   end)
@@ -492,7 +491,7 @@ describe("kivi file source", function()
     helper.new_directory("root_marker/dir")
     helper.cd("root_marker/dir")
 
-    kivi.open({source_setup_opts = {target = "project", root_patterns = {"root_marker"}}})
+    kivi.open({ source_setup_opts = { target = "project", root_patterns = { "root_marker" } } })
 
     helper.search("root_marker/")
     kivi.execute("child")
@@ -530,7 +529,7 @@ describe("kivi file source", function()
     helper.cd("dir1/dir2")
 
     kivi.open()
-    kivi.execute("expand_parent", {}, {root_patterns = {"marker"}})
+    kivi.execute("expand_parent", {}, { root_patterns = { "marker" } })
 
     assert.exists_pattern("^dir1/$")
     assert.exists_pattern("^  dir2/$")
@@ -546,10 +545,9 @@ describe("kivi file source", function()
     helper.cd("dir1/dir2/dir3")
 
     kivi.open()
-    kivi.execute("expand_parent", {}, {root_patterns = {"marker"}})
+    kivi.execute("expand_parent", {}, { root_patterns = { "marker" } })
     kivi.execute("parent")
 
     assert.current_line("dir1/")
   end)
-
 end)

@@ -10,7 +10,7 @@ local Source = {}
 M.Source = Source
 
 function Source.new(source_name, source_opts)
-  vim.validate({source_name = {source_name, "string"}, source_opts = {source_opts, "table", true}})
+  vim.validate({ source_name = { source_name, "string" }, source_opts = { source_opts, "table", true } })
   source_opts = source_opts or {}
 
   local source = modulelib.find("kivi.source." .. source_name)
@@ -36,7 +36,7 @@ function Source.__index(self, k)
 end
 
 function Source.start(self, opts, setup_opts)
-  vim.validate({opts = {opts, "table"}, setup_opts = {setup_opts, "table", true}})
+  vim.validate({ opts = { opts, "table" }, setup_opts = { setup_opts, "table", true } })
   if setup_opts then
     local new_opts = self:setup(opts, vim.tbl_extend("force", self._source.setup_opts, setup_opts))
     return self:collect(new_opts)

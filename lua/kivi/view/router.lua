@@ -52,7 +52,7 @@ function Router.delete(bufnr)
 end
 
 function Router._path(bufnr)
-  vim.validate({bufnr = {bufnr, "number"}})
+  vim.validate({ bufnr = { bufnr, "number" } })
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return nil, "invalid buffer: " .. bufnr
   end

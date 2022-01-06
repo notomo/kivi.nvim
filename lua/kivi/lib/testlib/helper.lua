@@ -40,7 +40,7 @@ function M.buffer_log()
 end
 
 function M.set_inputs(...)
-  local answers = vim.fn.reverse({...})
+  local answers = vim.fn.reverse({ ... })
   require("kivi.lib.input").read = function(msg)
     local answer = table.remove(answers)
     if answer == nil then
@@ -70,7 +70,7 @@ end
 
 function M.new_file(path, ...)
   local f = io.open(M.test_data_dir .. path, "w")
-  for _, line in ipairs({...}) do
+  for _, line in ipairs({ ... }) do
     f:write(line .. "\n")
   end
   f:close()

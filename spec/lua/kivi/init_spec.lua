@@ -2,7 +2,6 @@ local helper = require("kivi.lib.testlib.helper")
 local kivi = helper.require("kivi")
 
 describe("kivi", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -69,7 +68,7 @@ describe("kivi", function()
     helper.new_directory("dir1")
     helper.new_directory("dir1/dir2")
 
-    kivi.open({path = "dir1/dir2"})
+    kivi.open({ path = "dir1/dir2" })
     kivi.execute("parent")
     kivi.execute("parent")
     kivi.execute("back")
@@ -150,7 +149,7 @@ describe("kivi", function()
   it("ignores layout on toggle tree", function()
     helper.new_directory("dir")
 
-    kivi.open({layout = {type = "vertical"}})
+    kivi.open({ layout = { type = "vertical" } })
 
     helper.search("dir")
     kivi.execute("toggle_tree")
@@ -200,7 +199,7 @@ describe("kivi", function()
 
   it("shows `can't open` error", function()
     helper.skip_if_win32(pending)
-    kivi.open({path = "/root"})
+    kivi.open({ path = "/root" })
     assert.exists_message("can't open /root/")
   end)
 
@@ -209,10 +208,10 @@ describe("kivi", function()
     helper.new_file("file2")
     vim.cmd("edit file1")
 
-    kivi.open({layout = {type = "vertical"}})
+    kivi.open({ layout = { type = "vertical" } })
 
     helper.search("file2")
-    kivi.execute("vsplit_open", {quit = true})
+    kivi.execute("vsplit_open", { quit = true })
 
     assert.window_count(2)
   end)
@@ -250,7 +249,7 @@ describe("kivi", function()
   end)
 
   it("can config options", function()
-    kivi.setup({opts = {layout = {type = "vertical"}}})
+    kivi.setup({ opts = { layout = { type = "vertical" } } })
 
     kivi.open()
 
@@ -261,11 +260,11 @@ describe("kivi", function()
     helper.new_directory("dir")
     helper.new_file("dir/file")
 
-    kivi.open({layout = {type = "tab"}})
+    kivi.open({ layout = { type = "tab" } })
     helper.search("dir")
     kivi.execute("toggle_tree")
     vim.cmd("quit")
-    kivi.open({layout = {type = "tab"}})
+    kivi.open({ layout = { type = "tab" } })
 
     assert.no.exists_pattern("file")
   end)
@@ -318,5 +317,4 @@ describe("kivi", function()
     assert.no.exists_pattern("^  file")
     assert.current_line("file2")
   end)
-
 end)

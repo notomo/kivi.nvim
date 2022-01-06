@@ -5,7 +5,7 @@ Executor.__index = Executor
 M.Executor = Executor
 
 function Executor.new(ui)
-  local tbl = {_ui = ui}
+  local tbl = { _ui = ui }
   return setmetatable(tbl, Executor)
 end
 
@@ -23,7 +23,8 @@ function Executor._action(self, kind, nodes, action_name, opts, action_opts)
       self._ui:close()
     end
     return result, err
-  end, nil
+  end,
+    nil
 end
 
 function Executor.execute(self, ctx, all_nodes, action_name, opts, action_opts)

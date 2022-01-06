@@ -25,7 +25,7 @@ function M.collect(self, opts)
     return a:get() < b:get()
   end)
 
-  local root = {value = dir:head(), path = dir:slash(), kind_name = "directory", children = {}}
+  local root = { value = dir:head(), path = dir:slash(), kind_name = "directory", children = {} }
   for _, path in ipairs(paths) do
     local value
     local kind_name = M.kind_name
@@ -36,9 +36,9 @@ function M.collect(self, opts)
       value = path:head()
     end
 
-    local child = {value = value, path = path, kind_name = kind_name}
+    local child = { value = value, path = path, kind_name = kind_name }
     if kind_name == "directory" and opts.expanded[path:get()] then
-      child.children = self:collect(opts:merge({path = path})).children
+      child.children = self:collect(opts:merge({ path = path })).children
     end
 
     table.insert(root.children, child)
@@ -48,8 +48,8 @@ end
 
 vim.cmd("highlight default link KiviDirectory String")
 highlights.default("KiviDirectoryOpen", {
-  ctermfg = {"KiviDirectory", 150},
-  guifg = {"KiviDirectory", "#a9dd9d"},
+  ctermfg = { "KiviDirectory", 150 },
+  guifg = { "KiviDirectory", "#a9dd9d" },
   gui = "bold",
 })
 
@@ -87,11 +87,11 @@ end
 
 M.kind_name = "file"
 M.opts = {}
-M.setup_opts = {target = "current", root_patterns = {".git"}}
+M.setup_opts = { target = "current", root_patterns = { ".git" } }
 
 function M.setup(_, opts, setup_opts)
   local path = M.Target.new(setup_opts.target, setup_opts.root_patterns):path()
-  return opts:merge({path = path})
+  return opts:merge({ path = path })
 end
 
 local Target = {}
@@ -99,8 +99,8 @@ Target.__index = Target
 M.Target = Target
 
 function Target.new(name, root_patterns)
-  vim.validate({name = {name, "string"}})
-  local tbl = {_name = name, _root_patterns = root_patterns}
+  vim.validate({ name = { name, "string" } })
+  local tbl = { _name = name, _root_patterns = root_patterns }
   return setmetatable(tbl, Target)
 end
 

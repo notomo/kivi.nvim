@@ -12,7 +12,7 @@ Command.__index = Command
 M.Command = Command
 
 function Command.new(name, ...)
-  local args = {...}
+  local args = { ... }
   local f = function()
     return Command[name](unpack(args))
   end
@@ -27,13 +27,13 @@ function Command.new(name, ...)
 end
 
 function Command.open(raw_opts)
-  vim.validate({raw_opts = {raw_opts, "table", true}})
+  vim.validate({ raw_opts = { raw_opts, "table", true } })
   raw_opts = raw_opts or {}
   return Controller.new():open(raw_opts)
 end
 
 function Command.navigate(path, source_setup_opts)
-  vim.validate({path = {path, "string"}, source_setup_opts = {source_setup_opts, "table", true}})
+  vim.validate({ path = { path, "string" }, source_setup_opts = { source_setup_opts, "table", true } })
   source_setup_opts = source_setup_opts or {}
 
   local ctx, err = Context.get()
@@ -46,9 +46,9 @@ end
 
 function Command.execute(action_name, opts, action_opts)
   vim.validate({
-    action_name = {action_name, "string"},
-    opts = {opts, "table", true},
-    action_opts = {action_opts, "table", true},
+    action_name = { action_name, "string" },
+    opts = { opts, "table", true },
+    action_opts = { action_opts, "table", true },
   })
   local range = modelib.current_row_range()
   opts = opts or {}
@@ -57,7 +57,7 @@ function Command.execute(action_name, opts, action_opts)
 end
 
 function Command.setup(config)
-  vim.validate({config = {config, "table"}})
+  vim.validate({ config = { config, "table" } })
   custom.set(config)
 end
 

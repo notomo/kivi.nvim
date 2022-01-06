@@ -2,7 +2,7 @@ local Path = require("kivi.lib.path").Path
 
 local M = {}
 
-M.opts = {yank = {key = "path", register = "+"}}
+M.opts = { yank = { key = "path", register = "+" } }
 
 function M.action_parent(self, nodes, ctx)
   local node = nodes[1]
@@ -86,7 +86,7 @@ function M.action_rename(self, nodes)
   end
 
   local rename_items = vim.tbl_map(function(n)
-    return {from = n.path}
+    return { from = n.path }
   end, nodes)
 
   local has_cut = true

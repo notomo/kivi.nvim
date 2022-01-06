@@ -11,7 +11,7 @@ function File.new(path)
   if type(path) == "table" then
     path = path:get()
   end
-  local tbl = {path = pathlib.adjust_sep(vim.fn.fnamemodify(path, ":p"))}
+  local tbl = { path = pathlib.adjust_sep(vim.fn.fnamemodify(path, ":p")) }
   return setmetatable(tbl, File)
 end
 
@@ -51,15 +51,15 @@ if vim.fn.has("win32") == 1 then
   function File._copy_dir(self, to)
     local from_path = self:trim_slash():get():gsub("/", "\\")
     local to_path = to:trim_slash():get():gsub("/", "\\")
-    local cmd = {"xcopy", "/Y", "/E", "/I", from_path, to_path}
+    local cmd = { "xcopy", "/Y", "/E", "/I", from_path, to_path }
     vim.fn.systemlist(cmd)
   end
 else
   function File._copy_dir(self, to)
     if to:is_dir() then
-      vim.fn.system({"cp", "-RT", self.path, to:trim_slash():get()})
+      vim.fn.system({ "cp", "-RT", self.path, to:trim_slash():get() })
     else
-      vim.fn.system({"cp", "-R", self.path, to:trim_slash():get()})
+      vim.fn.system({ "cp", "-R", self.path, to:trim_slash():get() })
     end
   end
 end

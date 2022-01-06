@@ -15,7 +15,7 @@ function M.close_by_buffer(bufnr)
 end
 
 function M.get_current_or_first(bufnr)
-  vim.validate({bufnr = {bufnr, "number"}})
+  vim.validate({ bufnr = { bufnr, "number" } })
   local ids = vim.fn.win_findbuf(bufnr)
   local current = vim.api.nvim_get_current_win()
   for _, id in ipairs(ids) do

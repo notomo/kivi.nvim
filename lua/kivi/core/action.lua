@@ -7,9 +7,9 @@ local ACTION_PREFIX = "action_"
 
 function Action.new(kind, name, action_opts)
   vim.validate({
-    kind = {kind, "table"},
-    name = {name, "string"},
-    action_opts = {action_opts, "table"},
+    kind = { kind, "table" },
+    name = { name, "string" },
+    action_opts = { action_opts, "table" },
   })
 
   local action = kind[ACTION_PREFIX .. name]
