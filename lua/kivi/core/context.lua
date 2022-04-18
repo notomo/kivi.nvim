@@ -20,7 +20,12 @@ function Context.new(source, ui, key, opts)
   }
   local self = setmetatable(tbl, Context)
   if not repository:get(key) then
-    vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").delete(%s)]]):format(ui.bufnr, ui.bufnr))
+    vim.api.nvim_create_autocmd({ "BufWipeout" }, {
+      buffer = ui.bufnr,
+      callback = function()
+        require("kivi.command").delete(ui.bufnr)
+      end,
+    })
   end
   repository:set(key, self)
   return self

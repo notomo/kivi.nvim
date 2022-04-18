@@ -18,9 +18,26 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   vim.bo[bufnr].buftype = "acwrite"
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. Renamer.path)
 
-  vim.cmd(([[autocmd BufReadCmd <buffer=%s> ++nested lua require('kivi.command').read(%s)]]):format(bufnr, bufnr))
-  vim.cmd(([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').write(%s)]]):format(bufnr, bufnr))
-  vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").delete(%s)]]):format(bufnr, bufnr))
+  vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
+    buffer = bufnr,
+    nested = true,
+    callback = function()
+      require("kivi.command").read(bufnr)
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
+    buffer = bufnr,
+    nested = true,
+    callback = function()
+      require("kivi.command").write(bufnr)
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
+    buffer = bufnr,
+    callback = function()
+      require("kivi.command").delete(bufnr)
+    end,
+  })
 
   local froms = {}
   for i, item in ipairs(rename_items) do
@@ -57,7 +74,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     border = { { " ", "NormalFloat" } },
   })
   cursorlib.set_row(2, window_id, bufnr)
-  vim.cmd("doautocmd BufRead") -- HACK?
+  vim.api.nvim_exec_autocmds("BufRead", { modeline = false }) -- HACK?
 
   repository:set(bufnr, renamer)
 end

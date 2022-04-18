@@ -34,7 +34,12 @@ function View.open(source, open_opts)
   vim.api.nvim_set_option_value("number", false, { scope = "local" })
   vim.api.nvim_set_option_value("list", false, { scope = "local" })
   vim.cmd(View.key_mapping_script)
-  vim.cmd(([[autocmd BufReadCmd <buffer=%s> lua require("kivi.command").read(%s)]]):format(bufnr, bufnr))
+  vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
+    buffer = bufnr,
+    callback = function()
+      require("kivi.command").read(bufnr)
+    end,
+  })
 
   local tbl = { bufnr = bufnr, _nodes = Nodes.new({}) }
   return setmetatable(tbl, View), key
