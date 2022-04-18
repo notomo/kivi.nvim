@@ -1,4 +1,3 @@
-local repository = require("kivi.lib.repository").Repository.new("creator")
 local messagelib = require("kivi.lib.message")
 local windowlib = require("kivi.lib.window")
 
@@ -36,7 +35,6 @@ function Creator.open(kind, loader, base_node)
     _window_id = window_id,
   }
   local creator = setmetatable(tbl, Creator)
-  repository:set(bufnr, creator)
 
   vim.cmd("startinsert")
 
@@ -45,12 +43,6 @@ function Creator.open(kind, loader, base_node)
     nested = true,
     callback = function()
       creator:write()
-    end,
-  })
-  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
-    buffer = bufnr,
-    callback = function()
-      repository:delete(bufnr)
     end,
   })
 end

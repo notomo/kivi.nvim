@@ -1,4 +1,3 @@
-local repository = require("kivi.lib.repository").Repository.new("renamer")
 local messagelib = require("kivi.lib.message")
 local cursorlib = require("kivi.lib.cursor")
 
@@ -48,7 +47,6 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     border = { { " ", "NormalFloat" } },
   })
   cursorlib.set_row(2, window_id, bufnr)
-  repository:set(bufnr, renamer)
 
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
     buffer = bufnr,
@@ -62,12 +60,6 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     nested = true,
     callback = function()
       renamer:write()
-    end,
-  })
-  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
-    buffer = bufnr,
-    callback = function()
-      repository:delete(bufnr)
     end,
   })
   vim.api.nvim_exec_autocmds("BufRead", { modeline = false }) -- HACK?
