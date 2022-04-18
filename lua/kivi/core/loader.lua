@@ -1,11 +1,8 @@
-local Context = require("kivi.core.context").Context
-local Collector = require("kivi.core.collector").Collector
-
-local M = {}
+local Context = require("kivi.core.context")
+local Collector = require("kivi.core.collector")
 
 local Loader = {}
 Loader.__index = Loader
-M.Loader = Loader
 
 function Loader.new(bufnr)
   vim.validate({ bufnr = { bufnr, "number" } })
@@ -97,4 +94,4 @@ function Loader.expand_parent(_, ctx, path, cursor_line_path, expanded)
   end)
 end
 
-return M
+return Loader

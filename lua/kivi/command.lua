@@ -1,6 +1,6 @@
-local Context = require("kivi.core.context").Context
-local Controller = require("kivi.controller").Controller
-local Loader = require("kivi.core.loader").Loader
+local Context = require("kivi.core.context")
+local Controller = require("kivi.controller")
+local Loader = require("kivi.core.loader")
 
 local ShowError = require("kivi.vendor.misclib.error_handler").for_show_error()
 local ReturnValue = require("kivi.vendor.misclib.error_handler").for_return_value()

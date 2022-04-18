@@ -1,8 +1,5 @@
-local M = {}
-
 local Executor = {}
 Executor.__index = Executor
-M.Executor = Executor
 
 function Executor.new(ui)
   local tbl = { _ui = ui }
@@ -44,4 +41,4 @@ function Executor.execute(self, ctx, all_nodes, action_name, opts, action_opts)
   return result, nil
 end
 
-return M
+return Executor

@@ -2,11 +2,8 @@ local repository = require("kivi.lib.repository").Repository.new("creator")
 local messagelib = require("kivi.lib.message")
 local windowlib = require("kivi.lib.window")
 
-local M = {}
-
 local Creator = {}
 Creator.__index = Creator
-M.Creator = Creator
 
 function Creator.open(kind, loader, base_node)
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -121,4 +118,4 @@ function Creator.write(self)
   self._loader:reload(cursor_line_path, expanded)
 end
 
-return M
+return Creator

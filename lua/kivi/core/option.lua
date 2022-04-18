@@ -1,14 +1,11 @@
 local Path = require("kivi.lib.path").Path
 local tbllib = require("kivi.lib.table")
 
-local M = {}
-
 local default_opts = { source = "file", path = ".", expanded = {} }
 local default_open_opts = { layout = { type = "no" } }
 
 local Options = {}
 Options.__index = Options
-M.Options = Options
 
 function Options.new(raw_opts)
   raw_opts = raw_opts or {}
@@ -33,4 +30,4 @@ function Options.merge(self, opts)
   return Options.new(raw_opts)
 end
 
-return M
+return Options

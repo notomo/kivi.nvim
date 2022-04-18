@@ -1,11 +1,8 @@
 local repository = require("kivi.lib.repository").Repository.new("clipboard")
 local messagelib = require("kivi.lib.message")
 
-local M = {}
-
 local Clipboard = {}
 Clipboard.__index = Clipboard
-M.Clipboard = Clipboard
 
 function Clipboard.new(source_name)
   vim.validate({ source_name = { source_name, "string" } })
@@ -50,4 +47,4 @@ function Clipboard.pop(self)
   return nodes, has_cut
 end
 
-return M
+return Clipboard

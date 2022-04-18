@@ -1,8 +1,5 @@
-local M = {}
-
 local History = {}
 History.__index = History
-M.History = History
 
 function History.new()
   local tbl = { _rows = {}, _paths = {}, latest_path = nil }
@@ -36,4 +33,4 @@ function History.stored(self, path)
   return self._rows[path]
 end
 
-return M
+return History

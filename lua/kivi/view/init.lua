@@ -1,16 +1,13 @@
 local windowlib = require("kivi.lib.window")
 local cursorlib = require("kivi.lib.cursor")
 local bufferlib = require("kivi.vendor.misclib.buffer")
-local Layout = require("kivi.view.layout").Layout
-local Nodes = require("kivi.core.node").Nodes
-local Context = require("kivi.core.context").Context
+local Layout = require("kivi.view.layout")
+local Nodes = require("kivi.core.node")
+local Context = require("kivi.core.context")
 local vim = vim
-
-local M = {}
 
 local View = {}
 View.__index = View
-M.View = View
 
 View.key_mapping_script = [[
 nnoremap <silent> <buffer> <expr> j line('.') == line('$') ? 'gg' : 'j'
@@ -149,4 +146,4 @@ function View.highlight(self, source, opts, first_line, last_line)
   end)
 end
 
-return M
+return View

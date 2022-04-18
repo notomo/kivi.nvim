@@ -1,12 +1,9 @@
 local repository = require("kivi.lib.repository").Repository.new("context")
-local History = require("kivi.core.history").History
-local Clipboard = require("kivi.core.clipboard").Clipboard
-
-local M = {}
+local History = require("kivi.core.history")
+local Clipboard = require("kivi.core.clipboard")
 
 local Context = {}
 Context.__index = Context
-M.Context = Context
 
 function Context.new(source, ui, key, opts)
   local old_ctx = repository:get(key) or {}
@@ -45,4 +42,4 @@ function Context.get(bufnr)
   return ctx, nil
 end
 
-return M
+return Context

@@ -2,13 +2,10 @@ local repository = require("kivi.lib.repository").Repository.new("renamer")
 local messagelib = require("kivi.lib.message")
 local cursorlib = require("kivi.lib.cursor")
 
-local M = {}
-
 local ns = vim.api.nvim_create_namespace("kivi-renamer")
 
 local Renamer = {}
 Renamer.__index = Renamer
-M.Renamer = Renamer
 
 function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -162,4 +159,4 @@ function Renamer.read(self)
   end
 end
 
-return M
+return Renamer

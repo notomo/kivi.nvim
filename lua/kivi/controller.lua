@@ -1,17 +1,8 @@
-local Source = require("kivi.core.source").Source
-local Context = require("kivi.core.context").Context
-local Loader = require("kivi.core.loader").Loader
-local Executor = require("kivi.core.executor").Executor
-local Options = require("kivi.core.option").Options
-local View = require("kivi.view").View
-local Renamer = require("kivi.view.renamer").Renamer
-local Creator = require("kivi.view.creator").Creator
-
-local M = {}
+local Context = require("kivi.core.context")
+local Loader = require("kivi.core.loader")
 
 local Controller = {}
 Controller.__index = Controller
-M.Controller = Controller
 
 function Controller.new()
   local tbl = {}
@@ -19,13 +10,13 @@ function Controller.new()
 end
 
 function Controller.open(_, raw_opts)
-  local opts, open_opts = Options.new(raw_opts)
-  local source, err = Source.new(opts.source, raw_opts.source_opts)
+  local opts, open_opts = require("kivi.core.option").new(raw_opts)
+  local source, err = require("kivi.core.source").new(opts.source, raw_opts.source_opts)
   if err ~= nil then
     return nil, err
   end
 
-  local ui, key = View.open(source, open_opts)
+  local ui, key = require("kivi.view").open(source, open_opts)
   local ctx = Context.new(source, ui, key, opts)
   return Loader.new(ctx.ui.bufnr):open(ctx, raw_opts.source_setup_opts)
 end
@@ -66,7 +57,7 @@ function Controller.execute(_, action_name, range, opts, action_opts)
 
   local nodes = ctx.ui:selected_nodes(action_name, range)
   ctx.ui:reset_selections(action_name)
-  return Executor.new(ctx.ui):execute(ctx, nodes, action_name, opts, action_opts)
+  return require("kivi.core.executor").new(ctx.ui):execute(ctx, nodes, action_name, opts, action_opts)
 end
 
 function Controller.open_renamer(_, base_node, rename_items, has_cut)
@@ -81,7 +72,7 @@ function Controller.open_renamer(_, base_node, rename_items, has_cut)
   end
 
   local loader = Loader.new(ctx.ui.bufnr)
-  Renamer.open(kind, loader, base_node, rename_items, has_cut)
+  require("kivi.view.renamer").open(kind, loader, base_node, rename_items, has_cut)
 end
 
 function Controller.open_creator(_, base_node)
@@ -96,7 +87,7 @@ function Controller.open_creator(_, base_node)
   end
 
   local loader = Loader.new(ctx.ui.bufnr)
-  Creator.open(kind, loader, base_node)
+  require("kivi.view.creator").open(kind, loader, base_node)
 end
 
-return M
+return Controller

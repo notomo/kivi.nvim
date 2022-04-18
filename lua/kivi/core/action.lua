@@ -1,7 +1,4 @@
-local M = {}
-
 local Action = {}
-M.Action = Action
 
 local ACTION_PREFIX = "action_"
 
@@ -33,4 +30,4 @@ function Action.execute(self, nodes, ctx)
   return self._action(self, nodes, ctx)
 end
 
-return M
+return Action

@@ -3,14 +3,11 @@ local filelib = require("kivi.lib.file")
 local pathlib = require("kivi.lib.path")
 local inputlib = require("kivi.lib.input")
 local messagelib = require("kivi.lib.message")
-local Action = require("kivi.core.action").Action
+local Action = require("kivi.core.action")
 local base = require("kivi.kind.base")
 local vim = vim
 
-local M = {}
-
 local Kind = {}
-M.Kind = Kind
 
 function Kind.new(name)
   vim.validate({ name = { name, "string" } })
@@ -27,7 +24,7 @@ function Kind.new(name)
     messagelib = messagelib,
     opts = vim.tbl_deep_extend("force", base.opts, kind.opts or {}),
     input_reader = inputlib.reader(),
-    controller = require("kivi.controller").Controller.new(),
+    controller = require("kivi.controller").new(),
     _kind = kind,
   }
   return setmetatable(tbl, Kind), nil
@@ -50,4 +47,4 @@ function Kind.confirm(self, message, nodes)
   return self.input_reader:confirm(msg)
 end
 
-return M
+return Kind

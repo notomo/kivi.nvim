@@ -1,6 +1,4 @@
-local Nodes = require("kivi.core.node").Nodes
-
-local M = {}
+local Nodes = require("kivi.core.node")
 
 local CollectResult = {}
 CollectResult.__index = CollectResult
@@ -12,7 +10,6 @@ end
 
 local Collector = {}
 Collector.__index = Collector
-M.Collector = Collector
 
 function Collector.new(source)
   vim.validate({ source = { source, "table" } })
@@ -38,4 +35,4 @@ function Collector.start(self, opts, callback, source_setup_opts)
   return result, nil
 end
 
-return M
+return Collector

@@ -1,5 +1,3 @@
-local M = {}
-
 local Layouts = {}
 
 function Layouts.no() end
@@ -19,7 +17,6 @@ end
 
 local Layout = {}
 Layout.__index = Layout
-M.Layout = Layout
 
 function Layout.new(opts)
   opts = opts or {}
@@ -47,4 +44,4 @@ function Layout.open(self, bufnr)
   return vim.api.nvim_get_current_win()
 end
 
-return M
+return Layout

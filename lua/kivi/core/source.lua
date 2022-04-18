@@ -4,10 +4,7 @@ local filelib = require("kivi.lib.file")
 local HighlighterFactory = require("kivi.lib.highlight").HighlighterFactory
 local base = require("kivi.source.base")
 
-local M = {}
-
 local Source = {}
-M.Source = Source
 
 function Source.new(source_name, source_opts)
   vim.validate({ source_name = { source_name, "string" }, source_opts = { source_opts, "table", true } })
@@ -44,4 +41,4 @@ function Source.start(self, opts, setup_opts)
   return self:collect(opts)
 end
 
-return M
+return Source

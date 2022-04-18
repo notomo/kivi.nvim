@@ -1,10 +1,7 @@
-local Kind = require("kivi.core.kind").Kind
+local Kind = require("kivi.core.kind")
 local listlib = require("kivi.lib.list")
 
-local M = {}
-
 local Node = {}
-M.Node = Node
 
 function Node.new(raw_node, parent)
   vim.validate({ raw_node = { raw_node, "table" }, parent = { parent, "table", true } })
@@ -60,7 +57,6 @@ end
 
 local FlatNode = {}
 FlatNode.__index = FlatNode
-M.FlatNode = FlatNode
 
 function FlatNode.new(node, index, depth)
   vim.validate({ node = { node, "table" }, index = { index, "number" }, depth = { depth, "number" } })
@@ -74,7 +70,6 @@ end
 
 local Nodes = {}
 Nodes.__index = Nodes
-M.Nodes = Nodes
 
 function Nodes.new(raw_nodes, selected)
   vim.validate({ raw_nodes = { raw_nodes, "table" }, selected = { selected, "table", true } })
@@ -205,4 +200,4 @@ function Nodes.group_by_kind(self)
   end
 end
 
-return M
+return Nodes
