@@ -9,13 +9,6 @@ local vim = vim
 local View = {}
 View.__index = View
 
-View.key_mapping_script = [[
-nnoremap <silent> <buffer> <expr> j line('.') == line('$') ? 'gg' : 'j'
-nnoremap <silent> <buffer> <expr> k line('.') == 1 ? 'G' : 'k'
-nnoremap <buffer> h <Cmd>lua require("kivi").execute("parent")<CR>
-nnoremap <buffer> l <Cmd>lua require("kivi").execute("child")<CR>
-nnoremap <nowait> <buffer> q <Cmd>quit<CR>]]
-
 function View.open(source, open_opts)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
@@ -28,7 +21,6 @@ function View.open(source, open_opts)
   Layout.new(open_opts.layout):open(bufnr)
   vim.api.nvim_set_option_value("number", false, { scope = "local" })
   vim.api.nvim_set_option_value("list", false, { scope = "local" })
-  vim.cmd(View.key_mapping_script)
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
     buffer = bufnr,
     callback = function()
