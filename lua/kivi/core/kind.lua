@@ -4,7 +4,7 @@ local pathlib = require("kivi.lib.path")
 local inputlib = require("kivi.lib.input")
 local messagelib = require("kivi.lib.message")
 local Action = require("kivi.core.action")
-local base = require("kivi.kind.base")
+local base = require("kivi.handler.kind.base")
 local vim = vim
 
 local Kind = {}
@@ -12,7 +12,7 @@ local Kind = {}
 function Kind.new(name)
   vim.validate({ name = { name, "string" } })
 
-  local kind = modulelib.find("kivi.kind." .. name)
+  local kind = modulelib.find("kivi.handler.kind." .. name)
   if not kind then
     return nil, "not found kind: " .. name
   end

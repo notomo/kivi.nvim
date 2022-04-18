@@ -31,7 +31,7 @@ M.action_child = M.action_open
 
 M.is_parent = true
 
-local file_kind = require("kivi.kind.file")
+local file_kind = require("kivi.handler.kind.file")
 return setmetatable(M, {
   __index = function(_, k)
     return rawget(M, k) or file_kind[k]

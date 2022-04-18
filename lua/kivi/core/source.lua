@@ -2,7 +2,7 @@ local modulelib = require("kivi.vendor.misclib.module")
 local pathlib = require("kivi.lib.path")
 local filelib = require("kivi.lib.file")
 local HighlighterFactory = require("kivi.lib.highlight").HighlighterFactory
-local base = require("kivi.source.base")
+local base = require("kivi.handler.source.base")
 
 local Source = {}
 
@@ -10,7 +10,7 @@ function Source.new(source_name, source_opts)
   vim.validate({ source_name = { source_name, "string" }, source_opts = { source_opts, "table", true } })
   source_opts = source_opts or {}
 
-  local source = modulelib.find("kivi.source." .. source_name)
+  local source = modulelib.find("kivi.handler.source." .. source_name)
   if source == nil then
     return nil, "not found source: " .. source_name
   end
