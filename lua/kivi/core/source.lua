@@ -1,4 +1,4 @@
-local modulelib = require("kivi.lib.module")
+local modulelib = require("kivi.vendor.misclib.module")
 local pathlib = require("kivi.lib.path")
 local filelib = require("kivi.lib.file")
 local HighlighterFactory = require("kivi.lib.highlight").HighlighterFactory

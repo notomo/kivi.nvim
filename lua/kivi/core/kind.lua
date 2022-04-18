@@ -1,4 +1,4 @@
-local modulelib = require("kivi.lib.module")
+local modulelib = require("kivi.vendor.misclib.module")
 local filelib = require("kivi.lib.file")
 local pathlib = require("kivi.lib.path")
 local inputlib = require("kivi.lib.input")

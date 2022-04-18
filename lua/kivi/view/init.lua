@@ -1,6 +1,6 @@
 local windowlib = require("kivi.lib.window")
 local cursorlib = require("kivi.lib.cursor")
-local bufferlib = require("kivi.lib.buffer")
+local bufferlib = require("kivi.vendor.misclib.buffer")
 local Layout = require("kivi.view.layout").Layout
 local Nodes = require("kivi.core.node").Nodes
 local Context = require("kivi.core.context").Context
@@ -47,10 +47,11 @@ end
 
 function View.redraw(self, nodes)
   self._nodes = nodes
-  bufferlib.set_lines(
+  bufferlib.set_lines_as_modifiable(
     self.bufnr,
     0,
     -1,
+    false,
     nodes:map(function(node)
       local indent = ("  "):rep(node.depth - 1)
       return indent .. node.value
