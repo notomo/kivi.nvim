@@ -1,38 +1,17 @@
 local Context = require("kivi.core.context").Context
 local Controller = require("kivi.controller").Controller
-local custom = require("kivi.core.custom")
 local Router = require("kivi.view.router").Router
-local messagelib = require("kivi.lib.message")
-local modelib = require("kivi.lib.mode")
 
-local M = {}
+local ShowError = require("kivi.vendor.misclib.error_handler").for_show_error()
+local ReturnValue = require("kivi.vendor.misclib.error_handler").for_return_value()
 
-local Command = {}
-Command.__index = Command
-M.Command = Command
-
-function Command.new(name, ...)
-  local args = { ... }
-  local f = function()
-    return Command[name](unpack(args))
-  end
-
-  local ok, result, msg = xpcall(f, debug.traceback)
-  if not ok then
-    return messagelib.error(result)
-  elseif msg then
-    return messagelib.warn(msg)
-  end
-  return result
-end
-
-function Command.open(raw_opts)
+function ReturnValue.open(raw_opts)
   vim.validate({ raw_opts = { raw_opts, "table", true } })
   raw_opts = raw_opts or {}
   return Controller.new():open(raw_opts)
 end
 
-function Command.navigate(path, source_setup_opts)
+function ReturnValue.navigate(path, source_setup_opts)
   vim.validate({ path = { path, "string" }, source_setup_opts = { source_setup_opts, "table", true } })
   source_setup_opts = source_setup_opts or {}
 
@@ -44,36 +23,36 @@ function Command.navigate(path, source_setup_opts)
   return Controller.new():navigate(ctx, path, source_setup_opts)
 end
 
-function Command.execute(action_name, opts, action_opts)
+function ReturnValue.execute(action_name, opts, action_opts)
   vim.validate({
     action_name = { action_name, "string" },
     opts = { opts, "table", true },
     action_opts = { action_opts, "table", true },
   })
-  local range = modelib.current_row_range()
+  local range = require("kivi.lib.mode").current_row_range()
   opts = opts or {}
   action_opts = action_opts or {}
   return Controller.new():execute(action_name, range, opts, action_opts)
 end
 
-function Command.setup(config)
+function ShowError.setup(config)
   vim.validate({ config = { config, "table" } })
-  custom.set(config)
+  require("kivi.core.custom").set(config)
 end
 
-function Command.read(bufnr)
+function ShowError.read(bufnr)
   return Router.read(bufnr)
 end
 
-function Command.write(bufnr)
+function ShowError.write(bufnr)
   return Router.write(bufnr)
 end
 
-function Command.delete(bufnr)
+function ShowError.delete(bufnr)
   return Router.delete(bufnr)
 end
 
-function Command.is_parent()
+function ReturnValue.is_parent()
   local ctx, err = Context.get()
   if err ~= nil then
     return false, err
@@ -88,4 +67,4 @@ function Command.is_parent()
   return kind.is_parent == true, nil
 end
 
-return M
+return vim.tbl_extend("force", ShowError:methods(), ReturnValue:methods())

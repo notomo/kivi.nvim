@@ -33,15 +33,8 @@ function Creator.open(kind, loader, base_node)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. Creator.path)
   vim.cmd("doautocmd BufRead") -- HACK?
 
-  vim.cmd(
-    ([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').Command.new('write', %s)]]):format(
-      bufnr,
-      bufnr
-    )
-  )
-  vim.cmd(
-    ([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").Command.new("delete", %s)]]):format(bufnr, bufnr)
-  )
+  vim.cmd(([[autocmd BufWriteCmd <buffer=%s> ++nested lua require('kivi.command').write(%s)]]):format(bufnr, bufnr))
+  vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("kivi.command").delete(%s)]]):format(bufnr, bufnr))
 
   local tbl = {
     _bufnr = bufnr,
