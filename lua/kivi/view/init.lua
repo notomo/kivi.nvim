@@ -2,7 +2,7 @@ local windowlib = require("kivi.lib.window")
 local cursorlib = require("kivi.lib.cursor")
 local bufferlib = require("kivi.vendor.misclib.buffer")
 local Layout = require("kivi.view.layout")
-local Nodes = require("kivi.core.node")
+local Nodes = require("kivi.core.nodes")
 local Context = require("kivi.core.context")
 local vim = vim
 

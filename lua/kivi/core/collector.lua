@@ -1,4 +1,4 @@
-local Nodes = require("kivi.core.node")
+local Nodes = require("kivi.core.nodes")
 
 local CollectResult = {}
 CollectResult.__index = CollectResult
