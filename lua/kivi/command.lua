@@ -1,6 +1,5 @@
 local Context = require("kivi.core.context")
 local Controller = require("kivi.controller")
-local Loader = require("kivi.core.loader")
 
 local ShowError = require("kivi.vendor.misclib.error_handler").for_show_error()
 local ReturnValue = require("kivi.vendor.misclib.error_handler").for_return_value()
@@ -29,7 +28,8 @@ function ReturnValue.execute(action_name, opts, action_opts)
     opts = { opts, "table", true },
     action_opts = { action_opts, "table", true },
   })
-  local range = require("kivi.lib.mode").current_row_range()
+  local range = require("kivi.vendor.misclib.visual_mode").row_range()
+    or { first = vim.fn.line("."), last = vim.fn.line(".") }
   opts = opts or {}
   action_opts = action_opts or {}
   return Controller.new():execute(action_name, range, opts, action_opts)
@@ -41,7 +41,7 @@ function ShowError.setup(config)
 end
 
 function ShowError.read(bufnr)
-  return Loader.new(bufnr):reload()
+  return require("kivi.core.loader").new(bufnr):reload()
 end
 
 function ReturnValue.is_parent()
