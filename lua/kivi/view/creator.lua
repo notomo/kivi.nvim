@@ -8,8 +8,6 @@ local Creator = {}
 Creator.__index = Creator
 M.Creator = Creator
 
-Creator.path = "/kivi-creator"
-
 function Creator.open(kind, loader, base_node)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
@@ -30,22 +28,8 @@ function Creator.open(kind, loader, base_node)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].buftype = "acwrite"
   vim.bo[bufnr].modified = false
-  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. Creator.path)
+  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-creator")
   vim.api.nvim_exec_autocmds("BufRead", { modeline = false }) -- HACK?
-
-  vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
-    buffer = bufnr,
-    nested = true,
-    callback = function()
-      require("kivi.command").write(bufnr)
-    end,
-  })
-  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
-    buffer = bufnr,
-    callback = function()
-      require("kivi.command").delete(bufnr)
-    end,
-  })
 
   local tbl = {
     _bufnr = bufnr,
@@ -58,6 +42,20 @@ function Creator.open(kind, loader, base_node)
   repository:set(bufnr, creator)
 
   vim.cmd("startinsert")
+
+  vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
+    buffer = bufnr,
+    nested = true,
+    callback = function()
+      creator:write()
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
+    buffer = bufnr,
+    callback = function()
+      repository:delete(bufnr)
+    end,
+  })
 end
 
 function Creator.write(self)
@@ -121,23 +119,6 @@ function Creator.write(self)
   end
 
   self._loader:reload(cursor_line_path, expanded)
-end
-
-function Creator.match(path)
-  local pattern = vim.pesc(Creator.path) .. "$"
-  return path:match(pattern)
-end
-
-function Creator.write_from(bufnr)
-  local creator = repository:get(bufnr)
-  if creator == nil then
-    return
-  end
-  return creator:write()
-end
-
-function Creator.delete_from(bufnr)
-  repository:delete(bufnr)
 end
 
 return M

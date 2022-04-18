@@ -1,6 +1,6 @@
 local Context = require("kivi.core.context").Context
 local Controller = require("kivi.controller").Controller
-local Router = require("kivi.view.router").Router
+local Loader = require("kivi.core.loader").Loader
 
 local ShowError = require("kivi.vendor.misclib.error_handler").for_show_error()
 local ReturnValue = require("kivi.vendor.misclib.error_handler").for_return_value()
@@ -41,15 +41,7 @@ function ShowError.setup(config)
 end
 
 function ShowError.read(bufnr)
-  return Router.read(bufnr)
-end
-
-function ShowError.write(bufnr)
-  return Router.write(bufnr)
-end
-
-function ShowError.delete(bufnr)
-  return Router.delete(bufnr)
+  return Loader.new(bufnr):reload()
 end
 
 function ReturnValue.is_parent()

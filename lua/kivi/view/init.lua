@@ -19,13 +19,11 @@ nnoremap <buffer> h <Cmd>lua require("kivi").execute("parent")<CR>
 nnoremap <buffer> l <Cmd>lua require("kivi").execute("child")<CR>
 nnoremap <nowait> <buffer> q <Cmd>quit<CR>]]
 
-View.path = "/kivi"
-
 function View.open(source, open_opts)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
   local key = ("%s/%d"):format(source.name, bufnr)
-  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. key .. View.path)
+  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. key .. "/kivi")
   vim.bo[bufnr].filetype = source.filetype
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
@@ -149,11 +147,6 @@ function View.highlight(self, source, opts, first_line, last_line)
   highlighter:filter("KiviSelected", first_line, nodes, function(node)
     return self._nodes:is_selected(node.path)
   end)
-end
-
-function View.match(path)
-  local pattern = vim.pesc(View.path) .. "$"
-  return path:match(pattern)
 end
 
 return M

@@ -10,34 +10,11 @@ local Renamer = {}
 Renamer.__index = Renamer
 M.Renamer = Renamer
 
-Renamer.path = "/kivi-renamer"
-
 function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].buftype = "acwrite"
-  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. Renamer.path)
-
-  vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
-    buffer = bufnr,
-    nested = true,
-    callback = function()
-      require("kivi.command").read(bufnr)
-    end,
-  })
-  vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
-    buffer = bufnr,
-    nested = true,
-    callback = function()
-      require("kivi.command").write(bufnr)
-    end,
-  })
-  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
-    buffer = bufnr,
-    callback = function()
-      require("kivi.command").delete(bufnr)
-    end,
-  })
+  vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-renamer")
 
   local froms = {}
   for i, item in ipairs(rename_items) do
@@ -74,9 +51,29 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     border = { { " ", "NormalFloat" } },
   })
   cursorlib.set_row(2, window_id, bufnr)
-  vim.api.nvim_exec_autocmds("BufRead", { modeline = false }) -- HACK?
-
   repository:set(bufnr, renamer)
+
+  vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
+    buffer = bufnr,
+    nested = true,
+    callback = function()
+      renamer:read()
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
+    buffer = bufnr,
+    nested = true,
+    callback = function()
+      renamer:write()
+    end,
+  })
+  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
+    buffer = bufnr,
+    callback = function()
+      repository:delete(bufnr)
+    end,
+  })
+  vim.api.nvim_exec_autocmds("BufRead", { modeline = false }) -- HACK?
 end
 
 function Renamer.write(self)
@@ -163,31 +160,6 @@ function Renamer.read(self)
       virt_text = { { "<- " .. line, "Comment" } },
     })
   end
-end
-
-function Renamer.match(path)
-  local pattern = vim.pesc(Renamer.path) .. "$"
-  return path:match(pattern)
-end
-
-function Renamer.read_from(bufnr)
-  local renamer = repository:get(bufnr)
-  if renamer == nil then
-    return
-  end
-  return renamer:read()
-end
-
-function Renamer.write_from(bufnr)
-  local renamer = repository:get(bufnr)
-  if renamer == nil then
-    return
-  end
-  return renamer:write()
-end
-
-function Renamer.delete_from(bufnr)
-  repository:delete(bufnr)
 end
 
 return M

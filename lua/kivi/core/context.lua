@@ -23,16 +23,12 @@ function Context.new(source, ui, key, opts)
     vim.api.nvim_create_autocmd({ "BufWipeout" }, {
       buffer = ui.bufnr,
       callback = function()
-        require("kivi.command").delete(ui.bufnr)
+        repository:delete(self._key)
       end,
     })
   end
   repository:set(key, self)
   return self
-end
-
-function Context.delete(self)
-  repository:delete(self._key)
 end
 
 function Context.get(bufnr)
@@ -47,14 +43,6 @@ function Context.get(bufnr)
     return nil, "no context: " .. path
   end
   return ctx, nil
-end
-
-function Context.delete_from(bufnr)
-  local ctx, err = Context.get(bufnr)
-  if err ~= nil then
-    return err
-  end
-  return ctx:delete()
 end
 
 return M
