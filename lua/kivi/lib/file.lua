@@ -1,5 +1,6 @@
 local pathlib = require("kivi.lib.path")
 local vim = vim
+local loop = vim.loop
 
 local M = {}
 
@@ -7,11 +8,27 @@ local File = setmetatable({}, pathlib.Path)
 File.__index = File
 M.File = File
 
+local is_dir = function(path)
+  local stat = loop.fs_stat(path)
+  return stat and stat.type == "directory"
+end
+
 function File.new(path)
   if type(path) == "table" then
     path = path:get()
   end
-  local tbl = { path = pathlib.adjust_sep(vim.fn.fnamemodify(path, ":p")) }
+  path = path or loop.cwd()
+
+  local real_path = loop.fs_realpath(path)
+  if real_path then
+    path = real_path
+  end
+
+  path = pathlib.adjust_sep(path)
+  if is_dir(path) and not vim.endswith(path, "/") then
+    path = path .. "/"
+  end
+  local tbl = { path = path }
   return setmetatable(tbl, File)
 end
 
@@ -20,23 +37,45 @@ function File.__tostring(self)
 end
 
 function File.is_dir(self)
-  return vim.fn.isdirectory(self.path) ~= 0
+  return is_dir(self.path)
 end
 
 function File.can_read(self)
-  return vim.loop.fs_access(self.path, "r")
+  return loop.fs_access(self.path, "r")
 end
 
-function File.paths(self)
-  if not self:can_read() then
+function File.entries(self)
+  local fs = loop.fs_scandir(self.path)
+  if not fs then
     return nil, "can't open " .. self.path
   end
 
-  local paths = {}
-  for _, p in ipairs(vim.fn.readdir(self.path)) do
-    table.insert(paths, self:join(p))
+  local entries = {}
+  while true do
+    local file_name, type = loop.fs_scandir_next(fs)
+    if not file_name then
+      break
+    end
+
+    local path = self:join(file_name)
+    local is_directory = type == "directory"
+    local name = file_name
+    if is_directory then
+      name = name .. "/"
+    end
+    table.insert(entries, { path = path, is_directory = is_directory, name = name })
   end
-  return paths, nil
+
+  table.sort(entries, function(a, b)
+    local is_dir_a = a.is_directory and 1 or 0
+    local is_dir_b = b.is_directory and 1 or 0
+    if is_dir_a ~= is_dir_b then
+      return is_dir_a > is_dir_b
+    end
+    return a.name < b.name
+  end)
+
+  return entries
 end
 
 function File.delete(self)
