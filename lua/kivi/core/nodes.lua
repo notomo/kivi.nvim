@@ -75,7 +75,7 @@ function Nodes.new(raw_nodes, selected)
   vim.validate({ raw_nodes = { raw_nodes, "table" }, selected = { selected, "table", true } })
   local tbl = { _nodes = raw_nodes, _selected = selected or {} }
   if raw_nodes[1] then
-    tbl.root_path = raw_nodes[1].path
+    tbl.root_path = raw_nodes[1].path:get()
   end
   return setmetatable(tbl, Nodes)
 end

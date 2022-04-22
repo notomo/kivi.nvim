@@ -69,7 +69,7 @@ function M.init_path(self)
 end
 
 function M.hook(_, path)
-  File.new(path:get()):lcd()
+  File.new(path):lcd()
 end
 
 M.kind_name = "file"
