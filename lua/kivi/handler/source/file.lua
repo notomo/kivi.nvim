@@ -56,10 +56,6 @@ function M.init_path(self)
     return
   end
 
-  if vim.bo[bufnr].filetype == self.filetype then
-    return
-  end
-
   local path = File.new(vim.api.nvim_buf_get_name(bufnr))
   if not path:readable() then
     return

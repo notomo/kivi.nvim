@@ -1,6 +1,4 @@
 local modulelib = require("kivi.vendor.misclib.module")
-local pathlib = require("kivi.lib.path")
-local filelib = require("kivi.lib.file")
 local HighlighterFactory = require("kivi.lib.highlight").HighlighterFactory
 local base = require("kivi.handler.source.base")
 
@@ -18,10 +16,7 @@ function Source.new(source_name, source_opts)
   local tbl = {
     name = source_name,
     bufnr = vim.api.nvim_get_current_buf(),
-    filetype = ("kivi-%s"):format(source_name),
     highlights = HighlighterFactory.new("kivi-highlight"),
-    pathlib = pathlib,
-    filelib = filelib,
     opts = vim.tbl_extend("force", source.opts, source_opts),
     _source = source,
   }

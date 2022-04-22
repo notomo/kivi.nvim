@@ -14,7 +14,7 @@ function View.open(source, open_opts)
 
   local key = ("%s/%d"):format(source.name, bufnr)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. key .. "/kivi")
-  vim.bo[bufnr].filetype = source.filetype
+  vim.bo[bufnr].filetype = ("kivi-%s"):format(source.name)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
 
