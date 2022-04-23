@@ -1,3 +1,4 @@
+local pathlib = require("kivi.lib.path")
 local Path = require("kivi.lib.path").Path
 
 local M = {}
@@ -9,7 +10,7 @@ function M.action_parent(self, nodes, ctx)
   if not node then
     return
   end
-  return self.controller:navigate_parent(ctx, node:root().path:parent())
+  return self.controller:navigate_parent(ctx, pathlib.parent(node:root().path:get()))
 end
 
 function M.action_debug_print(_, nodes)

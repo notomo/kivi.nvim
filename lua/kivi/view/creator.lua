@@ -1,5 +1,6 @@
 local messagelib = require("kivi.lib.message")
 local windowlib = require("kivi.lib.window")
+local pathlib = require("kivi.lib.path")
 
 local Creator = {}
 Creator.__index = Creator
@@ -59,7 +60,7 @@ function Creator.write(self)
   local success = {}
   local errors = {}
   for i, path in ipairs(paths) do
-    if path:exists() then
+    if self._kind:exists(path) then
       table.insert(errors, { path = path, msg = "already exists: " .. path:get() })
       goto continue
     end
@@ -80,7 +81,7 @@ function Creator.write(self)
     -1,
     false,
     vim.tbl_map(function(e)
-      return self._base_node.path:relative(e.path)
+      return pathlib.relative(self._base_node.path:get(), e.path:get())
     end, errors)
   )
 

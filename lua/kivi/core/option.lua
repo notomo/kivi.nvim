@@ -21,8 +21,6 @@ function Options.new(raw_opts)
   raw_opts = raw_opts or {}
 
   local opts = tbllib.extend(default_opts, raw_opts)
-  opts.path = Path.new(opts.path)
-
   local open_opts = tbllib.extend(default_open_opts, raw_opts)
 
   return setmetatable(opts, Options), open_opts

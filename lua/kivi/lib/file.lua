@@ -8,7 +8,7 @@ local File = setmetatable({}, pathlib.Path)
 File.__index = File
 M.File = File
 
-local is_dir = function(path)
+function M.is_dir(path)
   local stat = loop.fs_stat(path)
   return stat and stat.type == "directory"
 end
@@ -25,7 +25,7 @@ function File.new(path)
   end
 
   path = pathlib.adjust_sep(path)
-  if is_dir(path) and not vim.endswith(path, "/") then
+  if M.is_dir(path) and not vim.endswith(path, "/") then
     path = path .. "/"
   end
   local tbl = { path = path }
@@ -36,18 +36,10 @@ function File.__tostring(self)
   return self.path
 end
 
-function File.is_dir(self)
-  return is_dir(self.path)
-end
-
-function File.can_read(self)
-  return loop.fs_access(self.path, "r")
-end
-
-function File.entries(self)
-  local fs = loop.fs_scandir(self.path)
+function M.entries(dir)
+  local fs = loop.fs_scandir(dir)
   if not fs then
-    return nil, "can't open " .. self.path
+    return nil, "can't open " .. dir
   end
 
   local entries = {}
@@ -57,7 +49,7 @@ function File.entries(self)
       break
     end
 
-    local path = self:join(file_name)
+    local path = pathlib.join(dir, file_name)
     local is_directory = type == "directory"
     local name = file_name
     if is_directory then
@@ -78,47 +70,50 @@ function File.entries(self)
   return entries
 end
 
-function File.delete(self)
-  return vim.fn.delete(self.path, "rf")
+function M.delete(path)
+  if M.is_dir(path) then
+    return loop.fs_rmdir(path)
+  end
+  return loop.fs_unlink(path)
 end
 
-function File.rename(self, to)
-  return vim.fn.rename(self.path, to:get())
+function M.rename(from, to)
+  return loop.fs_rename(from, to)
 end
 
 if vim.fn.has("win32") == 1 then
-  function File._copy_dir(self, to)
-    local from_path = self:trim_slash():get():gsub("/", "\\")
-    local to_path = to:trim_slash():get():gsub("/", "\\")
+  function M._copy_dir(from, to)
+    local from_path = pathlib.trim_slash(from):gsub("/", "\\")
+    local to_path = pathlib.trim_slash(to):gsub("/", "\\")
     local cmd = { "xcopy", "/Y", "/E", "/I", from_path, to_path }
     vim.fn.systemlist(cmd)
   end
 else
-  function File._copy_dir(self, to)
-    if to:is_dir() then
-      vim.fn.system({ "cp", "-RT", self.path, to:trim_slash():get() })
+  function M._copy_dir(from, to)
+    if M.is_dir(to) then
+      vim.fn.system({ "cp", "-RT", from, pathlib.trim_slash(to) })
     else
-      vim.fn.system({ "cp", "-R", self.path, to:trim_slash():get() })
+      vim.fn.system({ "cp", "-R", from, pathlib.trim_slash(to) })
     end
   end
 end
 
-function File.copy(self, to)
-  if self:is_dir() then
-    return self:_copy_dir(to)
+function M.copy(from, to)
+  if M.is_dir(from) then
+    return M._copy_dir(from, to)
   end
 
-  local from_file = io.open(self.path, "r")
+  local from_file = io.open(from, "r")
   local content = from_file:read("*a")
   from_file:close()
 
-  local to_file = io.open(to:get(), "w")
+  local to_file = io.open(to, "w")
   to_file:write(content)
   to_file:close()
 end
 
-function File._bufnr(self)
-  local pattern = ("^%s$"):format(self.path)
+function M._bufnr(path)
+  local pattern = ("^%s$"):format(path)
   local bufnr = vim.fn.bufnr(pattern)
   if bufnr ~= -1 then
     return bufnr
@@ -126,63 +121,63 @@ function File._bufnr(self)
   return nil
 end
 
-function File._escaped_path(self)
-  return ([[`='%s'`]]):format(self.path:gsub("'", "''"))
+function M._escape(path)
+  return ([[`='%s'`]]):format(path:gsub("'", "''"))
 end
 
-function File.lcd(self)
-  vim.cmd("silent lcd " .. self:_escaped_path())
+function M.lcd(path)
+  vim.cmd("silent lcd " .. M._escape(path))
 end
 
-function File.open(self)
-  local bufnr = self:_bufnr()
+function M.open(path)
+  local bufnr = M._bufnr(path)
   if bufnr ~= nil then
     vim.cmd("buffer " .. bufnr)
   else
-    vim.cmd("edit " .. self:_escaped_path())
+    vim.cmd("edit " .. M._escape(path))
   end
 end
 
-function File.tab_open(self)
-  local bufnr = self:_bufnr()
+function M.tab_open(path)
+  local bufnr = M._bufnr(path)
   if bufnr ~= nil then
     vim.cmd("tabedit")
     vim.cmd("buffer " .. bufnr)
   else
-    vim.cmd("tabedit " .. self:_escaped_path())
+    vim.cmd("tabedit " .. M._escape(path))
   end
 end
 
-function File.vsplit_open(self)
-  local bufnr = self:_bufnr()
+function M.vsplit_open(path)
+  local bufnr = M._bufnr(path)
   if bufnr ~= nil then
     vim.cmd("vsplit")
     vim.cmd("buffer " .. bufnr)
   else
-    vim.cmd("vsplit " .. self:_escaped_path())
+    vim.cmd("vsplit " .. M._escape(path))
   end
 end
 
-function File.readable(self)
-  return vim.fn.filereadable(self.path) ~= 0
+function M.readable(path)
+  return vim.fn.filereadable(path) ~= 0
 end
 
-function File.exists(self)
-  return self:readable() or self:is_dir()
+function M.exists(path)
+  return M.readable(path) or M.is_dir(path)
 end
 
-function File.create(self)
-  if vim.endswith(self.path, "/") then
-    vim.fn.mkdir(self.path, "p")
+function M.create(path)
+  if vim.endswith(path, "/") then
+    vim.fn.mkdir(path, "p")
     return
   end
-  local parent = self:parent()
-  if not parent:exists() then
-    parent:slash():create()
-  elseif not parent:is_dir() then
-    return ("can't create: %s (%s is a directory)"):format(self.path, parent)
+  local parent = pathlib.parent(path)
+  if not M.exists(parent) then
+    M.create(pathlib.slash(parent))
+  elseif not M.is_dir(parent) then
+    return ("can't create: %s (%s is a directory)"):format(path, parent)
   end
-  io.open(self.path, "w"):close()
+  io.open(path, "w"):close()
 end
 
 function M.find_upward_dir(child_pattern)

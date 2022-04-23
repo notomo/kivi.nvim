@@ -1,5 +1,6 @@
 local Kind = require("kivi.core.kind")
 local listlib = require("kivi.lib.list")
+local pathlib = require("kivi.lib.path")
 
 local Node = {}
 
@@ -32,7 +33,7 @@ end
 
 function Node.move_to(self, parent)
   local old = vim.deepcopy(self._node)
-  old.path = parent.path:join(self.path:head())
+  old.path = parent.path:join(pathlib.head(self.path:get()))
   return Node.new(old, parent)
 end
 

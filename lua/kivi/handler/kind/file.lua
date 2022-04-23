@@ -12,20 +12,20 @@ end
 function M.action_open(_, nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
-    node.path:open()
+    filelib.open(node.path:get())
   end
 end
 
 function M.action_tab_open(_, nodes)
   for _, node in ipairs(nodes) do
-    node.path:tab_open()
+    filelib.tab_open(node.path:get())
   end
 end
 
 function M.action_vsplit_open(_, nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
-    node.path:vsplit_open()
+    filelib.vsplit_open(node.path:get())
   end
 end
 
@@ -42,7 +42,7 @@ function M.action_paste(self, nodes, ctx)
   local copied, has_cut = ctx.clipboard:pop()
   for _, old_node in ipairs(copied) do
     local new_node = old_node:move_to(base_node)
-    if new_node.path:exists() then
+    if self:exists(new_node.path) then
       table.insert(already_exists, { from = old_node, to = new_node })
       goto continue
     end
@@ -89,19 +89,23 @@ function M.action_paste(self, nodes, ctx)
 end
 
 function M.create(_, path)
-  return path:create()
+  return filelib.create(path:get())
 end
 
 function M.delete(_, path)
-  return path:delete()
+  return filelib.delete(path:get())
 end
 
 function M.rename(_, from, to)
-  return from:rename(to)
+  return filelib.rename(from:get(), to:get())
 end
 
 function M.copy(_, from, to)
-  return from:copy(to)
+  return filelib.copy(from:get(), to:get())
+end
+
+function M.exists(_, path)
+  return filelib.exists(path:get())
 end
 
 function M.find_upward_marker(self)

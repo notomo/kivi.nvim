@@ -20,10 +20,10 @@ function Path.get(self)
   return self.path
 end
 
-function Path.join(self, ...)
+function M.join(...)
   local items = {}
   local slash = false
-  for _, item in ipairs({ self.path, ... }) do
+  for _, item in ipairs({ ... }) do
     if vim.endswith(item, "/") then
       item = item:sub(1, #item - 1)
       slash = true
@@ -38,65 +38,73 @@ function Path.join(self, ...)
     path = path .. "/"
   end
 
-  return self.new(path)
+  return path
+end
+
+function Path.join(self, ...)
+  return self.new(M.join(self.path, ...))
+end
+
+function M.parent(path)
+  if vim.endswith(path, "/") then
+    return vim.fn.fnamemodify(path, ":h:h")
+  end
+  return vim.fn.fnamemodify(path, ":h")
 end
 
 function Path.parent(self)
-  if vim.endswith(self.path, "/") then
-    return self.new(vim.fn.fnamemodify(self.path, ":h:h"))
-  end
-  return self.new(vim.fn.fnamemodify(self.path, ":h"))
+  return self.new(M.parent(self.path))
 end
 
-function Path.slash(self)
-  if vim.endswith(self.path, "/") then
-    return self.new(self.path)
-  end
-  return self.new(self.path .. "/")
-end
-
-function Path.trim_slash(self)
-  if not vim.endswith(self.path, "/") or self.path == "/" then
-    return self.new(self.path)
-  end
-  return self.new(self.path:sub(1, #self.path - 1))
-end
-
-function Path.head(self)
-  if not vim.endswith(self.path, "/") or self.path == "/" then
-    return vim.fn.fnamemodify(self.path, ":t")
-  end
-  return vim.fn.fnamemodify(self.path, ":h:t") .. "/"
-end
-
-function Path.relative(self, path)
-  local base = self:slash():get()
-  if not vim.startswith(path:get(), base) then
+function M.slash(path)
+  if vim.endswith(path, "/") then
     return path
   end
-  return path:get():sub(#base + 1)
+  return path .. "/"
 end
 
-function Path.depth(self)
-  return #(vim.split(self.path, "/", true))
+function M.trim_slash(path)
+  if not vim.endswith(path, "/") or path == "/" then
+    return path
+  end
+  return path:sub(1, #path - 1)
 end
 
-function Path.is_dir(self)
-  return vim.endswith(self.path, "/")
+function M.head(path)
+  if not vim.endswith(path, "/") or path == "/" then
+    return vim.fn.fnamemodify(path, ":t")
+  end
+  return vim.fn.fnamemodify(path, ":h:t") .. "/"
+end
+
+function M.relative(base, path)
+  base = M.slash(base)
+  if not vim.startswith(path, base) then
+    return path
+  end
+  return path:sub(#base + 1)
+end
+
+function M._depth(path)
+  return #(vim.split(path, "/", true))
+end
+
+function M.is_dir(path)
+  return vim.endswith(path, "/")
 end
 
 function Path.between(self, base_path)
   local dir
-  if self:is_dir() then
+  if M.is_dir(self.path) then
     dir = self
   else
     dir = self:parent()
   end
 
   local paths = {}
-  local depth = base_path:depth()
+  local depth = M._depth(base_path:get())
   while true do
-    if depth >= dir:depth() then
+    if depth >= M._depth(dir:get()) then
       break
     end
     table.insert(paths, dir)

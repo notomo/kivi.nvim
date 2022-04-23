@@ -1,5 +1,6 @@
 local messagelib = require("kivi.lib.message")
 local cursorlib = require("kivi.lib.cursor")
+local pathlib = require("kivi.lib.path")
 
 local ns = vim.api.nvim_create_namespace("kivi-renamer")
 
@@ -20,7 +21,8 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local tbl = {
     _bufnr = bufnr,
     _lines = vim.tbl_map(function(item)
-      return base_node.path:relative(item.to or item.from)
+      local path = item.to or item.from
+      return pathlib.relative(base_node.path:get(), path:get())
     end, rename_items),
     _froms = froms,
     _base_node = base_node,
@@ -86,7 +88,7 @@ function Renamer.write(self)
   local success = {}
   local already_exists = {}
   for i, item in ipairs(items) do
-    if item.to:exists() then
+    if self._kind:exists(item.to) then
       table.insert(already_exists, item)
       goto continue
     end

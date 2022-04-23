@@ -1,31 +1,34 @@
 local File = require("kivi.lib.file").File
 local highlights = require("kivi.lib.highlight")
 local filelib = require("kivi.lib.file")
+local pathlib = require("kivi.lib.path")
 local vim = vim
 
 local M = {}
 
 function M.collect(self, opts)
-  local dir = File.new(opts.path:get())
-  if not dir:is_dir() then
-    return nil, "does not exist: " .. opts.path:get()
+  local dir = File.new(opts.path)
+  local dir_path = dir:get()
+  if not filelib.is_dir(dir_path) then
+    return nil, "does not exist: " .. dir_path
   end
 
-  local entries, err = dir:entries()
+  local entries, err = filelib.entries(dir_path)
   if err ~= nil then
     return nil, err
   end
 
-  local root = { value = dir:head(), path = dir, kind_name = "directory", children = {} }
+  local root = { value = pathlib.head(dir_path), path = dir, kind_name = "directory", children = {} }
   for _, entry in ipairs(entries) do
     local kind_name = M.kind_name
     if entry.is_directory then
       kind_name = "directory"
     end
 
-    local child = { value = entry.name, path = entry.path, kind_name = kind_name }
-    if kind_name == "directory" and opts.expanded[entry.path:get()] then
-      child.children = self:collect(opts:merge({ path = entry.path })).children
+    local path = File.new(entry.path)
+    local child = { value = entry.name, path = path, kind_name = kind_name }
+    if kind_name == "directory" and opts.expanded[path:get()] then
+      child.children = self:collect(opts:merge({ path = path:get() })).children
     end
 
     table.insert(root.children, child)
@@ -56,16 +59,16 @@ function M.init_path(self)
     return
   end
 
-  local path = File.new(vim.api.nvim_buf_get_name(bufnr))
-  if not path:readable() then
+  local path = vim.api.nvim_buf_get_name(bufnr)
+  if not filelib.readable(path) then
     return
   end
 
-  return path:get()
+  return File.new(path):get()
 end
 
 function M.hook(_, path)
-  File.new(path):lcd()
+  filelib.lcd(path)
 end
 
 M.kind_name = "file"
