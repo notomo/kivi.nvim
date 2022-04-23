@@ -47,13 +47,13 @@ end
 
 function M.parent(path)
   if vim.endswith(path, "/") then
-    return vim.fn.fnamemodify(path, ":h:h")
+    return vim.fn.fnamemodify(path, ":h:h") .. "/"
   end
-  return vim.fn.fnamemodify(path, ":h")
-end
-
-function Path.parent(self)
-  return self.new(M.parent(self.path))
+  local parent = vim.fn.fnamemodify(path, ":h")
+  if vim.endswith(parent, "/") then
+    return parent
+  end
+  return parent .. "/"
 end
 
 function M.slash(path)
@@ -93,22 +93,22 @@ function M.is_dir(path)
   return vim.endswith(path, "/")
 end
 
-function Path.between(self, base_path)
+function M.between(path, base_path)
   local dir
-  if M.is_dir(self.path) then
-    dir = self
+  if M.is_dir(path) then
+    dir = path
   else
-    dir = self:parent()
+    dir = M.parent(path)
   end
 
   local paths = {}
-  local depth = M._depth(base_path:get())
+  local depth = M._depth(base_path)
   while true do
-    if depth >= M._depth(dir:get()) then
+    if depth >= M._depth(dir) then
       break
     end
     table.insert(paths, dir)
-    dir = dir:parent()
+    dir = M.parent(dir)
   end
 
   return paths

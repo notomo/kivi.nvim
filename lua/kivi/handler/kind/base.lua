@@ -87,7 +87,7 @@ function M.action_rename(self, nodes)
   end
 
   local rename_items = vim.tbl_map(function(n)
-    return { from = n.path }
+    return { from = n.path:get() }
   end, nodes)
 
   local has_cut = true
@@ -115,11 +115,11 @@ function M.action_expand_parent(self, nodes, ctx)
 
   local bottom = node:parent_or_root()
   local above_path = self:find_upward_marker()
-  local paths = bottom.path:between(above_path)
+  local paths = pathlib.between(bottom.path:get(), above_path:get())
 
   local expanded = {}
   for _, path in ipairs(paths) do
-    expanded[path:get()] = true
+    expanded[path] = true
   end
 
   return self.controller:expand_parent(ctx, above_path, node.path:get(), expanded)

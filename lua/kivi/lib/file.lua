@@ -167,15 +167,24 @@ function M.exists(path)
 end
 
 function M.create(path)
+  if M.is_dir(path) then
+    return
+  end
+  if M.exists(pathlib.trim_slash(path)) then
+    return ("can't create: %s"):format(path)
+  end
+
   if vim.endswith(path, "/") then
     vim.fn.mkdir(path, "p")
     return
   end
+
   local parent = pathlib.parent(path)
   if not M.exists(parent) then
-    M.create(pathlib.slash(parent))
-  elseif not M.is_dir(parent) then
-    return ("can't create: %s (%s is a directory)"):format(path, parent)
+    local err = M.create(pathlib.slash(parent))
+    if err then
+      return err
+    end
   end
   io.open(path, "w"):close()
 end

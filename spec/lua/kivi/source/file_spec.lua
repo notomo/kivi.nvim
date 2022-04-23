@@ -458,7 +458,7 @@ describe("kivi file source", function()
     vim.fn.setline(1, "target/file")
     vim.cmd("w")
 
-    assert.exists_message(("can't create: %starget/file"):format(helper.test_data_dir))
+    assert.exists_message(("can't create: %starget/"):format(helper.test_data_dir))
 
     vim.cmd("wincmd p")
     assert.no.exists_pattern("target/")

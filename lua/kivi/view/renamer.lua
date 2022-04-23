@@ -22,7 +22,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     _bufnr = bufnr,
     _lines = vim.tbl_map(function(item)
       local path = item.to or item.from
-      return pathlib.relative(base_node.path:get(), path:get())
+      return pathlib.relative(base_node.path:get(), path)
     end, rename_items),
     _froms = froms,
     _base_node = base_node,
@@ -79,8 +79,8 @@ function Renamer.write(self)
       goto continue
     end
     table.insert(items, {
-      from = self._froms[i] or self._base_node.path:join(original_line),
-      to = self._base_node.path:join(line),
+      from = self._froms[i] or pathlib.join(self._base_node.path:get(), original_line),
+      to = pathlib.join(self._base_node.path:get(), line),
     })
     ::continue::
   end
@@ -121,7 +121,7 @@ function Renamer.write(self)
 
   local cursor_line_path = nil
   if success[last_index] ~= nil then
-    cursor_line_path = success[last_index].to:get()
+    cursor_line_path = success[last_index].to
   end
 
   if #already_exists == 0 then
@@ -131,7 +131,7 @@ function Renamer.write(self)
     messagelib.warn(
       "already exists:",
       vim.tbl_map(function(item)
-        return item.to:get()
+        return item.to
       end, already_exists)
     )
   end

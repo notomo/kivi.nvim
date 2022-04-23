@@ -42,15 +42,15 @@ function M.action_paste(self, nodes, ctx)
   local copied, has_cut = ctx.clipboard:pop()
   for _, old_node in ipairs(copied) do
     local new_node = old_node:move_to(base_node)
-    if self:exists(new_node.path) then
+    if self:exists(new_node.path:get()) then
       table.insert(already_exists, { from = old_node, to = new_node })
       goto continue
     end
 
     if has_cut then
-      self:rename(old_node.path, new_node.path)
+      self:rename(old_node.path:get(), new_node.path:get())
     else
-      self:copy(old_node.path, new_node.path)
+      self:copy(old_node.path:get(), new_node.path:get())
     end
 
     ::continue::
@@ -63,7 +63,7 @@ function M.action_paste(self, nodes, ctx)
     if answer == "n" then
       goto continue
     elseif answer == "r" then
-      table.insert(rename_items, { from = item.from.path, to = item.to.path })
+      table.insert(rename_items, { from = item.from.path:get(), to = item.to.path:get() })
     elseif answer == "f" then
       table.insert(overwrite_items, item)
     end
@@ -72,9 +72,9 @@ function M.action_paste(self, nodes, ctx)
 
   for _, item in ipairs(overwrite_items) do
     if has_cut then
-      self:rename(item.from.path, item.to.path)
+      self:rename(item.from.path:get(), item.to.path:get())
     else
-      self:copy(item.from.path, item.to.path)
+      self:copy(item.from.path:get(), item.to.path:get())
     end
   end
 
@@ -89,7 +89,7 @@ function M.action_paste(self, nodes, ctx)
 end
 
 function M.create(_, path)
-  return filelib.create(path:get())
+  return filelib.create(path)
 end
 
 function M.delete(_, path)
@@ -97,15 +97,15 @@ function M.delete(_, path)
 end
 
 function M.rename(_, from, to)
-  return filelib.rename(from:get(), to:get())
+  return filelib.rename(from, to)
 end
 
 function M.copy(_, from, to)
-  return filelib.copy(from:get(), to:get())
+  return filelib.copy(from, to)
 end
 
 function M.exists(_, path)
-  return filelib.exists(path:get())
+  return filelib.exists(path)
 end
 
 function M.find_upward_marker(self)

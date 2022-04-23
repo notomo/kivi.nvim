@@ -53,7 +53,7 @@ function Creator.write(self)
   local paths = {}
   for _, line in ipairs(lines) do
     if line ~= "" then
-      table.insert(paths, self._base_node.path:join(line))
+      table.insert(paths, pathlib.join(self._base_node.path:get(), line))
     end
   end
 
@@ -61,7 +61,7 @@ function Creator.write(self)
   local errors = {}
   for i, path in ipairs(paths) do
     if self._kind:exists(path) then
-      table.insert(errors, { path = path, msg = "already exists: " .. path:get() })
+      table.insert(errors, { path = path, msg = "already exists: " .. path })
       goto continue
     end
 
@@ -81,7 +81,7 @@ function Creator.write(self)
     -1,
     false,
     vim.tbl_map(function(e)
-      return pathlib.relative(self._base_node.path:get(), e.path:get())
+      return pathlib.relative(self._base_node.path:get(), e.path)
     end, errors)
   )
 
@@ -97,15 +97,15 @@ function Creator.write(self)
   local last_index = 0
   local expanded = {}
   for i, path in pairs(success) do
-    for _, p in ipairs(path:between(self._base_node.path)) do
-      expanded[p:get()] = true
+    for _, p in ipairs(pathlib.between(path, self._base_node.path:get())) do
+      expanded[p] = true
     end
     last_index = i
   end
 
   local cursor_line_path = nil
   if success[last_index] ~= nil then
-    cursor_line_path = success[last_index]:get()
+    cursor_line_path = success[last_index]
   end
 
   self._loader:reload(cursor_line_path, expanded)
