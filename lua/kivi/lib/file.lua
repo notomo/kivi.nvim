@@ -69,7 +69,7 @@ function M.rename(from, to)
   return loop.fs_rename(from, to)
 end
 
-if vim.fn.has("win32") == 1 then
+if vim.loop.os_uname().version:match("Windows") then
   function M._copy_dir(from, to)
     local from_path = pathlib.trim_slash(from):gsub("/", "\\")
     local to_path = pathlib.trim_slash(to):gsub("/", "\\")
@@ -147,7 +147,7 @@ function M.vsplit_open(path)
 end
 
 function M.readable(path)
-  return vim.fn.filereadable(path) ~= 0
+  return vim.loop.fs_access(path, "R")
 end
 
 function M.exists(path)
@@ -180,12 +180,12 @@ end
 function M.find_upward_dir(child_pattern)
   local found_file = vim.fn.findfile(child_pattern, ".;")
   if found_file ~= "" then
-    return vim.fn.fnamemodify(found_file, ":p:h")
+    return pathlib.parent(found_file)
   end
 
   local found_dir = vim.fn.finddir(child_pattern, ".;")
   if found_dir ~= "" then
-    return vim.fn.fnamemodify(found_dir, ":p:h:h")
+    return pathlib.parent(found_dir)
   end
 
   return nil

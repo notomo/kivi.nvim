@@ -27,11 +27,11 @@ end
 
 function M.parent(path)
   if vim.endswith(path, "/") then
-    local index = path:reverse():find("/", 2)
+    local index = path:reverse():find("/", 2) or 0
     path = path:sub(1, #path - index + 1)
     return path
   end
-  local index = path:reverse():find("/")
+  local index = path:reverse():find("/") or 0
   path = path:sub(1, #path - index + 1)
   return path
 end
