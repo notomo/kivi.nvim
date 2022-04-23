@@ -12,10 +12,6 @@ function M.execute(action_name, opts, action_opts)
   return require("kivi.command").execute(action_name, opts, action_opts)
 end
 
-function M.setup(config)
-  return require("kivi.command").setup(config)
-end
-
 function M.is_parent()
   return require("kivi.command").is_parent()
 end

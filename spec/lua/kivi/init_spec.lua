@@ -248,14 +248,6 @@ describe("kivi", function()
     assert.is_same(false, kivi.is_parent())
   end)
 
-  it("can config options", function()
-    kivi.setup({ opts = { layout = { type = "vertical" } } })
-
-    kivi.open()
-
-    assert.window_count(2)
-  end)
-
   it("does not recall expanded tree", function()
     helper.new_directory("dir")
     helper.new_file("dir/file")

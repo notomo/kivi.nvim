@@ -35,11 +35,6 @@ function ReturnValue.execute(action_name, opts, action_opts)
   return Controller.new():execute(action_name, range, opts, action_opts)
 end
 
-function ShowError.setup(config)
-  vim.validate({ config = { config, "table" } })
-  require("kivi.core.custom").set(config)
-end
-
 function ShowError.read(bufnr)
   return require("kivi.core.loader").new(bufnr):reload()
 end
