@@ -11,14 +11,14 @@ end
 
 function Controller.open(_, raw_opts)
   local opts, open_opts = require("kivi.core.option").new(raw_opts)
-  local source, err = require("kivi.core.source").new(opts.source, raw_opts.source_opts)
+  local source, err = require("kivi.core.source").new(opts.source, opts.source_opts)
   if err ~= nil then
     return nil, err
   end
 
   local ui, key = require("kivi.view").open(source, open_opts)
   local ctx = Context.new(source, ui, key, opts)
-  return Loader.new(ctx.ui.bufnr):open(ctx, raw_opts.source_setup_opts)
+  return Loader.new(ctx.ui.bufnr):open(ctx, opts.source_setup_opts)
 end
 
 function Controller.navigate(_, ctx, path, source_setup_opts)

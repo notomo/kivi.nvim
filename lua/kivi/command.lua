@@ -5,8 +5,6 @@ local ShowError = require("kivi.vendor.misclib.error_handler").for_show_error()
 local ReturnValue = require("kivi.vendor.misclib.error_handler").for_return_value()
 
 function ReturnValue.open(raw_opts)
-  vim.validate({ raw_opts = { raw_opts, "table", true } })
-  raw_opts = raw_opts or {}
   return Controller.new():open(raw_opts)
 end
 

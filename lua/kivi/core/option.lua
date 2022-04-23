@@ -5,6 +5,8 @@ local default_opts = {
   source = "file",
   path = ".",
   expanded = {},
+  source_opts = {},
+  source_setup_opts = {},
 }
 
 local default_open_opts = {
@@ -15,6 +17,7 @@ local Options = {}
 Options.__index = Options
 
 function Options.new(raw_opts)
+  vim.validate({ raw_opts = { raw_opts, "table", true } })
   raw_opts = raw_opts or {}
 
   local opts = tbllib.extend(default_opts, raw_opts)
