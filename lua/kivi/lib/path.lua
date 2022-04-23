@@ -27,13 +27,13 @@ end
 
 function M.parent(path)
   if vim.endswith(path, "/") then
-    return vim.fn.fnamemodify(path, ":h:h") .. "/"
+    local index = path:reverse():find("/", 2)
+    path = path:sub(1, #path - index + 1)
+    return path
   end
-  local parent = vim.fn.fnamemodify(path, ":h")
-  if vim.endswith(parent, "/") then
-    return parent
-  end
-  return parent .. "/"
+  local index = path:reverse():find("/")
+  path = path:sub(1, #path - index + 1)
+  return path
 end
 
 function M.slash(path)
@@ -51,10 +51,12 @@ function M.trim_slash(path)
 end
 
 function M.head(path)
-  if not vim.endswith(path, "/") or path == "/" then
-    return vim.fn.fnamemodify(path, ":t")
+  if not vim.endswith(path, "/") then
+    local factors = vim.split(path, "/", true)
+    return factors[#factors]
   end
-  return vim.fn.fnamemodify(path, ":h:t") .. "/"
+  local factors = vim.split(path:sub(1, #path - 1), "/", true)
+  return factors[#factors] .. "/"
 end
 
 function M.relative(base, path)
@@ -94,7 +96,7 @@ function M.between(path, base_path)
   return paths
 end
 
-if vim.fn.has("win32") == 1 then
+if vim.loop.os_uname().version:match("Windows") then
   function M.adjust_sep(path)
     return path:gsub("\\", "/")
   end
