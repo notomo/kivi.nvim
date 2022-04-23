@@ -1,4 +1,3 @@
-local File = require("kivi.lib.file").File
 local highlights = require("kivi.lib.highlight")
 local filelib = require("kivi.lib.file")
 local pathlib = require("kivi.lib.path")
@@ -7,28 +6,36 @@ local vim = vim
 local M = {}
 
 function M.collect(self, opts)
-  local dir = File.new(opts.path)
-  local dir_path = dir:get()
-  if not filelib.is_dir(dir_path) then
-    return nil, "does not exist: " .. dir_path
+  local dir = filelib.adjust(opts.path)
+  if not filelib.is_dir(dir) then
+    return nil, "does not exist: " .. dir
   end
 
-  local entries, err = filelib.entries(dir_path)
+  local entries, err = filelib.entries(dir)
   if err ~= nil then
     return nil, err
   end
 
-  local root = { value = pathlib.head(dir_path), path = dir, kind_name = "directory", children = {} }
+  local root = {
+    value = pathlib.head(dir),
+    path = dir,
+    kind_name = "directory",
+    children = {},
+  }
   for _, entry in ipairs(entries) do
     local kind_name = M.kind_name
     if entry.is_directory then
       kind_name = "directory"
     end
 
-    local path = File.new(entry.path)
-    local child = { value = entry.name, path = path, kind_name = kind_name }
-    if kind_name == "directory" and opts.expanded[path:get()] then
-      child.children = self:collect(opts:merge({ path = path:get() })).children
+    local path = entry.path
+    local child = {
+      value = entry.name,
+      path = path,
+      kind_name = kind_name,
+    }
+    if kind_name == "directory" and opts.expanded[path] then
+      child.children = self:collect(opts:merge({ path = path })).children
     end
 
     table.insert(root.children, child)
@@ -49,7 +56,7 @@ function M.highlight(self, bufnr, row, nodes, opts)
     return node.kind_name == "directory"
   end)
   highlighter:filter("KiviDirectoryOpen", row, nodes, function(node)
-    return node.kind_name == "directory" and opts.expanded[node.path:get()]
+    return node.kind_name == "directory" and opts.expanded[node.path]
   end)
 end
 
@@ -64,7 +71,7 @@ function M.init_path(self)
     return
   end
 
-  return File.new(path):get()
+  return filelib.adjust(path)
 end
 
 function M.hook(_, path)

@@ -1,5 +1,4 @@
 local pathlib = require("kivi.lib.path")
-local Path = require("kivi.lib.path").Path
 
 local M = {}
 
@@ -10,7 +9,7 @@ function M.action_parent(self, nodes, ctx)
   if not node then
     return
   end
-  return self.controller:navigate_parent(ctx, pathlib.parent(node:root().path:get()))
+  return self.controller:navigate_parent(ctx, pathlib.parent(node:root().path))
 end
 
 function M.action_debug_print(_, nodes)
@@ -52,7 +51,7 @@ end
 function M.action_toggle_tree(self, nodes, ctx)
   local expanded = ctx.opts.expanded
   for _, node in ipairs(nodes) do
-    local path = node.path:get()
+    local path = node.path
     if expanded[path] then
       expanded[path] = nil
     else
@@ -87,7 +86,7 @@ function M.action_rename(self, nodes)
   end
 
   local rename_items = vim.tbl_map(function(n)
-    return { from = n.path:get() }
+    return { from = n.path }
   end, nodes)
 
   local has_cut = true
@@ -115,18 +114,18 @@ function M.action_expand_parent(self, nodes, ctx)
 
   local bottom = node:parent_or_root()
   local above_path = self:find_upward_marker()
-  local paths = pathlib.between(bottom.path:get(), above_path:get())
+  local paths = pathlib.between(bottom.path, above_path)
 
   local expanded = {}
   for _, path in ipairs(paths) do
     expanded[path] = true
   end
 
-  return self.controller:expand_parent(ctx, above_path, node.path:get(), expanded)
+  return self.controller:expand_parent(ctx, above_path, node.path, expanded)
 end
 
 function M.find_upward_marker(_)
-  return Path.new("/")
+  return pathlib.adjust("/")
 end
 
 function M.action_shrink(self, nodes, ctx)
@@ -135,7 +134,7 @@ function M.action_shrink(self, nodes, ctx)
     return
   end
   local parent = node:parent_or_root()
-  return self.controller:shrink(ctx, parent.path, node.path:get())
+  return self.controller:shrink(ctx, parent.path, node.path)
 end
 
 return M

@@ -4,19 +4,12 @@ local loop = vim.loop
 
 local M = {}
 
-local File = setmetatable({}, pathlib.Path)
-File.__index = File
-M.File = File
-
 function M.is_dir(path)
   local stat = loop.fs_stat(path)
   return stat and stat.type == "directory"
 end
 
-function File.new(path)
-  if type(path) == "table" then
-    path = path:get()
-  end
+function M.adjust(path)
   path = path or loop.cwd()
 
   local real_path = loop.fs_realpath(path)
@@ -28,12 +21,7 @@ function File.new(path)
   if M.is_dir(path) and not vim.endswith(path, "/") then
     path = path .. "/"
   end
-  local tbl = { path = path }
-  return setmetatable(tbl, File)
-end
-
-function File.__tostring(self)
-  return self.path
+  return path
 end
 
 function M.entries(dir)
@@ -55,7 +43,7 @@ function M.entries(dir)
     if is_directory then
       name = name .. "/"
     end
-    table.insert(entries, { path = path, is_directory = is_directory, name = name })
+    table.insert(entries, { path = M.adjust(path), is_directory = is_directory, name = name })
   end
 
   table.sort(entries, function(a, b)

@@ -53,7 +53,7 @@ function Creator.write(self)
   local paths = {}
   for _, line in ipairs(lines) do
     if line ~= "" then
-      table.insert(paths, pathlib.join(self._base_node.path:get(), line))
+      table.insert(paths, pathlib.join(self._base_node.path, line))
     end
   end
 
@@ -81,7 +81,7 @@ function Creator.write(self)
     -1,
     false,
     vim.tbl_map(function(e)
-      return pathlib.relative(self._base_node.path:get(), e.path)
+      return pathlib.relative(self._base_node.path, e.path)
     end, errors)
   )
 
@@ -97,7 +97,7 @@ function Creator.write(self)
   local last_index = 0
   local expanded = {}
   for i, path in pairs(success) do
-    for _, p in ipairs(pathlib.between(path, self._base_node.path:get())) do
+    for _, p in ipairs(pathlib.between(path, self._base_node.path)) do
       expanded[p] = true
     end
     last_index = i

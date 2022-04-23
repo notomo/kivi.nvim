@@ -24,7 +24,7 @@ function Clipboard.copy(self, nodes)
   messagelib.info(
     "copied:",
     vim.tbl_map(function(node)
-      return node.path:get()
+      return node.path
     end, nodes)
   )
 end
@@ -35,7 +35,7 @@ function Clipboard.cut(self, nodes)
   messagelib.info(
     "cut:",
     vim.tbl_map(function(node)
-      return node.path:get()
+      return node.path
     end, nodes)
   )
 end

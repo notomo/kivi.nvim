@@ -22,7 +22,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     _bufnr = bufnr,
     _lines = vim.tbl_map(function(item)
       local path = item.to or item.from
-      return pathlib.relative(base_node.path:get(), path)
+      return pathlib.relative(base_node.path, path)
     end, rename_items),
     _froms = froms,
     _base_node = base_node,
@@ -79,8 +79,8 @@ function Renamer.write(self)
       goto continue
     end
     table.insert(items, {
-      from = self._froms[i] or pathlib.join(self._base_node.path:get(), original_line),
-      to = pathlib.join(self._base_node.path:get(), line),
+      from = self._froms[i] or pathlib.join(self._base_node.path, original_line),
+      to = pathlib.join(self._base_node.path, line),
     })
     ::continue::
   end
@@ -144,7 +144,7 @@ function Renamer.read(self)
   vim.api.nvim_buf_set_lines(self._bufnr, 1, -1, true, self._lines)
 
   vim.api.nvim_buf_set_extmark(self._bufnr, ns, 0, 0, {
-    virt_text = { { self._base_node.path:get(), "Comment" } },
+    virt_text = { { self._base_node.path, "Comment" } },
   })
   for i, line in ipairs(self._lines) do
     vim.api.nvim_buf_set_extmark(self._bufnr, ns, i, #line, {

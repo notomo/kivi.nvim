@@ -1,23 +1,7 @@
 local M = {}
 
-local Path = {}
-Path.__index = Path
-M.Path = Path
-
-function Path.new(path)
-  if type(path) == "table" then
-    path = path:get()
-  end
-  local tbl = { path = M.adjust_sep(path) }
-  return setmetatable(tbl, Path)
-end
-
-function Path.__tostring(self)
-  return self.path
-end
-
-function Path.get(self)
-  return self.path
+function M.adjust(path)
+  return M.adjust_sep(path)
 end
 
 function M.join(...)
@@ -39,10 +23,6 @@ function M.join(...)
   end
 
   return path
-end
-
-function Path.join(self, ...)
-  return self.new(M.join(self.path, ...))
 end
 
 function M.parent(path)

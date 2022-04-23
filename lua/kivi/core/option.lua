@@ -1,4 +1,3 @@
-local Path = require("kivi.lib.path").Path
 local tbllib = require("kivi.lib.table")
 
 local default_opts = {

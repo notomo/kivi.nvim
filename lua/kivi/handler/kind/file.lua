@@ -1,5 +1,4 @@
 local filelib = require("kivi.lib.file")
-local File = require("kivi.lib.file").File
 
 local M = {}
 
@@ -12,20 +11,20 @@ end
 function M.action_open(_, nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
-    filelib.open(node.path:get())
+    filelib.open(node.path)
   end
 end
 
 function M.action_tab_open(_, nodes)
   for _, node in ipairs(nodes) do
-    filelib.tab_open(node.path:get())
+    filelib.tab_open(node.path)
   end
 end
 
 function M.action_vsplit_open(_, nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
-    filelib.vsplit_open(node.path:get())
+    filelib.vsplit_open(node.path)
   end
 end
 
@@ -42,15 +41,15 @@ function M.action_paste(self, nodes, ctx)
   local copied, has_cut = ctx.clipboard:pop()
   for _, old_node in ipairs(copied) do
     local new_node = old_node:move_to(base_node)
-    if self:exists(new_node.path:get()) then
+    if self:exists(new_node.path) then
       table.insert(already_exists, { from = old_node, to = new_node })
       goto continue
     end
 
     if has_cut then
-      self:rename(old_node.path:get(), new_node.path:get())
+      self:rename(old_node.path, new_node.path)
     else
-      self:copy(old_node.path:get(), new_node.path:get())
+      self:copy(old_node.path, new_node.path)
     end
 
     ::continue::
@@ -59,11 +58,11 @@ function M.action_paste(self, nodes, ctx)
   local overwrite_items = {}
   local rename_items = {}
   for _, item in ipairs(already_exists) do
-    local answer = self.input_reader:get(item.to.path:get() .. " already exists, (f)orce (n)o (r)ename: ")
+    local answer = self.input_reader:get(item.to.path .. " already exists, (f)orce (n)o (r)ename: ")
     if answer == "n" then
       goto continue
     elseif answer == "r" then
-      table.insert(rename_items, { from = item.from.path:get(), to = item.to.path:get() })
+      table.insert(rename_items, { from = item.from.path, to = item.to.path })
     elseif answer == "f" then
       table.insert(overwrite_items, item)
     end
@@ -72,9 +71,9 @@ function M.action_paste(self, nodes, ctx)
 
   for _, item in ipairs(overwrite_items) do
     if has_cut then
-      self:rename(item.from.path:get(), item.to.path:get())
+      self:rename(item.from.path, item.to.path)
     else
-      self:copy(item.from.path:get(), item.to.path:get())
+      self:copy(item.from.path, item.to.path)
     end
   end
 
@@ -93,7 +92,7 @@ function M.create(_, path)
 end
 
 function M.delete(_, path)
-  return filelib.delete(path:get())
+  return filelib.delete(path)
 end
 
 function M.rename(_, from, to)
@@ -112,10 +111,10 @@ function M.find_upward_marker(self)
   for _, pattern in ipairs(self.action_opts.root_patterns) do
     local found = filelib.find_upward_dir(pattern)
     if found ~= nil then
-      return File.new(found)
+      return filelib.adjust(found)
     end
   end
-  return File.new(".")
+  return filelib.adjust(".")
 end
 
 return M

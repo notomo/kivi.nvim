@@ -33,7 +33,7 @@ end
 
 function Node.move_to(self, parent)
   local old = vim.deepcopy(self._node)
-  old.path = parent.path:join(pathlib.head(self.path:get()))
+  old.path = pathlib.join(parent.path, pathlib.head(self.path))
   return Node.new(old, parent)
 end
 
@@ -76,7 +76,7 @@ function Nodes.new(raw_nodes, selected)
   vim.validate({ raw_nodes = { raw_nodes, "table" }, selected = { selected, "table", true } })
   local tbl = { _nodes = raw_nodes, _selected = selected or {} }
   if raw_nodes[1] then
-    tbl.root_path = raw_nodes[1].path:get()
+    tbl.root_path = raw_nodes[1].path
   end
   return setmetatable(tbl, Nodes)
 end
@@ -153,7 +153,7 @@ end
 function Nodes.find(self, path)
   vim.validate({ path = { path, "string" } })
   for _, node in ipairs(self._nodes) do
-    if node.path:get() == path then
+    if node.path == path then
       return node
     end
   end
