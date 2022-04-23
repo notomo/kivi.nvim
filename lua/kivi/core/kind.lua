@@ -1,6 +1,4 @@
 local modulelib = require("kivi.vendor.misclib.module")
-local filelib = require("kivi.lib.file")
-local pathlib = require("kivi.lib.path")
 local inputlib = require("kivi.lib.input")
 local messagelib = require("kivi.lib.message")
 local Action = require("kivi.core.action")
@@ -19,8 +17,6 @@ function Kind.new(name)
 
   local tbl = {
     name = name,
-    filelib = filelib,
-    pathlib = pathlib,
     messagelib = messagelib,
     opts = vim.tbl_deep_extend("force", base.opts, kind.opts or {}),
     input_reader = inputlib.reader(),
