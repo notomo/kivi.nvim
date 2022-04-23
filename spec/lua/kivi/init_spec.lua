@@ -46,6 +46,8 @@ describe("kivi", function()
   end)
 
   it("can execute yank action", function()
+    vim.g.clipboard = helper.clipboard()
+
     helper.new_file("file1")
     helper.new_file("file2")
 

@@ -4,6 +4,7 @@ local M = require("vusted.helper")
 M.root = M.find_plugin_root(plugin_name)
 
 function M.before_each()
+  vim.g.clipboard = nil
   vim.cmd("filetype on")
   vim.cmd("syntax enable")
   M.test_data_path = "spec/test_data/" .. math.random(1, 2 ^ 30) .. "/"
@@ -90,6 +91,23 @@ end
 
 function M.path(path)
   return M.test_data_dir .. (path or "")
+end
+
+function M.clipboard()
+  local register = {}
+  return {
+    name = "test",
+    copy = {
+      ["+"] = function(lines, regtype)
+        vim.list_extend(register, { lines, regtype })
+      end,
+    },
+    paste = {
+      ["+"] = function()
+        return register
+      end,
+    },
+  }
 end
 
 function M.window_count()
