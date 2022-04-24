@@ -1,13 +1,5 @@
 local Nodes = require("kivi.core.nodes")
 
-local CollectResult = {}
-CollectResult.__index = CollectResult
-
-function CollectResult.new(root)
-  local tbl = { nodes = Nodes.from_node(root) }
-  return setmetatable(tbl, CollectResult)
-end
-
 local Collector = {}
 Collector.__index = Collector
 
@@ -23,16 +15,11 @@ function Collector.start(self, opts, callback, source_setup_opts)
     callback = { callback, "function" },
     source_setup_opts = { source_setup_opts, "table", true },
   })
-  local raw_result, err = self._source:start(opts, source_setup_opts)
-  if err ~= nil then
-    return nil, err
-  end
-  local result = CollectResult.new(raw_result)
-
-  callback(result.nodes)
-  self._source:hook(result.nodes.root_path)
-
-  return result, nil
+  return self._source:start(opts, source_setup_opts):next(function(raw_result)
+    local nodes = Nodes.from_node(raw_result)
+    callback(nodes)
+    self._source:hook(nodes.root_path)
+  end)
 end
 
 return Collector

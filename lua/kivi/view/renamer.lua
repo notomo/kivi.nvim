@@ -7,6 +7,8 @@ local ns = vim.api.nvim_create_namespace("kivi-renamer")
 local Renamer = {}
 Renamer.__index = Renamer
 
+local _promise = nil
+
 function Renamer.open(kind, loader, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.bo[bufnr].bufhidden = "wipe"
@@ -61,7 +63,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     buffer = bufnr,
     nested = true,
     callback = function()
-      renamer:write()
+      _promise = renamer:write()
     end,
   })
   vim.api.nvim_exec_autocmds("BufRead", { modeline = false }) -- HACK?
@@ -136,7 +138,7 @@ function Renamer.write(self)
     )
   end
 
-  self._loader:reload(cursor_line_path)
+  return self._loader:reload(cursor_line_path)
 end
 
 function Renamer.read(self)
@@ -151,6 +153,16 @@ function Renamer.read(self)
       virt_text = { { "<- " .. line, "Comment" } },
     })
   end
+end
+
+-- for test
+function Renamer.promises()
+  if _promise then
+    local promise = _promise
+    _promise = nil
+    return { promise }
+  end
+  return {}
 end
 
 return Renamer

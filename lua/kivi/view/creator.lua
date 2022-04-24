@@ -5,6 +5,8 @@ local pathlib = require("kivi.lib.path")
 local Creator = {}
 Creator.__index = Creator
 
+local _promise = nil
+
 function Creator.open(kind, loader, base_node)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
@@ -43,7 +45,7 @@ function Creator.open(kind, loader, base_node)
     buffer = bufnr,
     nested = true,
     callback = function()
-      creator:write()
+      _promise = creator:write()
     end,
   })
 end
@@ -108,7 +110,17 @@ function Creator.write(self)
     cursor_line_path = success[last_index]
   end
 
-  self._loader:reload(cursor_line_path, expanded)
+  return self._loader:reload(cursor_line_path, expanded)
+end
+
+-- for test
+function Creator.promises()
+  if _promise then
+    local promise = _promise
+    _promise = nil
+    return { promise }
+  end
+  return {}
 end
 
 return Creator

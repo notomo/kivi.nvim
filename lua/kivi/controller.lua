@@ -13,7 +13,7 @@ function Controller.open(_, raw_opts)
   local opts, open_opts = require("kivi.core.option").new(raw_opts)
   local source, err = require("kivi.core.source").new(opts.source, opts.source_opts)
   if err ~= nil then
-    return nil, err
+    return require("kivi.vendor.promise").reject(err)
   end
 
   local ui, key = require("kivi.view").open(source, open_opts)
@@ -52,7 +52,7 @@ end
 function Controller.execute(_, action_name, range, opts, action_opts)
   local ctx, err = Context.get()
   if err ~= nil then
-    return nil, err
+    return require("kivi.vendor.promise").reject(err)
   end
 
   local nodes = ctx.ui:selected_nodes(action_name, range)

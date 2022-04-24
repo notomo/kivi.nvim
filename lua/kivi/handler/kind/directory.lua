@@ -1,30 +1,23 @@
+local Promise = require("kivi.vendor.promise")
+
 local M = {}
 
 function M.action_open(self, nodes, ctx)
-  for _, node in ipairs(nodes) do
-    local _, err = self.controller:navigate(ctx, node.path)
-    if err ~= nil then
-      return nil, err
-    end
-  end
+  return Promise.all(vim.tbl_map(function(node)
+    return self.controller:navigate(ctx, node.path)
+  end, nodes))
 end
 
 function M.action_tab_open(self, nodes)
-  for _, node in ipairs(nodes) do
-    local _, err = self.controller:open({ path = node.path, layout = { type = "tab" } })
-    if err ~= nil then
-      return nil, err
-    end
-  end
+  return Promise.all(vim.tbl_map(function(node)
+    return self.controller:open({ path = node.path, layout = { type = "tab" } })
+  end, nodes))
 end
 
 function M.action_vsplit_open(self, nodes)
-  for _, node in ipairs(nodes) do
-    local _, err = self.controller:open({ path = node.path, layout = { type = "vertical" } })
-    if err ~= nil then
-      return nil, err
-    end
-  end
+  return Promise.all(vim.tbl_map(function(node)
+    return self.controller:open({ path = node.path, layout = { type = "vertical" } })
+  end, nodes))
 end
 
 M.action_child = M.action_open

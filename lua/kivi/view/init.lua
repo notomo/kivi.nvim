@@ -9,6 +9,8 @@ local vim = vim
 local View = {}
 View.__index = View
 
+local _promise = nil
+
 function View.open(source, open_opts)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
@@ -24,7 +26,7 @@ function View.open(source, open_opts)
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
     buffer = bufnr,
     callback = function()
-      require("kivi.command").read(bufnr)
+      _promise = require("kivi.core.loader").new(bufnr):reload()
     end,
   })
 
@@ -34,6 +36,9 @@ end
 
 function View.redraw(self, nodes)
   self._nodes = nodes
+  if not vim.api.nvim_buf_is_valid(self.bufnr) then
+    return
+  end
   bufferlib.set_lines_as_modifiable(
     self.bufnr,
     0,
@@ -136,6 +141,16 @@ function View.highlight(self, source, opts, first_line, last_line)
   highlighter:filter("KiviSelected", first_line, nodes, function(node)
     return self._nodes:is_selected(node.path)
   end)
+end
+
+-- for test
+function View.promises()
+  if _promise then
+    local promise = _promise
+    _promise = nil
+    return { promise }
+  end
+  return {}
 end
 
 return View

@@ -47,7 +47,7 @@ function Loader.reload(self, cursor_line_path, expanded)
 
   local ctx, ctx_err = Context.get(self._bufnr)
   if ctx_err ~= nil then
-    return nil, ctx_err
+    return require("kivi.vendor.promise").reject(ctx_err)
   end
   ctx.opts = ctx.opts:merge({ expanded = expanded or ctx.opts.expanded })
 

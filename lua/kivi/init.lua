@@ -16,4 +16,9 @@ function M.is_parent()
   return require("kivi.command").is_parent()
 end
 
+-- for test
+function M.promise()
+  return require("kivi.command").promise()
+end
+
 return M

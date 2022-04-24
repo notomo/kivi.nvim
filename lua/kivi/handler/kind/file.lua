@@ -77,14 +77,11 @@ function M.action_paste(self, nodes, ctx)
     end
   end
 
-  local _, err = self.controller:reload(ctx)
-  if err ~= nil then
-    return nil, err
-  end
-
-  if #rename_items > 0 then
-    return self.controller:open_renamer(base_node, rename_items, has_cut)
-  end
+  return self.controller:reload(ctx):next(function()
+    if #rename_items > 0 then
+      return self.controller:open_renamer(base_node, rename_items, has_cut)
+    end
+  end)
 end
 
 function M.create(_, path)

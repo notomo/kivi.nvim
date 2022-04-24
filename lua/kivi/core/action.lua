@@ -1,3 +1,5 @@
+local Promise = require("kivi.vendor.promise")
+
 local Action = {}
 
 local ACTION_PREFIX = "action_"
@@ -27,7 +29,11 @@ function Action.__index(self, k)
 end
 
 function Action.execute(self, nodes, ctx)
-  return self._action(self, nodes, ctx)
+  local result, err = self._action(self, nodes, ctx)
+  if err then
+    return Promise.reject(err)
+  end
+  return Promise.resolve(result)
 end
 
 return Action
