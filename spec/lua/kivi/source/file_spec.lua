@@ -73,6 +73,7 @@ describe("kivi file source", function()
     helper.set_inputs("y")
 
     helper.new_directory("dir1")
+    helper.new_file("dir1/file")
     helper.new_directory("dir2")
 
     kivi.open()

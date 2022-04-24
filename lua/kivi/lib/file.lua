@@ -9,8 +9,14 @@ function M.is_dir(path)
   return stat and stat.type == "directory"
 end
 
+M.home_dir = loop.os_homedir()
+
 function M.adjust(path)
   path = path or loop.cwd()
+
+  if vim.startswith(path, "~") then
+    path = path:gsub("^~", M.home_dir)
+  end
 
   local real_path = loop.fs_realpath(path)
   if real_path then
@@ -59,10 +65,7 @@ function M.entries(dir)
 end
 
 function M.delete(path)
-  if M.is_dir(path) then
-    return loop.fs_rmdir(path)
-  end
-  return loop.fs_unlink(path)
+  return vim.fn.delete(path, "rf")
 end
 
 function M.rename(from, to)
