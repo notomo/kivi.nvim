@@ -485,7 +485,7 @@ describe("kivi file source", function()
     assert.exists_pattern("content")
   end)
 
-  it("can open project root", function()
+  it("can open project root from child directory", function()
     helper.new_directory("root_marker")
     helper.new_directory("root_marker/dir1")
     helper.new_directory("root_marker/dir1/dir2")
@@ -494,6 +494,14 @@ describe("kivi file source", function()
     helper.wait(kivi.open({ source_setup_opts = { target = "project", root_patterns = { "root_marker" } } }))
 
     assert.exists_pattern("root_marker/")
+  end)
+
+  it("can open project root from project root directory", function()
+    helper.new_directory("root_marker")
+
+    helper.wait(kivi.open({ source_setup_opts = { target = "project", root_patterns = { "root_marker" } } }))
+
+    assert.current_dir("")
   end)
 
   it("can move from project root", function()

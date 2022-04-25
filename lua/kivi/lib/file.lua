@@ -183,12 +183,12 @@ end
 function M.find_upward_dir(child_pattern)
   local found_file = vim.fn.findfile(child_pattern, ".;")
   if found_file ~= "" then
-    return pathlib.parent(found_file)
+    return pathlib.parent(M.adjust(found_file))
   end
 
   local found_dir = vim.fn.finddir(child_pattern, ".;")
   if found_dir ~= "" then
-    return pathlib.parent(found_dir)
+    return pathlib.parent(M.adjust(found_dir))
   end
 
   return nil
