@@ -130,6 +130,10 @@ vim.api.nvim_set_decoration_provider(ns, {})
 vim.api.nvim_set_decoration_provider(ns, { on_win = View._highlight_win })
 
 function View.highlight(self, source, opts, first_line, last_line)
+  if vim.api.nvim_buf_get_text(0, 0, 0, 0, 1, {})[1] == "" then
+    return
+  end
+
   local nodes = self._nodes:range(first_line + 1, last_line)
   source:highlight(self.bufnr, first_line, nodes, opts)
 
