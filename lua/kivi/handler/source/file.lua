@@ -20,37 +20,43 @@ collect = function(target_dir, opts_expanded)
     end)
 
     vim.loop.new_thread(function(async, dir, _expanded)
-      local expanded = vim.mpack.decode(_expanded)
-      local entries, err = require("kivi.lib.file").entries(dir)
-      if err then
-        return async:send(vim.mpack.encode({ error = err }))
-      end
-      local root = {
-        value = require("kivi.lib.path").head(dir),
-        path = dir,
-        kind_name = "directory",
-        children = {},
-      }
-      local expand_indicies = {}
-      for i, entry in ipairs(entries) do
-        local kind_name = "file"
-        if entry.is_directory then
-          kind_name = "directory"
+      local f = function()
+        local expanded = vim.mpack.decode(_expanded)
+        local entries, err = require("kivi.lib.file").entries(dir)
+        if err then
+          return async:send(vim.mpack.encode({ error = err }))
         end
-
-        local path = entry.path
-        local child = {
-          value = entry.name,
-          path = path,
-          kind_name = kind_name,
+        local root = {
+          value = require("kivi.lib.path").head(dir),
+          path = dir,
+          kind_name = "directory",
+          children = {},
         }
-        if child.kind_name == "directory" and expanded[child.path] then
-          table.insert(expand_indicies, i)
-        end
-        table.insert(root.children, child)
-      end
+        local expand_indicies = {}
+        for i, entry in ipairs(entries) do
+          local kind_name = "file"
+          if entry.is_directory then
+            kind_name = "directory"
+          end
 
-      async:send(vim.mpack.encode({ expand_indicies = expand_indicies, root = root }))
+          local path = entry.path
+          local child = {
+            value = entry.name,
+            path = path,
+            kind_name = kind_name,
+          }
+          if child.kind_name == "directory" and expanded[child.path] then
+            table.insert(expand_indicies, i)
+          end
+          table.insert(root.children, child)
+        end
+
+        async:send(vim.mpack.encode({ expand_indicies = expand_indicies, root = root }))
+      end
+      local ok, err = xpcall(f, debug.traceback)
+      if not ok then
+        error(err)
+      end
     end, sender, target_dir, vim.mpack.encode(opts_expanded))
   end):next(function(root, expand_indicies)
     local promises = {}
