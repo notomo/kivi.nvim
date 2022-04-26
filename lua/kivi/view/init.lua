@@ -130,7 +130,7 @@ vim.api.nvim_set_decoration_provider(ns, {})
 vim.api.nvim_set_decoration_provider(ns, { on_win = View._highlight_win })
 
 function View.highlight(self, source, opts, first_line, last_line)
-  if vim.api.nvim_buf_get_text(0, 0, 0, 0, 1, {})[1] == "" then
+  if vim.api.nvim_buf_get_text(self.bufnr, 0, 0, 0, 1, {})[1] == "" then
     return
   end
 
