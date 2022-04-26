@@ -34,7 +34,9 @@ function Loader.navigate_parent(_, ctx, path)
   return Collector.new(ctx.source):start(ctx.opts, function(nodes)
     ctx.history:add(nodes.root_path)
     ctx.ui:redraw(nodes)
-    local _ = ctx.ui:move_cursor(ctx.history.latest_path) or ctx.ui:init_cursor()
+    if nodes.root_path ~= ctx.history.latest_path then
+      local _ = ctx.ui:move_cursor(ctx.history.latest_path) or ctx.ui:init_cursor()
+    end
     ctx.history:set(nodes.root_path)
   end)
 end
