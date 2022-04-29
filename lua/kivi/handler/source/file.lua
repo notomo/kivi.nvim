@@ -85,9 +85,8 @@ end
 
 vim.cmd("highlight default link KiviDirectory String")
 highlights.default("KiviDirectoryOpen", {
-  ctermfg = { "KiviDirectory", 150 },
-  guifg = { "KiviDirectory", "#a9dd9d" },
-  gui = "bold",
+  fg = { "KiviDirectory", "foreground" },
+  bold = true,
 })
 
 function M.highlight(self, bufnr, row, nodes, opts)
