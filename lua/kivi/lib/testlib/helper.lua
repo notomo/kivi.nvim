@@ -1,47 +1,39 @@
 local plugin_name = vim.split((...):gsub("%.", "/"), "/", true)[1]
-local M = require("vusted.helper")
+local helper = require("vusted.helper")
 
-M.root = M.find_plugin_root(plugin_name)
+helper.root = helper.find_plugin_root(plugin_name)
 
-function M.before_each()
+function helper.before_each()
   require("kivi").promise()
   vim.g.clipboard = nil
-  vim.cmd("filetype on")
-  vim.cmd("syntax enable")
-  M.test_data_path = "spec/test_data/" .. math.random(1, 2 ^ 30) .. "/"
-  M.test_data_dir = M.root .. "/" .. M.test_data_path
-  M.new_directory("")
-  vim.api.nvim_set_current_dir(M.test_data_dir)
-  M.set_inputs()
+  helper.test_data_path = "spec/test_data/" .. math.random(1, 2 ^ 30) .. "/"
+  helper.test_data_dir = helper.root .. "/" .. helper.test_data_path
+  helper.new_directory("")
+  vim.api.nvim_set_current_dir(helper.test_data_dir)
+  helper.set_inputs()
 end
 
-function M.after_each()
-  vim.cmd("tabedit")
-  vim.cmd("tabonly!")
-  vim.cmd("silent! %bwipeout!")
-  vim.cmd("filetype off")
-  vim.cmd("syntax off")
-  vim.cmd("messages clear")
+function helper.after_each()
+  helper.cleanup()
+  helper.cleanup_loaded_modules(plugin_name)
+  vim.fn.delete(helper.root .. "/spec/test_data", "rf")
   print(" ")
-
-  M.cleanup_loaded_modules(plugin_name)
-  vim.fn.delete(M.root .. "/spec/test_data", "rf")
 end
 
-function M.skip_if_win32(pending_fn)
+function helper.skip_if_win32(pending_fn)
   if vim.fn.has("win32") == 1 then
     pending_fn("skip on win32")
   end
 end
 
-function M.buffer_log()
+function helper.buffer_log()
   local lines = vim.fn.getbufline("%", 1, "$")
   for _, line in ipairs(lines) do
     print(line)
   end
 end
 
-function M.set_inputs(...)
+function helper.set_inputs(...)
   local answers = vim.fn.reverse({ ... })
   require("kivi.lib.input").read = function(msg)
     local answer = table.remove(answers)
@@ -54,11 +46,11 @@ function M.set_inputs(...)
   end
 end
 
-function M.set_lines(lines)
+function helper.set_lines(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end
 
-function M.search(pattern)
+function helper.search(pattern)
   local result = vim.fn.search(pattern)
   if result == 0 then
     local info = debug.getinfo(2)
@@ -70,31 +62,31 @@ function M.search(pattern)
   return result
 end
 
-function M.new_file(path, ...)
-  local f = io.open(M.test_data_dir .. path, "w")
+function helper.new_file(path, ...)
+  local f = io.open(helper.test_data_dir .. path, "w")
   for _, line in ipairs({ ... }) do
     f:write(line .. "\n")
   end
   f:close()
 end
 
-function M.new_directory(path)
-  vim.fn.mkdir(M.test_data_dir .. path, "p")
+function helper.new_directory(path)
+  vim.fn.mkdir(helper.test_data_dir .. path, "p")
 end
 
-function M.delete(path)
-  vim.fn.delete(M.test_data_dir .. path, "rf")
+function helper.delete(path)
+  vim.fn.delete(helper.test_data_dir .. path, "rf")
 end
 
-function M.cd(path)
-  vim.api.nvim_set_current_dir(M.test_data_dir .. path)
+function helper.cd(path)
+  vim.api.nvim_set_current_dir(helper.test_data_dir .. path)
 end
 
-function M.path(path)
-  return M.test_data_dir .. (path or "")
+function helper.path(path)
+  return helper.test_data_dir .. (path or "")
 end
 
-function M.on_finished()
+function helper.on_finished()
   local finished = false
   return setmetatable({
     wait = function()
@@ -112,15 +104,15 @@ function M.on_finished()
   })
 end
 
-function M.wait(promise)
-  local on_finished = M.on_finished()
+function helper.wait(promise)
+  local on_finished = helper.on_finished()
   promise:finally(function()
     on_finished()
   end)
   on_finished:wait()
 end
 
-function M.clipboard()
+function helper.clipboard()
   local register = {}
   return {
     name = "test",
@@ -137,14 +129,14 @@ function M.clipboard()
   }
 end
 
-function M.window_count()
+function helper.window_count()
   return vim.fn.tabpagewinnr(vim.fn.tabpagenr(), "$")
 end
 
 local asserts = require("vusted.assert").asserts
 
 asserts.create("window_count"):register_eq(function()
-  return M.window_count()
+  return helper.window_count()
 end)
 
 asserts.create("current_line"):register_eq(function()
@@ -164,7 +156,7 @@ asserts.create("file_name"):register_eq(function()
 end)
 
 asserts.create("current_dir"):register_eq(function()
-  return require("kivi.lib.path").adjust_sep(vim.fn.getcwd()):gsub(M.test_data_dir .. "?", "")
+  return require("kivi.lib.path").adjust_sep(vim.fn.getcwd()):gsub(helper.test_data_dir .. "?", "")
 end)
 
 asserts.create("register_value"):register_eq(function(name)
@@ -212,4 +204,4 @@ asserts.create("exists_message"):register(function(self)
   end
 end)
 
-return M
+return helper
