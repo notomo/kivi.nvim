@@ -568,4 +568,27 @@ describe("kivi file source", function()
 
     assert.current_line("dir1/")
   end)
+
+  it("can treat symbolic link", function()
+    helper.new_directory("a")
+    helper.new_directory("a/b")
+    helper.new_directory("a/b/c")
+    helper.new_file("a/b/c/d")
+    helper.symlink("link_from", "a/b/c")
+
+    helper.wait(kivi.open())
+    helper.search("link_from")
+    helper.wait(kivi.execute("child"))
+
+    assert.current_line("d")
+  end)
+
+  it("can treat broken symbolic link", function()
+    helper.symlink("link_from", "not_found")
+
+    helper.wait(kivi.open())
+    helper.search("link_from")
+
+    assert.current_line("link_from")
+  end)
 end)

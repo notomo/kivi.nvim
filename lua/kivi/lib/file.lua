@@ -30,6 +30,14 @@ function M.adjust(path)
   return path
 end
 
+function M._link_entry(path)
+  local real_path = loop.fs_realpath(path)
+  if real_path then
+    return real_path, M.is_dir(real_path), false
+  end
+  return path, false, true
+end
+
 function M.entries(dir)
   local fs = loop.fs_scandir(dir)
   if not fs then
@@ -43,13 +51,26 @@ function M.entries(dir)
       break
     end
 
-    local path = pathlib.join(dir, file_name)
-    local is_directory = type == "directory"
+    local path, is_directory, is_broken_link
+    local joined = pathlib.join(dir, file_name)
+    if type == "link" then
+      path, is_directory, is_broken_link = M._link_entry(joined)
+    else
+      path = joined
+      is_directory = type == "directory"
+      is_broken_link = false
+    end
+
     local name = file_name
     if is_directory then
       name = name .. "/"
     end
-    table.insert(entries, { path = M.adjust(path), is_directory = is_directory, name = name })
+    table.insert(entries, {
+      path = M.adjust(path),
+      is_directory = is_directory,
+      is_broken_link = is_broken_link,
+      name = name,
+    })
   end
 
   table.sort(entries, function(a, b)

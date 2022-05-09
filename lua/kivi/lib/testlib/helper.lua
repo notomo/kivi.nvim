@@ -74,6 +74,10 @@ function helper.new_directory(path)
   vim.fn.mkdir(helper.test_data_dir .. path, "p")
 end
 
+function helper.symlink(from, to)
+  vim.loop.fs_symlink(helper.test_data_dir .. to, helper.test_data_dir .. from)
+end
+
 function helper.delete(path)
   vim.fn.delete(helper.test_data_dir .. path, "rf")
 end

@@ -44,6 +44,7 @@ collect = function(target_dir, opts_expanded)
             value = entry.name,
             path = path,
             kind_name = kind_name,
+            is_broken = entry.is_broken_link,
           }
           if child.kind_name == "directory" and expanded[child.path] then
             table.insert(expand_indicies, i)
@@ -83,7 +84,14 @@ function M.collect(_, opts)
   return collect(dir, opts.expanded)
 end
 
-vim.cmd("highlight default link KiviDirectory String")
+vim.api.nvim_set_hl(0, "KiviDirectory", {
+  default = true,
+  link = "String",
+})
+vim.api.nvim_set_hl(0, "KiviBrokenLink", {
+  default = true,
+  link = "WarningMsg",
+})
 highlights.default("KiviDirectoryOpen", {
   fg = { "KiviDirectory", "foreground" },
   bold = true,
@@ -96,6 +104,9 @@ function M.highlight(self, bufnr, row, nodes, opts)
   end)
   highlighter:filter("KiviDirectoryOpen", row, nodes, function(node)
     return node.kind_name == "directory" and opts.expanded[node.path]
+  end)
+  highlighter:filter("KiviBrokenLink", row, nodes, function(node)
+    return node.is_broken
   end)
 end
 
