@@ -10,6 +10,7 @@ local default_opts = {
 
 local default_open_opts = {
   layout = { type = "no" },
+  bufnr = -1,
 }
 
 local Options = {}
@@ -21,6 +22,9 @@ function Options.new(raw_opts)
 
   local opts = tbllib.extend(default_opts, raw_opts)
   local open_opts = tbllib.extend(default_open_opts, raw_opts)
+  if open_opts.bufnr == -1 then
+    open_opts.bufnr = nil
+  end
 
   return setmetatable(opts, Options), open_opts
 end

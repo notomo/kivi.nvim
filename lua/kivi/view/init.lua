@@ -12,7 +12,7 @@ View.__index = View
 local _promise = nil
 
 function View.open(source, open_opts)
-  local bufnr = vim.api.nvim_create_buf(false, true)
+  local bufnr = open_opts.bufnr or vim.api.nvim_create_buf(false, true)
 
   local key = ("%s/%d"):format(source.name, bufnr)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. key .. "/kivi")

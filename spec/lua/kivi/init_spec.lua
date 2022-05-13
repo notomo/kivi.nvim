@@ -160,6 +160,18 @@ describe("kivi", function()
     assert.window_count(2)
   end)
 
+  it("can open with hide layout", function()
+    helper.new_file("file")
+    local bufnr = vim.api.nvim_create_buf(false, true)
+
+    helper.wait(kivi.open({ layout = { type = "hide" }, bufnr = bufnr }))
+
+    assert.window_count(1)
+
+    vim.cmd([[buffer ]] .. bufnr)
+    assert.exists_pattern("file")
+  end)
+
   it("can reload renamer", function()
     helper.new_file("file")
 
