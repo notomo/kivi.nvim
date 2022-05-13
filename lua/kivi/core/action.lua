@@ -36,4 +36,8 @@ function Action.execute(self, nodes, ctx)
   return Promise.resolve(result)
 end
 
+function Action.is_same(self, action)
+  return self._action == action._action
+end
+
 return Action

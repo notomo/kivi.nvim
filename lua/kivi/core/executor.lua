@@ -6,33 +6,33 @@ function Executor.new(ui)
   return setmetatable(tbl, Executor)
 end
 
-function Executor._action(self, kind, nodes, action_name, opts, action_opts)
+function Executor.execute(self, ctx, all_nodes, action_name, opts, action_opts)
   action_opts = action_opts or {}
 
-  local action, action_err = kind:find_action(action_name, action_opts)
-  if action_err ~= nil then
-    return nil, action_err
+  local holders = {}
+  for kind, nodes in all_nodes:group_by_kind() do
+    local action, err = kind:find_action(action_name, action_opts)
+    if err then
+      return nil, err
+    end
+
+    local previous = holders[#holders]
+    if previous and previous.action:is_same(action) then
+      vim.list_extend(previous.nodes, nodes)
+    else
+      table.insert(holders, {
+        action = action,
+        nodes = nodes,
+      })
+    end
   end
 
-  return function(ctx)
-    local result, err = action:execute(nodes, ctx)
+  local result
+  for _, holder in ipairs(holders) do
+    local res, err = holder.action:execute(holder.nodes, ctx)
     if opts.quit then
       self._ui:close()
     end
-    return result, err
-  end,
-    nil
-end
-
-function Executor.execute(self, ctx, all_nodes, action_name, opts, action_opts)
-  local result
-  for kind, nodes in all_nodes:group_by_kind() do
-    local action, action_err = self:_action(kind, nodes, action_name, opts, action_opts)
-    if action_err ~= nil then
-      return nil, action_err
-    end
-
-    local res, err = action(ctx)
     if err ~= nil then
       return nil, err
     end

@@ -192,6 +192,28 @@ describe("kivi file source", function()
     assert.exists_pattern("dir2")
   end)
 
+  it("can copy and paste file and directory", function()
+    helper.new_file("file")
+    helper.new_directory("dir1")
+    helper.new_file("dir1/file")
+    helper.new_directory("dir2")
+
+    helper.wait(kivi.open())
+
+    helper.search("dir1")
+    helper.wait(kivi.execute("toggle_selection"))
+    helper.search("file")
+    helper.wait(kivi.execute("toggle_selection"))
+    helper.wait(kivi.execute("copy"))
+
+    helper.search("dir2")
+    helper.wait(kivi.execute("child"))
+    helper.wait(kivi.execute("paste"))
+
+    assert.exists_pattern("file")
+    assert.exists_pattern("dir1")
+  end)
+
   it("can copy file and force paste", function()
     helper.new_file("file", [[test]])
     helper.new_directory("dir")
