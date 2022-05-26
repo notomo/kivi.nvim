@@ -2,6 +2,7 @@ local Layouts = {}
 
 function Layouts.no(bufnr)
   vim.api.nvim_win_set_buf(0, bufnr)
+  return true
 end
 
 function Layouts.vertical(width)
@@ -11,15 +12,19 @@ function Layouts.vertical(width)
     vim.cmd("vsplit")
     vim.api.nvim_win_set_width(0, width)
     vim.api.nvim_win_set_buf(0, bufnr)
+    return true
   end
 end
 
 function Layouts.tab(bufnr)
   vim.cmd("tabedit")
   vim.api.nvim_win_set_buf(0, bufnr)
+  return true
 end
 
-function Layouts.hide() end
+function Layouts.hide()
+  return false
+end
 
 local Layout = {}
 Layout.__index = Layout
@@ -47,7 +52,11 @@ end
 
 function Layout.open(self, bufnr)
   vim.validate({ bufnr = { bufnr, "number" } })
-  self._f(bufnr)
+  local opened = self._f(bufnr)
+  if opened then
+    vim.api.nvim_set_option_value("number", false, { scope = "local" })
+    vim.api.nvim_set_option_value("list", false, { scope = "local" })
+  end
   return vim.api.nvim_get_current_win()
 end
 

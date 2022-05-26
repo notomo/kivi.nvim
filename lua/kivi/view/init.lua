@@ -21,8 +21,6 @@ function View.open(source, open_opts)
   vim.bo[bufnr].modifiable = false
 
   Layout.new(open_opts.layout):open(bufnr)
-  vim.api.nvim_set_option_value("number", false, { scope = "local" })
-  vim.api.nvim_set_option_value("list", false, { scope = "local" })
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
     buffer = bufnr,
     callback = function()
