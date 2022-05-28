@@ -17,8 +17,8 @@ function Collector.start(self, opts, callback, source_setup_opts)
   })
   return self._source:start(opts, source_setup_opts):next(function(raw_result)
     local nodes = Nodes.from_node(raw_result)
-    callback(nodes)
-    self._source:hook(nodes.root_path)
+    local bufnr = callback(nodes)
+    self._source:hook(nodes.root_path, bufnr)
   end)
 end
 

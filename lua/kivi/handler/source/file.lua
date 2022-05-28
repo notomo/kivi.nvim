@@ -124,10 +124,19 @@ function M.init_path(self)
   return filelib.adjust(path)
 end
 
-function M.hook(_, path)
-  if filelib.exists(path) then
-    filelib.lcd(path)
+function M.hook(_, path, bufnr)
+  if not filelib.exists(path) then
+    return
   end
+
+  local window_id = vim.fn.win_findbuf(bufnr)[1]
+  if not window_id then
+    return
+  end
+
+  vim.api.nvim_win_call(window_id, function()
+    filelib.lcd(path)
+  end)
 end
 
 M.kind_name = "file"
