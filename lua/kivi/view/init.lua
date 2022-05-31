@@ -112,7 +112,7 @@ function View.reset_selections(self, action_name)
   vim.api.nvim__buf_redraw_range(self.bufnr, vim.fn.line("w0"), vim.fn.line("w$"))
 end
 
-vim.cmd("highlight default link KiviSelected Statement")
+vim.api.nvim_set_hl(0, "KiviSelected", { default = true, link = "Statement" })
 
 function View._highlight_win(_, _, bufnr, topline, botline_guess)
   local ctx, err = Context.get(bufnr)
