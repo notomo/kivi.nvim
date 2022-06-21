@@ -296,6 +296,7 @@ describe("kivi", function()
     helper.new_file("dir1/file1")
     helper.new_directory("dir2")
     helper.new_file("dir2/file2")
+    helper.new_file("dir2/file3")
 
     helper.wait(kivi.open())
 
@@ -304,11 +305,11 @@ describe("kivi", function()
 
     helper.search("dir2")
     helper.wait(kivi.execute("toggle_tree"))
+    helper.search("file2")
 
     helper.wait(kivi.execute("close_all_tree"))
 
-    assert.no.exists_pattern("file1")
-    assert.no.exists_pattern("file2")
+    assert.current_line("file2")
   end)
 
   it("can shrink tree", function()

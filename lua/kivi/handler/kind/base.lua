@@ -62,8 +62,13 @@ function M.action_toggle_tree(self, nodes, ctx)
   return self.controller:expand_child(ctx, expanded)
 end
 
-function M.action_close_all_tree(self, _, ctx)
-  return self.controller:expand_child(ctx, {})
+function M.action_close_all_tree(self, nodes, ctx)
+  local node = nodes[1]
+  if not node then
+    return
+  end
+  local parent = node:parent_or_root()
+  return self.controller:close_all_tree(ctx, parent.path, node.path)
 end
 
 function M.action_create(self, nodes)
