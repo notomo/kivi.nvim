@@ -327,4 +327,14 @@ describe("kivi", function()
     assert.no.exists_pattern("^  file")
     assert.current_line("file2")
   end)
+
+  it("can debug_print node", function()
+    helper.new_directory("dir")
+
+    helper.wait(kivi.open())
+    helper.search("dir")
+    helper.wait(kivi.execute("debug_print"))
+
+    assert.exists_message([[value = "dir/"]])
+  end)
 end)

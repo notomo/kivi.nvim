@@ -14,6 +14,15 @@ function Node.__index(self, k)
   return rawget(Node, k) or self._node[k]
 end
 
+function Node.raw(self)
+  local values = {}
+  for k, v in pairs(self._node) do
+    values[k] = v
+  end
+  values.parent = nil
+  return values
+end
+
 function Node.root(self)
   local current = self
   while true do
@@ -67,6 +76,15 @@ end
 
 function FlatNode.__index(self, k)
   return rawget(FlatNode, k) or self._node[k]
+end
+
+function FlatNode.raw(self)
+  local values = {}
+  for k, v in pairs(self._node:raw()) do
+    values[k] = v
+  end
+  values.parent = nil
+  return values
 end
 
 local Nodes = {}
