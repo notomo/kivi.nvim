@@ -27,6 +27,13 @@ function Highlighter.filter(self, hl_group, row, elements, condition)
   end
 end
 
+function Highlighter.virtual_text(self, virt_text, row)
+  vim.api.nvim_buf_set_extmark(self._bufnr, self._ns, row, 0, {
+    virt_text = virt_text,
+    ephemeral = true,
+  })
+end
+
 local HighlighterFactory = {}
 HighlighterFactory.__index = HighlighterFactory
 M.HighlighterFactory = HighlighterFactory

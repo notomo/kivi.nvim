@@ -45,6 +45,7 @@ collect = function(target_dir, opts_expanded)
             path = path,
             kind_name = kind_name,
             is_broken = entry.is_broken_link,
+            is_link = entry.is_link,
           }
           if child.kind_name == "directory" and expanded[child.path] then
             table.insert(expand_indicies, i)
@@ -108,6 +109,11 @@ function M.highlight(self, bufnr, row, nodes, opts)
   highlighter:filter("KiviBrokenLink", row, nodes, function(node)
     return node.is_broken
   end)
+  for i, node in ipairs(nodes) do
+    if node.is_link then
+      highlighter:virtual_text({ { "-> " .. node.path, "Comment" } }, row + i - 1)
+    end
+  end
 end
 
 function M.init_path(self)
