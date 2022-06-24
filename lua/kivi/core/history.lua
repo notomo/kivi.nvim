@@ -2,7 +2,11 @@ local History = {}
 History.__index = History
 
 function History.new()
-  local tbl = { _rows = {}, _paths = {}, latest_path = nil }
+  local tbl = {
+    _positions = {},
+    _paths = {},
+    latest_path = nil,
+  }
   return setmetatable(tbl, History)
 end
 
@@ -16,7 +20,10 @@ end
 
 function History.store_current(self)
   vim.validate({ latest_path = { self.latest_path, "string" } })
-  self._rows[self.latest_path] = vim.api.nvim_win_get_cursor(0)[1]
+  self._positions[self.latest_path] = {
+    cursor_row = vim.api.nvim_win_get_cursor(0)[1],
+    first_row = vim.fn.line("w0"),
+  }
 end
 
 function History.set(self, path)
@@ -30,7 +37,7 @@ end
 
 function History.stored(self, path)
   vim.validate({ path = { path, "string" } })
-  return self._rows[path]
+  return self._positions[path]
 end
 
 return History

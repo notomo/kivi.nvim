@@ -49,19 +49,25 @@ function View.redraw(self, nodes)
   )
 end
 
-function View.move_cursor(self, path)
-  vim.validate({ path = { path, "string", true } })
-  if not path then
+function View.move_cursor(self, history, cursor_line_path)
+  vim.validate({ path = { cursor_line_path, "string", true } })
+  if not cursor_line_path then
     return false
   end
 
-  local node = self._nodes:find(path)
-  if node then
-    cursorlib.set_row_by_buffer(node.index, self.bufnr)
-    return true
+  local node = self._nodes:find(cursor_line_path)
+  if not node then
+    return false
   end
 
-  return false
+  cursorlib.set_row_by_buffer(node.index, self.bufnr)
+
+  local parent = node:parent_or_root()
+  local position = history:stored(parent.path)
+  if position ~= nil then
+    vim.fn.winrestview({ topline = position.first_row })
+  end
+  return true
 end
 
 function View.init_cursor(self)
@@ -70,9 +76,10 @@ end
 
 function View.restore_cursor(self, history, path)
   vim.validate({ history = { history, "table" }, path = { path, "string" } })
-  local row = history:stored(path)
-  if row ~= nil then
-    cursorlib.set_row_by_buffer(row, self.bufnr)
+  local position = history:stored(path)
+  if position ~= nil then
+    cursorlib.set_row_by_buffer(position.cursor_row, self.bufnr)
+    vim.fn.winrestview({ topline = position.first_row })
     return true
   end
   return false
