@@ -28,6 +28,8 @@ function Context.new(source, ui, key, opts)
   return self
 end
 
+--- @return table: context
+--- @return string|nil: error
 function Context.get(bufnr)
   vim.validate({ bufnr = { bufnr, "number", true } })
   local path = vim.api.nvim_buf_get_name(bufnr or 0)
