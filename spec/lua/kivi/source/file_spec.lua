@@ -613,4 +613,15 @@ describe("kivi file source", function()
 
     assert.current_line("link_from")
   end)
+
+  it("can show file details", function()
+    helper.new_file("file")
+
+    helper.wait(kivi.open())
+
+    helper.search("file")
+    helper.wait(kivi.execute("show_details"))
+
+    assert.exists_message("-rw-r--r--")
+  end)
 end)

@@ -84,6 +84,22 @@ function M.action_paste(self, nodes, ctx)
   end)
 end
 
+function M.action_show_details(_, nodes)
+  local paths = vim.tbl_map(function (node)
+    return node.path
+  end, nodes)
+  return filelib.details(paths):next(function(output)
+    if #paths == 1 and filelib.is_dir(paths[1]) then
+      local prefix = paths[1] .. ":\n"
+      vim.api.nvim_echo({ { prefix }, { output } }, true, {})
+    else
+      vim.api.nvim_echo({ { output } }, true, {})
+    end
+  end):catch(function(err)
+    require("kivi.vendor.misclib.message").error(err)
+  end)
+end
+
 function M.create(_, path)
   return filelib.create(path)
 end
