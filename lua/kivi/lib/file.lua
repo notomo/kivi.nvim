@@ -119,10 +119,16 @@ function M.copy(from, to)
   end
 
   local from_file = io.open(from, "r")
+  if not from_file then
+    error("cannot open to read: " .. from)
+  end
   local content = from_file:read("*a")
   from_file:close()
 
   local to_file = io.open(to, "w")
+  if not to_file then
+    error("cannot open to write: " .. to)
+  end
   to_file:write(content)
   to_file:close()
 end
