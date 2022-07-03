@@ -6,17 +6,17 @@ helper.root = helper.find_plugin_root(plugin_name)
 function helper.before_each()
   require("kivi").promise()
   vim.g.clipboard = nil
-  helper.test_data_path = "spec/test_data/" .. math.random(1, 2 ^ 30) .. "/"
-  helper.test_data_dir = helper.root .. "/" .. helper.test_data_path
-  helper.new_directory("")
-  vim.api.nvim_set_current_dir(helper.test_data_dir)
+
+  helper.test_data = require("kivi.vendor.misclib.test.data_dir").setup(helper.root)
+  helper.test_data:cd("")
+
   helper.set_inputs()
 end
 
 function helper.after_each()
+  helper.test_data:teardown()
   helper.cleanup()
   helper.cleanup_loaded_modules(plugin_name)
-  vim.fn.delete(helper.root .. "/spec/test_data", "rf")
   print(" ")
 end
 
@@ -62,32 +62,12 @@ function helper.search(pattern)
   return result
 end
 
-function helper.new_file(path, ...)
-  local f = io.open(helper.test_data_dir .. path, "w")
-  for _, line in ipairs({ ... }) do
-    f:write(line .. "\n")
-  end
-  f:close()
-end
-
-function helper.new_directory(path)
-  vim.fn.mkdir(helper.test_data_dir .. path, "p")
-end
-
 function helper.symlink(from, to)
-  vim.loop.fs_symlink(helper.test_data_dir .. to, helper.test_data_dir .. from)
-end
-
-function helper.delete(path)
-  vim.fn.delete(helper.test_data_dir .. path, "rf")
-end
-
-function helper.cd(path)
-  vim.api.nvim_set_current_dir(helper.test_data_dir .. path)
+  vim.loop.fs_symlink(helper.test_data.full_path .. to, helper.test_data.full_path .. from)
 end
 
 function helper.path(path)
-  return helper.test_data_dir .. (path or "")
+  return helper.test_data.full_path .. (path or "")
 end
 
 function helper.on_finished()
@@ -160,7 +140,7 @@ asserts.create("file_name"):register_eq(function()
 end)
 
 asserts.create("current_dir"):register_eq(function()
-  return require("kivi.lib.path").adjust_sep(vim.fn.getcwd()):gsub(helper.test_data_dir .. "?", "")
+  return require("kivi.lib.path").adjust_sep(vim.fn.getcwd()):gsub(helper.test_data.full_path .. "?", "")
 end)
 
 asserts.create("register_value"):register_eq(function(name)

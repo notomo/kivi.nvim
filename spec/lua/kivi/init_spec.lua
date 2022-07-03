@@ -12,7 +12,7 @@ describe("kivi", function()
   end)
 
   it("can reload ui", function()
-    helper.new_file("file")
+    helper.test_data:create_file("file")
 
     helper.wait(kivi.open())
     vim.cmd("edit!")
@@ -22,10 +22,10 @@ describe("kivi", function()
   end)
 
   it("can remember path history", function()
-    helper.new_directory("dir")
-    helper.new_file("dir/file1")
-    helper.new_file("dir/file2")
-    helper.cd("dir")
+    helper.test_data:create_dir("dir")
+    helper.test_data:create_file("dir/file1")
+    helper.test_data:create_file("dir/file2")
+    helper.test_data:cd("dir")
 
     helper.wait(kivi.open())
     helper.search("file2")
@@ -38,8 +38,8 @@ describe("kivi", function()
   end)
 
   it("opens with the cursor on the second line", function()
-    helper.new_file("file1")
-    helper.new_file("file2")
+    helper.test_data:create_file("file1")
+    helper.test_data:create_file("file2")
 
     helper.wait(kivi.open())
 
@@ -49,8 +49,8 @@ describe("kivi", function()
   it("can execute yank action", function()
     vim.g.clipboard = helper.clipboard()
 
-    helper.new_file("file1")
-    helper.new_file("file2")
+    helper.test_data:create_file("file1")
+    helper.test_data:create_file("file2")
 
     helper.wait(kivi.open())
 
@@ -61,15 +61,15 @@ describe("kivi", function()
 
     helper.wait(kivi.execute("yank"))
 
-    assert.register_value("+", helper.test_data_dir .. "file1\n" .. helper.test_data_dir .. "file2")
+    assert.register_value("+", helper.test_data.full_path .. "file1\n" .. helper.test_data.full_path .. "file2")
     assert.exists_message("yank:$")
     assert.exists_message("file1$")
     assert.exists_message("file2$")
   end)
 
   it("can execute back action", function()
-    helper.new_directory("dir1")
-    helper.new_directory("dir1/dir2")
+    helper.test_data:create_dir("dir1")
+    helper.test_data:create_dir("dir1/dir2")
 
     helper.wait(kivi.open({ path = "dir1/dir2" }))
     helper.wait(kivi.execute("parent"))
@@ -86,9 +86,9 @@ describe("kivi", function()
   end)
 
   it("can select nodes and execute action", function()
-    helper.new_file("file1")
-    helper.new_file("file2")
-    helper.new_file("file3")
+    helper.test_data:create_file("file1")
+    helper.test_data:create_file("file2")
+    helper.test_data:create_file("file3")
 
     helper.wait(kivi.open())
     helper.search("file2")
@@ -101,8 +101,8 @@ describe("kivi", function()
   end)
 
   it("can reset selections by action", function()
-    helper.new_file("file1")
-    helper.new_file("file2")
+    helper.test_data:create_file("file1")
+    helper.test_data:create_file("file2")
 
     helper.wait(kivi.open())
     helper.search("file1")
@@ -117,8 +117,8 @@ describe("kivi", function()
   end)
 
   it("can reset selections by toggle_selection action", function()
-    helper.new_file("file1")
-    helper.new_file("file2")
+    helper.test_data:create_file("file1")
+    helper.test_data:create_file("file2")
 
     helper.wait(kivi.open())
     helper.search("file1")
@@ -132,8 +132,8 @@ describe("kivi", function()
   end)
 
   it("can toggle tree", function()
-    helper.new_directory("dir")
-    helper.new_file("dir/file")
+    helper.test_data:create_dir("dir")
+    helper.test_data:create_file("dir/file")
 
     helper.wait(kivi.open())
 
@@ -150,7 +150,7 @@ describe("kivi", function()
   end)
 
   it("ignores layout on toggle tree", function()
-    helper.new_directory("dir")
+    helper.test_data:create_dir("dir")
 
     helper.wait(kivi.open({ layout = { type = "vertical" } }))
 
@@ -161,7 +161,7 @@ describe("kivi", function()
   end)
 
   it("can open with hide layout", function()
-    helper.new_file("file")
+    helper.test_data:create_file("file")
     local bufnr = vim.api.nvim_create_buf(false, true)
 
     helper.wait(kivi.open({ layout = { type = "hide" }, bufnr = bufnr }))
@@ -173,7 +173,7 @@ describe("kivi", function()
   end)
 
   it("can reload renamer", function()
-    helper.new_file("file")
+    helper.test_data:create_file("file")
 
     helper.wait(kivi.open())
 
@@ -186,7 +186,7 @@ describe("kivi", function()
   end)
 
   it("shows already exists error on creator", function()
-    helper.new_file("file")
+    helper.test_data:create_file("file")
 
     helper.wait(kivi.open())
     helper.wait(kivi.execute("create"))
@@ -199,8 +199,8 @@ describe("kivi", function()
   end)
 
   it("shows already exists error on renamer", function()
-    helper.new_file("file1")
-    helper.new_file("file2")
+    helper.test_data:create_file("file1")
+    helper.test_data:create_file("file2")
 
     helper.wait(kivi.open())
 
@@ -221,8 +221,8 @@ describe("kivi", function()
   end)
 
   it("can execute action and close ui by quit option", function()
-    helper.new_file("file1")
-    helper.new_file("file2")
+    helper.test_data:create_file("file1")
+    helper.test_data:create_file("file2")
     vim.cmd("edit file1")
 
     helper.wait(kivi.open({ layout = { type = "vertical" } }))
@@ -234,9 +234,9 @@ describe("kivi", function()
   end)
 
   it("can execute tab_open node", function()
-    helper.new_file("file1")
-    helper.new_directory("dir")
-    helper.new_file("dir/file2")
+    helper.test_data:create_file("file1")
+    helper.test_data:create_dir("dir")
+    helper.test_data:create_file("dir/file2")
 
     helper.wait(kivi.open())
 
@@ -257,7 +257,7 @@ describe("kivi", function()
   end)
 
   it("can return whether the node is not parent", function()
-    helper.new_file("file")
+    helper.test_data:create_file("file")
 
     helper.wait(kivi.open())
     helper.search("file")
@@ -266,8 +266,8 @@ describe("kivi", function()
   end)
 
   it("does not recall expanded tree", function()
-    helper.new_directory("dir")
-    helper.new_file("dir/file")
+    helper.test_data:create_dir("dir")
+    helper.test_data:create_file("dir/file")
 
     helper.wait(kivi.open({ layout = { type = "tab" } }))
     helper.search("dir")
@@ -279,24 +279,24 @@ describe("kivi", function()
   end)
 
   it("ignores duplicated path history", function()
-    helper.new_directory("dir1/dir2")
+    helper.test_data:create_dir("dir1/dir2")
 
     helper.wait(kivi.open())
-    helper.wait(kivi.navigate(helper.test_data_dir .. "dir1"))
-    helper.wait(kivi.navigate(helper.test_data_dir .. "dir1/dir2"))
-    helper.wait(kivi.navigate(helper.test_data_dir .. "dir1/dir2"))
-    helper.wait(kivi.navigate(helper.test_data_dir .. "dir1/dir2"))
+    helper.wait(kivi.navigate(helper.test_data.full_path .. "dir1"))
+    helper.wait(kivi.navigate(helper.test_data.full_path .. "dir1/dir2"))
+    helper.wait(kivi.navigate(helper.test_data.full_path .. "dir1/dir2"))
+    helper.wait(kivi.navigate(helper.test_data.full_path .. "dir1/dir2"))
     helper.wait(kivi.execute("back"))
 
     assert.current_dir("dir1")
   end)
 
   it("can close all tree", function()
-    helper.new_directory("dir1")
-    helper.new_file("dir1/file1")
-    helper.new_directory("dir2")
-    helper.new_file("dir2/file2")
-    helper.new_file("dir2/file3")
+    helper.test_data:create_dir("dir1")
+    helper.test_data:create_file("dir1/file1")
+    helper.test_data:create_dir("dir2")
+    helper.test_data:create_file("dir2/file2")
+    helper.test_data:create_file("dir2/file3")
 
     helper.wait(kivi.open())
 
@@ -313,9 +313,9 @@ describe("kivi", function()
   end)
 
   it("can shrink tree", function()
-    helper.new_directory("dir")
-    helper.new_file("dir/file1")
-    helper.new_file("dir/file2")
+    helper.test_data:create_dir("dir")
+    helper.test_data:create_file("dir/file1")
+    helper.test_data:create_file("dir/file2")
 
     helper.wait(kivi.open())
     helper.search("dir")
@@ -329,7 +329,7 @@ describe("kivi", function()
   end)
 
   it("can debug_print node", function()
-    helper.new_directory("dir")
+    helper.test_data:create_dir("dir")
 
     helper.wait(kivi.open())
     helper.search("dir")
