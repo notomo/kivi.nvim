@@ -225,8 +225,8 @@ function M.find_upward_dir(child_pattern)
 end
 
 function M.details(paths)
-  local stdout = require("kivi.lib.output").new()
-  local stderr = require("kivi.lib.output").new()
+  local stdout = require("kivi.vendor.misclib.job.output").new()
+  local stderr = require("kivi.vendor.misclib.job.output").new()
   local cmd = { "ls", "-lh", unpack(paths) }
   return require("kivi.vendor.promise").new(function(resolve, reject)
     local _, err = require("kivi.lib.job_factory").new():create(cmd, {
