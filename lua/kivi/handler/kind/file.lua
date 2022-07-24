@@ -5,7 +5,7 @@ local M = {}
 M.opts = { expand_parent = { root_patterns = { ".git" } } }
 
 local adjust_window = function()
-  vim.cmd("wincmd w")
+  vim.cmd.wincmd("w")
 end
 
 function M.action_open(_, nodes)

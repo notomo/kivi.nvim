@@ -9,7 +9,7 @@ function Layouts.vertical(width)
   vim.validate({ width = { width, "number", true } })
   width = width or 38
   return function(bufnr)
-    vim.cmd("vsplit")
+    vim.cmd.vsplit()
     vim.api.nvim_win_set_width(0, width)
     vim.api.nvim_win_set_buf(0, bufnr)
     return true
@@ -17,7 +17,7 @@ function Layouts.vertical(width)
 end
 
 function Layouts.tab(bufnr)
-  vim.cmd("tabedit")
+  vim.cmd.tabedit()
   vim.api.nvim_win_set_buf(0, bufnr)
   return true
 end

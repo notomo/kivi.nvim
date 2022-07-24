@@ -147,35 +147,35 @@ function M._escape(path)
 end
 
 function M.lcd(path)
-  vim.cmd("silent lcd " .. M._escape(path))
+  vim.cmd.lcd({ args = { M._escape(path) }, mods = { silent = true } })
 end
 
 function M.open(path)
   local bufnr = M._bufnr(path)
   if bufnr ~= nil then
-    vim.cmd("buffer " .. bufnr)
+    vim.cmd.buffer({ count = bufnr })
   else
-    vim.cmd("edit " .. M._escape(path))
+    vim.cmd.edit(M._escape(path))
   end
 end
 
 function M.tab_open(path)
   local bufnr = M._bufnr(path)
   if bufnr ~= nil then
-    vim.cmd("tabedit")
-    vim.cmd("buffer " .. bufnr)
+    vim.cmd.tabedit()
+    vim.cmd.buffer({ count = bufnr })
   else
-    vim.cmd("tabedit " .. M._escape(path))
+    vim.cmd.tabedit(M._escape(path))
   end
 end
 
 function M.vsplit_open(path)
   local bufnr = M._bufnr(path)
   if bufnr ~= nil then
-    vim.cmd("vsplit")
-    vim.cmd("buffer " .. bufnr)
+    vim.cmd.vsplit()
+    vim.cmd.buffer({ count = bufnr })
   else
-    vim.cmd("vsplit " .. M._escape(path))
+    vim.cmd.vsplit(M._escape(path))
   end
 end
 

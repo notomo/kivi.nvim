@@ -9,7 +9,7 @@ describe("kivi file source", function()
     helper.test_data:create_file("file")
 
     helper.wait(kivi.open())
-    vim.cmd("normal! G")
+    vim.cmd.normal({ args = { "G" }, bang = true })
     helper.wait(kivi.execute("child"))
 
     assert.file_name("file")
@@ -43,7 +43,7 @@ describe("kivi file source", function()
     helper.test_data:create_file("file2")
     helper.test_data:create_file("file3")
 
-    vim.cmd("edit file3")
+    vim.cmd.edit("file3")
 
     helper.wait(kivi.open())
 
@@ -235,7 +235,7 @@ describe("kivi file source", function()
     helper.search("file")
     helper.wait(kivi.execute("vsplit_open"))
     assert.current_line("test")
-    vim.cmd("wincmd p")
+    vim.cmd.wincmd("p")
 
     helper.wait(kivi.execute("parent"))
     assert.exists_pattern("file")
@@ -284,19 +284,19 @@ describe("kivi file source", function()
     helper.set_inputs("r")
     helper.wait(kivi.execute("paste"))
 
-    vim.cmd("s/file/renamed/")
-    vim.cmd("write")
+    vim.cmd.substitute("/file/renamed/")
+    vim.cmd.write()
     helper.wait(kivi.promise())
-    vim.cmd("wincmd p")
+    vim.cmd.wincmd("p")
 
     assert.current_line("renamed")
     assert.exists_pattern("file")
 
-    vim.cmd("wincmd w")
-    vim.cmd("s/renamed/again/")
-    vim.cmd("write")
+    vim.cmd.wincmd("w")
+    vim.cmd.substitute("/renamed/again/")
+    vim.cmd.write()
     helper.wait(kivi.promise())
-    vim.cmd("wincmd p")
+    vim.cmd.wincmd("p")
 
     assert.no.exists_pattern("renamed")
     assert.exists_pattern("again")
@@ -320,10 +320,10 @@ describe("kivi file source", function()
     helper.set_inputs("r")
     helper.wait(kivi.execute("paste"))
 
-    vim.cmd("s/dir1/renamed/")
-    vim.cmd("write")
+    vim.cmd.substitute("/dir1/renamed/")
+    vim.cmd.write()
     helper.wait(kivi.promise())
-    vim.cmd("wincmd p")
+    vim.cmd.wincmd("p")
 
     assert.exists_pattern("dir1")
 
@@ -399,8 +399,8 @@ describe("kivi file source", function()
 
     assert.current_line("file")
 
-    vim.cmd("s/file/renamed/")
-    vim.cmd("wq")
+    vim.cmd.substitute("/file/renamed/")
+    vim.cmd.wq()
     helper.wait(kivi.promise())
 
     assert.no.exists_pattern("file")
@@ -415,8 +415,8 @@ describe("kivi file source", function()
 
     assert.current_line("dir/")
 
-    vim.cmd("s/dir/renamed/")
-    vim.cmd("wq")
+    vim.cmd.substitute("/dir/renamed/")
+    vim.cmd.wq()
     helper.wait(kivi.promise())
 
     assert.no.exists_pattern("dir")
@@ -429,7 +429,7 @@ describe("kivi file source", function()
     helper.wait(kivi.execute("create"))
 
     vim.fn.setline(1, "created")
-    vim.cmd("w")
+    vim.cmd.write()
     helper.wait(kivi.promise())
 
     assert.exists_pattern("created")
@@ -448,7 +448,7 @@ describe("kivi file source", function()
     helper.wait(kivi.execute("create"))
 
     vim.fn.setline(1, "created")
-    vim.cmd("w")
+    vim.cmd.write()
     helper.wait(kivi.promise())
 
     assert.exists_pattern("  created")
@@ -460,7 +460,7 @@ describe("kivi file source", function()
     helper.wait(kivi.execute("create"))
 
     vim.fn.setline(1, "created/")
-    vim.cmd("w")
+    vim.cmd.write()
     helper.wait(kivi.promise())
 
     assert.exists_pattern("created/")
@@ -472,7 +472,7 @@ describe("kivi file source", function()
     helper.wait(kivi.execute("create"))
 
     vim.fn.setline(1, "created1/created2/file")
-    vim.cmd("w")
+    vim.cmd.write()
     helper.wait(kivi.promise())
 
     assert.exists_pattern("created1/")
@@ -488,11 +488,11 @@ describe("kivi file source", function()
     helper.wait(kivi.execute("create"))
 
     vim.fn.setline(1, "target/file")
-    vim.cmd("w")
+    vim.cmd.write()
 
     assert.exists_message(("can't create: %starget/"):format(helper.test_data.full_path))
 
-    vim.cmd("wincmd p")
+    vim.cmd.wincmd("p")
     assert.no.exists_pattern("target/")
   end)
 

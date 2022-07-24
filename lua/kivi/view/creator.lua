@@ -39,7 +39,7 @@ function Creator.open(kind, loader, base_node)
   }
   local creator = setmetatable(tbl, Creator)
 
-  vim.cmd("startinsert")
+  vim.cmd.startinsert()
 
   vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
     buffer = bufnr,

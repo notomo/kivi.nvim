@@ -15,7 +15,7 @@ describe("kivi", function()
     helper.test_data:create_file("file")
 
     helper.wait(kivi.open())
-    vim.cmd("edit!")
+    vim.cmd.edit({ bang = true })
     helper.wait(kivi.promise())
 
     assert.exists_pattern("file")
@@ -109,7 +109,7 @@ describe("kivi", function()
     helper.wait(kivi.execute("toggle_selection"))
     helper.wait(kivi.execute("tab_open"))
 
-    vim.cmd("tabprevious")
+    vim.cmd.tabprevious()
     helper.search("file2")
     helper.wait(kivi.execute("tab_open"))
 
@@ -168,7 +168,7 @@ describe("kivi", function()
 
     assert.window_count(1)
 
-    vim.cmd([[buffer ]] .. bufnr)
+    vim.cmd.buffer({ count = bufnr })
     assert.exists_pattern("file")
   end)
 
@@ -180,7 +180,7 @@ describe("kivi", function()
     helper.search("file")
     helper.wait(kivi.execute("rename"))
 
-    vim.cmd("edit!")
+    vim.cmd.edit({ bang = true })
 
     assert.exists_pattern("file")
   end)
@@ -192,7 +192,7 @@ describe("kivi", function()
     helper.wait(kivi.execute("create"))
 
     vim.fn.setline(1, "file")
-    vim.cmd("w")
+    vim.cmd.write()
     helper.wait(kivi.promise())
 
     assert.exists_message("already exists: .*/file")
@@ -207,8 +207,8 @@ describe("kivi", function()
     helper.search("file1")
     helper.wait(kivi.execute("rename"))
 
-    vim.cmd("s/file1/file2/")
-    vim.cmd("w")
+    vim.cmd.substitute("/file1/file2/")
+    vim.cmd.write()
     helper.wait(kivi.promise())
 
     assert.exists_message("already exists: .*/file2")
@@ -223,7 +223,7 @@ describe("kivi", function()
   it("can execute action and close ui by quit option", function()
     helper.test_data:create_file("file1")
     helper.test_data:create_file("file2")
-    vim.cmd("edit file1")
+    vim.cmd.edit("file1")
 
     helper.wait(kivi.open({ layout = { type = "vertical" } }))
 
@@ -246,7 +246,7 @@ describe("kivi", function()
     assert.tab_count(2)
     assert.exists_pattern("file2")
 
-    vim.cmd("tabprevious")
+    vim.cmd.tabprevious()
     assert.exists_pattern("file1")
   end)
 
@@ -272,7 +272,7 @@ describe("kivi", function()
     helper.wait(kivi.open({ layout = { type = "tab" } }))
     helper.search("dir")
     helper.wait(kivi.execute("toggle_tree"))
-    vim.cmd("quit")
+    vim.cmd.quit()
     helper.wait(kivi.open({ layout = { type = "tab" } }))
 
     assert.no.exists_pattern("file")
