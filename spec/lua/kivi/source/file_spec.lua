@@ -489,6 +489,7 @@ describe("kivi file source", function()
 
     vim.fn.setline(1, "target/file")
     vim.cmd.write()
+    helper.wait(kivi.promise())
 
     assert.exists_message(("can't create: %starget/"):format(helper.test_data.full_path))
 
