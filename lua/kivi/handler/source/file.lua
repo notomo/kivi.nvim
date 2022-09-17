@@ -1,4 +1,4 @@
-local highlights = require("kivi.lib.highlight")
+local highlightlib = require("kivi.lib.highlight")
 local filelib = require("kivi.lib.file")
 local Promise = require("kivi.vendor.promise")
 
@@ -93,25 +93,25 @@ vim.api.nvim_set_hl(0, "KiviBrokenLink", {
   default = true,
   link = "WarningMsg",
 })
-highlights.default("KiviDirectoryOpen", {
+highlightlib.default("KiviDirectoryOpen", {
   fg = { "KiviDirectory", "foreground" },
   bold = true,
 })
 
 function M.highlight(self, bufnr, row, nodes, opts)
-  local highlighter = self.highlights:create(bufnr)
-  highlighter:filter("KiviDirectory", row, nodes, function(node)
+  local decorator = self.decorator_factory:create(bufnr, true)
+  decorator:filter("KiviDirectory", row, nodes, function(node)
     return node.kind_name == "directory"
   end)
-  highlighter:filter("KiviDirectoryOpen", row, nodes, function(node)
+  decorator:filter("KiviDirectoryOpen", row, nodes, function(node)
     return node.kind_name == "directory" and opts.expanded[node.path]
   end)
-  highlighter:filter("KiviBrokenLink", row, nodes, function(node)
+  decorator:filter("KiviBrokenLink", row, nodes, function(node)
     return node.is_broken
   end)
   for i, node in ipairs(nodes) do
     if node.is_link then
-      highlighter:virtual_text({ { "-> " .. node.path, "Comment" } }, row + i - 1)
+      decorator:add_virtual_text(row + i - 1, 0, { { "-> " .. node.path, "Comment" } })
     end
   end
 end
