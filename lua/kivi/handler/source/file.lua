@@ -1,4 +1,3 @@
-local highlightlib = require("kivi.lib.highlight")
 local filelib = require("kivi.lib.file")
 local Promise = require("kivi.vendor.promise")
 
@@ -85,16 +84,11 @@ function M.collect(_, opts)
   return collect(dir, opts.expanded)
 end
 
-vim.api.nvim_set_hl(0, "KiviDirectory", {
-  default = true,
-  link = "String",
-})
-vim.api.nvim_set_hl(0, "KiviBrokenLink", {
-  default = true,
-  link = "WarningMsg",
-})
-highlightlib.default("KiviDirectoryOpen", {
-  fg = { "KiviDirectory", "foreground" },
+local highlightlib = require("kivi.vendor.misclib.highlight")
+highlightlib.link("KiviDirectory", "String")
+highlightlib.link("KiviBrokenLink", "WarningMsg")
+highlightlib.define("KiviDirectoryOpen", {
+  fg = vim.api.nvim_get_hl_by_name("KiviDirectory", true).foreground,
   bold = true,
 })
 
