@@ -14,7 +14,7 @@ end
 
 function M.action_debug_print(_, nodes)
   for _, node in ipairs(nodes) do
-    print(vim.inspect(node:raw()))
+    require("kivi.vendor.misclib.message").info(node:raw())
   end
 end
 
