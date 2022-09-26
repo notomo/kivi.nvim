@@ -12,7 +12,7 @@ describe("kivi file source", function()
     vim.cmd.normal({ args = { "G" }, bang = true })
     helper.wait(kivi.execute("child"))
 
-    assert.file_name("file")
+    assert.buffer_name_tail("file")
   end)
 
   it("can execute parent action", function()

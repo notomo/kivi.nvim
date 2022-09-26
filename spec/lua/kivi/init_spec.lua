@@ -128,7 +128,7 @@ describe("kivi", function()
     helper.wait(kivi.execute("tab_open"))
 
     assert.tab_count(2)
-    assert.file_name("file2")
+    assert.buffer_name_tail("file2")
   end)
 
   it("can toggle tree", function()
