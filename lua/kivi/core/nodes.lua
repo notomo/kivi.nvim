@@ -1,5 +1,5 @@
 local Kind = require("kivi.core.kind")
-local listlib = require("kivi.lib.list")
+local listlib = require("kivi.vendor.misclib.collection.list")
 local pathlib = require("kivi.lib.path")
 
 local Node = {}
@@ -204,7 +204,7 @@ function Nodes.group_by_kind(self)
     kinds[node.path] = cache[node.kind_name]
   end
 
-  local node_groups = listlib.group_by(self._nodes, function(node)
+  local node_groups = listlib.group_by_adjacent(self._nodes, function(node)
     return kinds[node.path]
   end)
 
