@@ -168,7 +168,7 @@ describe("kivi", function()
 
     assert.window_count(1)
 
-    vim.cmd.buffer({ count = bufnr })
+    vim.cmd.buffer(bufnr)
     assert.exists_pattern("file")
   end)
 
