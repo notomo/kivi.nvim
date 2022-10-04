@@ -26,13 +26,6 @@ function helper.skip_if_win32(pending_fn)
   end
 end
 
-function helper.buffer_log()
-  local lines = vim.fn.getbufline("%", 1, "$")
-  for _, line in ipairs(lines) do
-    print(line)
-  end
-end
-
 function helper.set_inputs(...)
   local answers = vim.fn.reverse({ ... })
   require("kivi.lib.input").read = function(msg)
