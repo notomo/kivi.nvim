@@ -1,4 +1,4 @@
-local helper = require("kivi.lib.testlib.helper")
+local helper = require("kivi.test.helper")
 local kivi = helper.require("kivi")
 
 describe("kivi file source", function()
