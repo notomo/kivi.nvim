@@ -337,4 +337,10 @@ describe("kivi", function()
 
     assert.exists_message([[value = "dir/"]])
   end)
+
+  it("does not raise error even if executed action on empty kivi buffer", function()
+    local promise = kivi.open()
+    helper.wait(kivi.execute("child"))
+    helper.wait(promise)
+  end)
 end)

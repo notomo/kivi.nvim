@@ -27,7 +27,7 @@ function Executor.execute(self, ctx, all_nodes, action_name, opts, action_opts)
     end
   end
 
-  local result
+  local result = require("kivi.vendor.promise").resolve()
   for _, holder in ipairs(holders) do
     local res, err = holder.action:execute(holder.nodes, ctx)
     if opts.quit then
