@@ -105,6 +105,10 @@ function M.highlight_one(_, decorator, row, node, opts)
   if node.is_link then
     decorator:add_virtual_text(row, 0, { { "-> " .. node.path, "Comment" } })
   end
+  if node.is_git_ignored then
+    decorator:highlight_line("Comment", row)
+    decorator:add_virtual_text(row, 0, { { "[X]", "Comment" } })
+  end
 end
 
 function M.init_path(self)

@@ -103,6 +103,43 @@ function M.action_show_details(_, nodes)
     end)
 end
 
+function M.action_show_git_ignores(_, nodes, ctx)
+  local first_node = nodes[1]
+  if not first_node then
+    return
+  end
+
+  local git_root, git_err = filelib.find_git_root()
+  if git_err then
+    return nil, git_err
+  end
+
+  local base_node = first_node:parent_or_root()
+  local cmd = { "git", "-C", base_node.path, "ls-files", "--full-name" }
+  return require("kivi.lib.job")
+    .promise(cmd)
+    :next(function(output)
+      local paths = vim.split(output, "\n", true)
+
+      local in_git = {}
+      local pathlib = require("kivi.lib.path")
+      for _, path in ipairs(paths) do
+        in_git[pathlib.join(git_root, path)] = true
+      end
+
+      for _, node in ipairs(base_node.children) do
+        if not in_git[node.path] and not filelib.is_dir(node.path) then
+          node.is_git_ignored = true
+        end
+      end
+
+      ctx.ui:redraw_buffer()
+    end)
+    :catch(function(err)
+      require("kivi.vendor.misclib.message").error(err)
+    end)
+end
+
 function M.create(_, path)
   return filelib.create(path)
 end

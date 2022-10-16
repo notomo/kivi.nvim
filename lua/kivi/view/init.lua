@@ -49,6 +49,11 @@ function View.redraw(self, nodes)
   )
 end
 
+function View.redraw_buffer(self)
+  -- NOTICE: This works only for the current window.
+  vim.api.nvim__buf_redraw_range(self.bufnr, vim.fn.line("w0"), vim.fn.line("w$"))
+end
+
 function View.move_cursor(self, history, cursor_line_path)
   vim.validate({ path = { cursor_line_path, "string", true } })
   if not cursor_line_path then
@@ -115,8 +120,7 @@ function View.reset_selections(self, action_name)
     return
   end
   self._nodes = self._nodes:clear_selections()
-  -- NOTICE: This works only for the current window.
-  vim.api.nvim__buf_redraw_range(self.bufnr, vim.fn.line("w0"), vim.fn.line("w$"))
+  self:redraw_buffer()
 end
 
 vim.api.nvim_set_hl(0, "KiviSelected", { default = true, link = "Statement" })
