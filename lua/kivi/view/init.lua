@@ -139,17 +139,18 @@ function View.highlight(self, source, opts, first_line, last_line)
     return
   end
 
-  local nodes = self._nodes:range(first_line + 1, last_line)
-  source:highlight(self.bufnr, first_line, nodes, opts)
-
   local decorator = source.decorator_factory:create(self.bufnr, true)
+  local nodes = self._nodes:range(first_line + 1, last_line)
+  for i, node in ipairs(nodes) do
+    local row = first_line + i - 1
+    source:highlight_one(decorator, row, node, opts)
+    if self._nodes:is_selected(node.path) then
+      decorator:highlight_line("KiviSelected", row)
+    end
+  end
   if first_line == 0 then
     decorator:highlight_line("Comment", 0)
   end
-
-  decorator:filter("KiviSelected", first_line, nodes, function(node)
-    return self._nodes:is_selected(node.path)
-  end)
 end
 
 -- for test

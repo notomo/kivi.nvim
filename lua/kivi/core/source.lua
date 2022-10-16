@@ -1,5 +1,5 @@
 local modulelib = require("kivi.vendor.misclib.module")
-local Decorator = require("kivi.lib.decorator")
+local Decorator = require("kivi.vendor.misclib.decorator")
 local base = require("kivi.handler.source.base")
 
 local Source = {}

@@ -92,21 +92,18 @@ highlightlib.define("KiviDirectoryOpen", {
   bold = true,
 })
 
-function M.highlight(self, bufnr, row, nodes, opts)
-  local decorator = self.decorator_factory:create(bufnr, true)
-  decorator:filter("KiviDirectory", row, nodes, function(node)
-    return node.kind_name == "directory"
-  end)
-  decorator:filter("KiviDirectoryOpen", row, nodes, function(node)
-    return node.kind_name == "directory" and opts.expanded[node.path]
-  end)
-  decorator:filter("KiviBrokenLink", row, nodes, function(node)
-    return node.is_broken
-  end)
-  for i, node in ipairs(nodes) do
-    if node.is_link then
-      decorator:add_virtual_text(row + i - 1, 0, { { "-> " .. node.path, "Comment" } })
-    end
+function M.highlight_one(_, decorator, row, node, opts)
+  if node.kind_name == "directory" then
+    decorator:highlight_line("KiviDirectory", row)
+  end
+  if node.kind_name == "directory" and opts.expanded[node.path] then
+    decorator:highlight_line("KiviDirectoryOpen", row)
+  end
+  if node.is_broken then
+    decorator:highlight_line("KiviBrokenLink", row)
+  end
+  if node.is_link then
+    decorator:add_virtual_text(row, 0, { { "-> " .. node.path, "Comment" } })
   end
 end
 

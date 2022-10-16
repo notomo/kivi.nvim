@@ -4,7 +4,7 @@ function M.collect()
   return {}
 end
 
-function M.highlight() end
+function M.highlight_one() end
 
 function M.init_path() end
 
