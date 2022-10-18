@@ -1,5 +1,3 @@
-local tbllib = require("kivi.lib.table")
-
 local default_opts = {
   source = "file",
   path = ".",
@@ -20,8 +18,8 @@ function Options.new(raw_opts)
   vim.validate({ raw_opts = { raw_opts, "table", true } })
   raw_opts = raw_opts or {}
 
-  local opts = tbllib.extend(default_opts, raw_opts)
-  local open_opts = tbllib.extend(default_open_opts, raw_opts)
+  local opts = vim.tbl_extend("keep", raw_opts, vim.deepcopy(default_opts))
+  local open_opts = vim.tbl_extend("keep", raw_opts, vim.deepcopy(default_open_opts))
   if open_opts.bufnr == -1 then
     open_opts.bufnr = nil
   end
