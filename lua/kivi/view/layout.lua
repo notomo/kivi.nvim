@@ -18,6 +18,8 @@ end
 
 function Layouts.tab(bufnr)
   vim.cmd.tabedit()
+  vim.bo.buftype = "nofile"
+  vim.bo.bufhidden = "wipe"
   vim.api.nvim_win_set_buf(0, bufnr)
   return true
 end

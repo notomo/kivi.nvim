@@ -163,6 +163,8 @@ function M.tab_open(path)
   local bufnr = M._bufnr(path)
   if bufnr ~= nil then
     vim.cmd.tabedit()
+    vim.bo.buftype = "nofile"
+    vim.bo.bufhidden = "wipe"
     vim.cmd.buffer(bufnr)
   else
     vim.cmd.tabedit(M._escape(path))
