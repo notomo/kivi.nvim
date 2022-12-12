@@ -1,15 +1,9 @@
 local Context = require("kivi.core.context")
 local Loader = require("kivi.core.loader")
 
-local Controller = {}
-Controller.__index = Controller
+local M = {}
 
-function Controller.new()
-  local tbl = {}
-  return setmetatable(tbl, Controller)
-end
-
-function Controller.open(_, raw_opts)
+function M.open(raw_opts)
   local opts, open_opts = require("kivi.core.option").new(raw_opts)
   local source, err = require("kivi.core.source").new(opts.source, opts.source_opts)
   if err ~= nil then
@@ -21,39 +15,39 @@ function Controller.open(_, raw_opts)
   return Loader.new(ctx.ui.bufnr):open(ctx, opts.source_setup_opts)
 end
 
-function Controller.navigate(_, ctx, path, source_setup_opts)
+function M.navigate(ctx, path, source_setup_opts)
   return Loader.new(ctx.ui.bufnr):navigate(ctx, path, source_setup_opts)
 end
 
-function Controller.navigate_parent(_, ctx, path)
+function M.navigate_parent(ctx, path)
   return Loader.new(ctx.ui.bufnr):navigate_parent(ctx, path)
 end
 
-function Controller.back(_, ctx, path)
+function M.back(ctx, path)
   return Loader.new(ctx.ui.bufnr):back(ctx, path)
 end
 
-function Controller.expand_child(_, ctx, expanded)
+function M.expand_child(ctx, expanded)
   return Loader.new(ctx.ui.bufnr):expand_child(ctx, expanded)
 end
 
-function Controller.close_all_tree(_, ctx, path, cursor_line_path)
+function M.close_all_tree(ctx, path, cursor_line_path)
   return Loader.new(ctx.ui.bufnr):close_all_tree(ctx, path, cursor_line_path)
 end
 
-function Controller.expand_parent(_, ctx, path, cursor_line_path, expanded)
+function M.expand_parent(ctx, path, cursor_line_path, expanded)
   return Loader.new(ctx.ui.bufnr):expand_parent(ctx, path, cursor_line_path, expanded)
 end
 
-function Controller.shrink(_, ctx, path, cursor_line_path)
+function M.shrink(ctx, path, cursor_line_path)
   return Loader.new(ctx.ui.bufnr):shrink(ctx, path, cursor_line_path)
 end
 
-function Controller.reload(_, ctx)
+function M.reload(ctx)
   return Loader.new(ctx.ui.bufnr):reload()
 end
 
-function Controller.execute(_, action_name, range, opts, action_opts)
+function M.execute(action_name, range, opts, action_opts)
   local ctx, err = Context.get()
   if err ~= nil then
     return require("kivi.vendor.promise").reject(err)
@@ -64,7 +58,7 @@ function Controller.execute(_, action_name, range, opts, action_opts)
   return require("kivi.core.executor").new(ctx.ui):execute(ctx, nodes, action_name, opts, action_opts)
 end
 
-function Controller.open_renamer(_, base_node, rename_items, has_cut)
+function M.open_renamer(base_node, rename_items, has_cut)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
@@ -79,7 +73,7 @@ function Controller.open_renamer(_, base_node, rename_items, has_cut)
   require("kivi.view.renamer").open(kind, loader, base_node, rename_items, has_cut)
 end
 
-function Controller.open_creator(_, base_node)
+function M.open_creator(base_node)
   local ctx, err = Context.get()
   if err ~= nil then
     return nil, err
@@ -94,4 +88,4 @@ function Controller.open_creator(_, base_node)
   require("kivi.view.creator").open(kind, loader, base_node)
 end
 
-return Controller
+return M

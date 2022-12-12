@@ -20,7 +20,6 @@ function Kind.new(name)
     messagelib = messagelib,
     opts = vim.tbl_deep_extend("force", base.opts, kind.opts or {}),
     input_reader = inputlib.reader(),
-    controller = require("kivi.controller").new(),
     _kind = kind,
   }
   return setmetatable(tbl, Kind), nil

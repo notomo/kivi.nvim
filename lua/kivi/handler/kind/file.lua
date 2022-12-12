@@ -77,9 +77,9 @@ function M.action_paste(self, nodes, ctx)
     end
   end
 
-  return self.controller:reload(ctx):next(function()
+  return require("kivi.controller").reload(ctx):next(function()
     if #rename_items > 0 then
-      return self.controller:open_renamer(base_node, rename_items, has_cut)
+      return require("kivi.controller").open_renamer(base_node, rename_items, has_cut)
     end
   end)
 end
