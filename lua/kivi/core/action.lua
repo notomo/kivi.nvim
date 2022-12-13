@@ -11,6 +11,7 @@ function ActionContext.new(kind, action_opts)
 end
 
 local Action = {}
+Action.__index = Action
 
 local ACTION_PREFIX = "action_"
 
@@ -34,13 +35,9 @@ function Action.new(kind, name, action_opts)
   return setmetatable(tbl, Action)
 end
 
-function Action.__index(self, k)
-  return rawget(Action, k) or self._kind[k]
-end
-
 function Action.execute(self, nodes, ctx)
   local action_ctx = ActionContext.new(self._kind, self.action_opts)
-  local result, err = self._action(self, nodes, action_ctx, ctx)
+  local result, err = self._action(nodes, action_ctx, ctx)
   if err then
     return Promise.reject(err)
   end

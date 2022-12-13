@@ -8,20 +8,20 @@ local adjust_window = function()
   vim.cmd.wincmd("w")
 end
 
-function M.action_open(_, nodes)
+function M.action_open(nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
     filelib.open(node.path)
   end
 end
 
-function M.action_tab_open(_, nodes)
+function M.action_tab_open(nodes)
   for _, node in ipairs(nodes) do
     filelib.tab_open(node.path)
   end
 end
 
-function M.action_vsplit_open(_, nodes)
+function M.action_vsplit_open(nodes)
   adjust_window()
   for _, node in ipairs(nodes) do
     filelib.vsplit_open(node.path)
@@ -30,7 +30,7 @@ end
 
 M.action_child = M.action_open
 
-function M.action_paste(_, nodes, _, ctx)
+function M.action_paste(nodes, _, ctx)
   local node = nodes[1]
   if not node then
     return
@@ -85,7 +85,7 @@ function M.action_paste(_, nodes, _, ctx)
   end)
 end
 
-function M.action_show_details(_, nodes)
+function M.action_show_details(nodes)
   local paths = vim.tbl_map(function(node)
     return node.path
   end, nodes)
@@ -104,7 +104,7 @@ function M.action_show_details(_, nodes)
     end)
 end
 
-function M.action_show_git_ignores(_, nodes, _, ctx)
+function M.action_show_git_ignores(nodes, _, ctx)
   local first_node = nodes[1]
   if not first_node then
     return

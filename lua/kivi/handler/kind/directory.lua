@@ -2,19 +2,19 @@ local Promise = require("kivi.vendor.promise")
 
 local M = {}
 
-function M.action_open(_, nodes, _, ctx)
+function M.action_open(nodes, _, ctx)
   return Promise.all(vim.tbl_map(function(node)
     return require("kivi.controller").navigate(ctx, node.path)
   end, nodes))
 end
 
-function M.action_tab_open(_, nodes)
+function M.action_tab_open(nodes)
   return Promise.all(vim.tbl_map(function(node)
     return require("kivi.controller").open({ path = node.path, layout = { type = "tab" } })
   end, nodes))
 end
 
-function M.action_vsplit_open(_, nodes)
+function M.action_vsplit_open(nodes)
   return Promise.all(vim.tbl_map(function(node)
     return require("kivi.controller").open({ path = node.path, layout = { type = "vertical" } })
   end, nodes))

@@ -4,7 +4,7 @@ local M = {}
 
 M.opts = { yank = { key = "path", register = "+" } }
 
-function M.action_parent(_, nodes, _, ctx)
+function M.action_parent(nodes, _, ctx)
   local node = nodes[1]
   if not node then
     return
@@ -12,13 +12,13 @@ function M.action_parent(_, nodes, _, ctx)
   return require("kivi.controller").navigate_parent(ctx, pathlib.parent(node:root().path))
 end
 
-function M.action_debug_print(_, nodes)
+function M.action_debug_print(nodes)
   for _, node in ipairs(nodes) do
     require("kivi.vendor.misclib.message").info(node:raw())
   end
 end
 
-function M.action_yank(_, nodes, action_ctx)
+function M.action_yank(nodes, action_ctx)
   local values = vim.tbl_map(function(node)
     return tostring(node[action_ctx.opts.key])
   end, nodes)
@@ -28,7 +28,7 @@ function M.action_yank(_, nodes, action_ctx)
   end
 end
 
-function M.action_back(_, _, _, ctx)
+function M.action_back(_, _, ctx)
   local path = ctx.history:pop()
   if not path then
     return
@@ -36,19 +36,19 @@ function M.action_back(_, _, _, ctx)
   return require("kivi.controller").back(ctx, path)
 end
 
-function M.action_toggle_selection(_, nodes, _, ctx)
+function M.action_toggle_selection(nodes, _, ctx)
   ctx.ui:toggle_selections(nodes)
 end
 
-function M.action_copy(_, nodes, _, ctx)
+function M.action_copy(nodes, _, ctx)
   ctx.clipboard:copy(nodes)
 end
 
-function M.action_cut(_, nodes, _, ctx)
+function M.action_cut(nodes, _, ctx)
   ctx.clipboard:cut(nodes)
 end
 
-function M.action_toggle_tree(_, nodes, _, ctx)
+function M.action_toggle_tree(nodes, _, ctx)
   local expanded = ctx.opts.expanded
   for _, node in ipairs(nodes) do
     local path = node.path
@@ -62,7 +62,7 @@ function M.action_toggle_tree(_, nodes, _, ctx)
   return require("kivi.controller").expand_child(ctx, expanded)
 end
 
-function M.action_close_all_tree(_, nodes, _, ctx)
+function M.action_close_all_tree(nodes, _, ctx)
   local node = nodes[1]
   if not node then
     return
@@ -71,7 +71,7 @@ function M.action_close_all_tree(_, nodes, _, ctx)
   return require("kivi.controller").close_all_tree(ctx, parent.path, node.path)
 end
 
-function M.action_create(_, nodes)
+function M.action_create(nodes)
   local node = nodes[1]
   if not node then
     return
@@ -80,7 +80,7 @@ function M.action_create(_, nodes)
   return require("kivi.controller").open_creator(base_node)
 end
 
-function M.action_rename(_, nodes)
+function M.action_rename(nodes)
   local node = nodes[1]
   if not node then
     return
@@ -98,7 +98,7 @@ function M.action_rename(_, nodes)
   return require("kivi.controller").open_renamer(base_node, rename_items, has_cut)
 end
 
-function M.action_delete(_, nodes, action_ctx, ctx)
+function M.action_delete(nodes, action_ctx, ctx)
   local yes = require("kivi.util.input").confirm("delete?", nodes)
   if not yes then
     require("kivi.lib.message").info("canceled.")
@@ -111,7 +111,7 @@ function M.action_delete(_, nodes, action_ctx, ctx)
   return require("kivi.controller").reload(ctx)
 end
 
-function M.action_expand_parent(_, nodes, action_ctx, ctx)
+function M.action_expand_parent(nodes, action_ctx, ctx)
   local node = nodes[1]
   if not node then
     return
@@ -133,7 +133,7 @@ function M.find_upward_marker(_)
   return pathlib.adjust("/")
 end
 
-function M.action_shrink(_, nodes, _, ctx)
+function M.action_shrink(nodes, _, ctx)
   local node = nodes[1]
   if not node then
     return
