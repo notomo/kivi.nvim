@@ -1,12 +1,6 @@
-local Executor = {}
-Executor.__index = Executor
+local M = {}
 
-function Executor.new(ui)
-  local tbl = { _ui = ui }
-  return setmetatable(tbl, Executor)
-end
-
-function Executor.execute(self, ctx, all_nodes, action_name, opts, action_opts)
+function M.execute(ctx, all_nodes, action_name, opts, action_opts)
   action_opts = action_opts or {}
 
   local holders = {}
@@ -31,7 +25,7 @@ function Executor.execute(self, ctx, all_nodes, action_name, opts, action_opts)
   for _, holder in ipairs(holders) do
     local res, err = holder.action:execute(holder.nodes, ctx)
     if opts.quit then
-      self._ui:close()
+      ctx.ui:close()
     end
     if err ~= nil then
       return nil, err
@@ -41,4 +35,4 @@ function Executor.execute(self, ctx, all_nodes, action_name, opts, action_opts)
   return result, nil
 end
 
-return Executor
+return M

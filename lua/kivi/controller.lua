@@ -55,7 +55,7 @@ function M.execute(action_name, range, opts, action_opts)
 
   local nodes = ctx.ui:selected_nodes(action_name, range)
   ctx.ui:reset_selections(action_name)
-  return require("kivi.core.executor").new(ctx.ui):execute(ctx, nodes, action_name, opts, action_opts)
+  return require("kivi.core.executor").execute(ctx, nodes, action_name, opts, action_opts)
 end
 
 function M.open_renamer(base_node, rename_items, has_cut)
