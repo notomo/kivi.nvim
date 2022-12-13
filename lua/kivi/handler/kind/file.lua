@@ -30,7 +30,7 @@ end
 
 M.action_child = M.action_open
 
-function M.action_paste(self, nodes, ctx)
+function M.action_paste(self, nodes, _, ctx)
   local node = nodes[1]
   if not node then
     return
@@ -104,7 +104,7 @@ function M.action_show_details(_, nodes)
     end)
 end
 
-function M.action_show_git_ignores(_, nodes, ctx)
+function M.action_show_git_ignores(_, nodes, _, ctx)
   local first_node = nodes[1]
   if not first_node then
     return
@@ -161,8 +161,8 @@ function M.exists(_, path)
   return filelib.exists(path)
 end
 
-function M.find_upward_marker(self)
-  for _, pattern in ipairs(self.action_opts.root_patterns) do
+function M.find_upward_marker(action_ctx)
+  for _, pattern in ipairs(action_ctx.opts.root_patterns) do
     local found = filelib.find_upward_dir(pattern)
     if found ~= nil then
       return filelib.adjust(found)

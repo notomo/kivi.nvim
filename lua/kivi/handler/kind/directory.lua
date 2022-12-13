@@ -2,7 +2,7 @@ local Promise = require("kivi.vendor.promise")
 
 local M = {}
 
-function M.action_open(_, nodes, ctx)
+function M.action_open(_, nodes, _, ctx)
   return Promise.all(vim.tbl_map(function(node)
     return require("kivi.controller").navigate(ctx, node.path)
   end, nodes))

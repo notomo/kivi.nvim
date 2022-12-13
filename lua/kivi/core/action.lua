@@ -1,5 +1,14 @@
 local Promise = require("kivi.vendor.promise")
 
+local ActionContext = {}
+
+function ActionContext.new(action_opts)
+  local tbl = {
+    opts = action_opts,
+  }
+  return setmetatable(tbl, ActionContext)
+end
+
 local Action = {}
 
 local ACTION_PREFIX = "action_"
@@ -29,7 +38,8 @@ function Action.__index(self, k)
 end
 
 function Action.execute(self, nodes, ctx)
-  local result, err = self._action(self, nodes, ctx)
+  local action_ctx = ActionContext.new(self.action_opts)
+  local result, err = self._action(self, nodes, action_ctx, ctx)
   if err then
     return Promise.reject(err)
   end
