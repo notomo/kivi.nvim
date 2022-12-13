@@ -27,7 +27,7 @@ function M.execute(ctx, all_nodes, action_name, opts, action_opts)
     if opts.quit then
       ctx.ui:close()
     end
-    if err ~= nil then
+    if err then
       return nil, err
     end
     result = res

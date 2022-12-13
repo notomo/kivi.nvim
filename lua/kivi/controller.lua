@@ -6,7 +6,7 @@ local M = {}
 function M.open(raw_opts)
   local opts, open_opts = require("kivi.core.option").new(raw_opts)
   local source, err = require("kivi.core.source").new(opts.source, opts.source_opts)
-  if err ~= nil then
+  if err then
     return require("kivi.vendor.promise").reject(err)
   end
 
@@ -49,7 +49,7 @@ end
 
 function M.execute(action_name, range, opts, action_opts)
   local ctx, err = Context.get()
-  if err ~= nil then
+  if err then
     return require("kivi.vendor.promise").reject(err)
   end
 
@@ -60,12 +60,12 @@ end
 
 function M.open_renamer(base_node, rename_items, has_cut)
   local ctx, err = Context.get()
-  if err ~= nil then
+  if err then
     return nil, err
   end
 
   local kind, kind_err = base_node:kind()
-  if kind_err ~= nil then
+  if kind_err then
     return nil, kind_err
   end
 
@@ -74,12 +74,12 @@ end
 
 function M.open_creator(base_node)
   local ctx, err = Context.get()
-  if err ~= nil then
+  if err then
     return nil, err
   end
 
   local kind, kind_err = base_node:kind()
-  if kind_err ~= nil then
+  if kind_err then
     return nil, kind_err
   end
 

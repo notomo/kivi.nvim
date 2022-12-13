@@ -127,7 +127,7 @@ vim.api.nvim_set_hl(0, "KiviSelected", { default = true, link = "Statement" })
 
 function View._highlight_win(_, _, bufnr, topline, botline_guess)
   local ctx, err = Context.get(bufnr)
-  if err ~= nil then
+  if err then
     return false
   end
   ctx.ui:highlight(ctx.source, ctx.opts, topline, botline_guess)

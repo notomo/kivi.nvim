@@ -59,7 +59,7 @@ end
 
 function Node.kind(self)
   local kind, err = Kind.new(self.kind_name)
-  if err ~= nil then
+  if err then
     return nil, err
   end
   return kind, nil
@@ -196,7 +196,7 @@ function Nodes.group_by_kind(self)
   for _, node in ipairs(self._nodes) do
     if not cache[node.kind_name] then
       local kind, err = node:kind()
-      if err ~= nil then
+      if err then
         return nil, err
       end
       cache[node.kind_name] = kind

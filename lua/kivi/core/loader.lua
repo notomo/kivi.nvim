@@ -45,7 +45,7 @@ function M.reload(bufnr, cursor_line_path, expanded)
   })
 
   local ctx, ctx_err = Context.get(bufnr)
-  if ctx_err ~= nil then
+  if ctx_err then
     return require("kivi.vendor.promise").reject(ctx_err)
   end
   ctx.opts = ctx.opts:merge({ expanded = expanded or ctx.opts.expanded })

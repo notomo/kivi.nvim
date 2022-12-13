@@ -15,7 +15,7 @@ function ReturnValue.navigate(path, source_setup_opts)
   source_setup_opts = source_setup_opts or {}
 
   local ctx, err = Context.get()
-  if err ~= nil then
+  if err then
     return require("kivi.vendor.promise").reject(err)
   end
 
@@ -41,13 +41,13 @@ end
 
 function ReturnValue.is_parent()
   local ctx, err = Context.get()
-  if err ~= nil then
+  if err then
     return false, err
   end
 
   local nodes = ctx.ui:selected_nodes()
   local kind, kind_err = nodes:kind()
-  if kind_err ~= nil then
+  if kind_err then
     return false, kind_err
   end
 

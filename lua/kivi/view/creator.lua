@@ -68,7 +68,7 @@ function Creator.write(self)
     end
 
     local err = self._kind.create(path)
-    if err ~= nil then
+    if err then
       table.insert(errors, { path = path, msg = err })
       goto continue
     end
