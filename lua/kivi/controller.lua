@@ -65,7 +65,7 @@ function M.open_renamer(base_node, rename_items, has_cut)
   end
 
   local kind, kind_err = base_node:kind()
-  if err ~= nil then
+  if kind_err ~= nil then
     return nil, kind_err
   end
 
@@ -79,7 +79,7 @@ function M.open_creator(base_node)
   end
 
   local kind, kind_err = base_node:kind()
-  if err ~= nil then
+  if kind_err ~= nil then
     return nil, kind_err
   end
 
