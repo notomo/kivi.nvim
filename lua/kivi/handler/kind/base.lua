@@ -24,7 +24,7 @@ function M.action_yank(self, nodes)
   end, nodes)
   if #values ~= 0 then
     vim.fn.setreg(self.action_opts.register, table.concat(values, "\n"))
-    self.messagelib.info("yank:", values)
+    require("kivi.lib.message").info("yank:", values)
   end
 end
 
@@ -99,9 +99,9 @@ function M.action_rename(_, nodes)
 end
 
 function M.action_delete(self, nodes, ctx)
-  local yes = self:confirm("delete?", nodes)
+  local yes = require("kivi.util.input").confirm("delete?", nodes)
   if not yes then
-    self.messagelib.info("canceled.")
+    require("kivi.lib.message").info("canceled.")
     return
   end
 

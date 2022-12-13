@@ -57,8 +57,9 @@ function M.action_paste(self, nodes, ctx)
 
   local overwrite_items = {}
   local rename_items = {}
+  local input_reader = require("kivi.lib.input").reader()
   for _, item in ipairs(already_exists) do
-    local answer = self.input_reader:get(item.to.path .. " already exists, (f)orce (n)o (r)ename: ")
+    local answer = input_reader:get(item.to.path .. " already exists, (f)orce (n)o (r)ename: ")
     if answer == "n" then
       goto continue
     elseif answer == "r" then

@@ -1,6 +1,4 @@
 local modulelib = require("kivi.vendor.misclib.module")
-local inputlib = require("kivi.lib.input")
-local messagelib = require("kivi.lib.message")
 local Action = require("kivi.core.action")
 local base = require("kivi.handler.kind.base")
 local vim = vim
@@ -17,9 +15,7 @@ function Kind.new(name)
 
   local tbl = {
     name = name,
-    messagelib = messagelib,
     opts = vim.tbl_deep_extend("force", base.opts, kind.opts or {}),
-    input_reader = inputlib.reader(),
     _kind = kind,
   }
   return setmetatable(tbl, Kind), nil
@@ -31,15 +27,6 @@ end
 
 function Kind.find_action(self, action_name, action_opts)
   return Action.new(self, action_name, action_opts)
-end
-
-function Kind.confirm(self, message, nodes)
-  local paths = vim.tbl_map(function(node)
-    return node.path
-  end, nodes)
-  local target = table.concat(paths, "\n")
-  local msg = ("%s\n%s"):format(target, message)
-  return self.input_reader:confirm(msg)
 end
 
 return Kind
