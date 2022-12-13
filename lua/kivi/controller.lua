@@ -1,5 +1,5 @@
 local Context = require("kivi.core.context")
-local Loader = require("kivi.core.loader")
+local loader = require("kivi.core.loader")
 
 local M = {}
 
@@ -12,39 +12,39 @@ function M.open(raw_opts)
 
   local ui, key = require("kivi.view").open(source, open_opts)
   local ctx = Context.new(source, ui, key, opts)
-  return Loader.new(ctx.ui.bufnr):open(ctx, opts.source_setup_opts)
+  return loader.open(ctx, opts.source_setup_opts)
 end
 
 function M.navigate(ctx, path, source_setup_opts)
-  return Loader.new(ctx.ui.bufnr):navigate(ctx, path, source_setup_opts)
+  return loader.navigate(ctx, path, source_setup_opts)
 end
 
 function M.navigate_parent(ctx, path)
-  return Loader.new(ctx.ui.bufnr):navigate_parent(ctx, path)
+  return loader.navigate_parent(ctx, path)
 end
 
 function M.back(ctx, path)
-  return Loader.new(ctx.ui.bufnr):back(ctx, path)
+  return loader.back(ctx, path)
 end
 
 function M.expand_child(ctx, expanded)
-  return Loader.new(ctx.ui.bufnr):expand_child(ctx, expanded)
+  return loader.expand_child(ctx, expanded)
 end
 
 function M.close_all_tree(ctx, path, cursor_line_path)
-  return Loader.new(ctx.ui.bufnr):close_all_tree(ctx, path, cursor_line_path)
+  return loader.close_all_tree(ctx, path, cursor_line_path)
 end
 
 function M.expand_parent(ctx, path, cursor_line_path, expanded)
-  return Loader.new(ctx.ui.bufnr):expand_parent(ctx, path, cursor_line_path, expanded)
+  return loader.expand_parent(ctx, path, cursor_line_path, expanded)
 end
 
 function M.shrink(ctx, path, cursor_line_path)
-  return Loader.new(ctx.ui.bufnr):shrink(ctx, path, cursor_line_path)
+  return loader.shrink(ctx, path, cursor_line_path)
 end
 
 function M.reload(ctx)
-  return Loader.new(ctx.ui.bufnr):reload()
+  return loader.reload(ctx.ui.bufnr)
 end
 
 function M.execute(action_name, range, opts, action_opts)
@@ -69,8 +69,7 @@ function M.open_renamer(base_node, rename_items, has_cut)
     return nil, kind_err
   end
 
-  local loader = Loader.new(ctx.ui.bufnr)
-  require("kivi.view.renamer").open(kind, loader, base_node, rename_items, has_cut)
+  require("kivi.view.renamer").open(kind, ctx.ui.bufnr, base_node, rename_items, has_cut)
 end
 
 function M.open_creator(base_node)
@@ -84,8 +83,7 @@ function M.open_creator(base_node)
     return nil, kind_err
   end
 
-  local loader = Loader.new(ctx.ui.bufnr)
-  require("kivi.view.creator").open(kind, loader, base_node)
+  require("kivi.view.creator").open(kind, ctx.ui.bufnr, base_node)
 end
 
 return M

@@ -7,7 +7,7 @@ Creator.__index = Creator
 
 local _promise = nil
 
-function Creator.open(kind, loader, base_node)
+function Creator.open(kind, tree_bufnr, base_node)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
   local width = 75
@@ -34,7 +34,7 @@ function Creator.open(kind, loader, base_node)
     _bufnr = bufnr,
     _base_node = base_node,
     _kind = kind,
-    _loader = loader,
+    _tree_bufnr = tree_bufnr,
     _window_id = window_id,
   }
   local creator = setmetatable(tbl, Creator)
@@ -110,7 +110,7 @@ function Creator.write(self)
     cursor_line_path = success[last_index]
   end
 
-  return self._loader:reload(cursor_line_path, expanded)
+  return require("kivi.core.loader").reload(self._tree_bufnr, cursor_line_path, expanded)
 end
 
 -- for test

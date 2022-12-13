@@ -9,7 +9,7 @@ Renamer.__index = Renamer
 
 local _promise = nil
 
-function Renamer.open(kind, loader, base_node, rename_items, has_cut)
+function Renamer.open(kind, tree_bufnr, base_node, rename_items, has_cut)
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].buftype = "acwrite"
@@ -30,7 +30,7 @@ function Renamer.open(kind, loader, base_node, rename_items, has_cut)
     _base_node = base_node,
     _has_cut = has_cut,
     _kind = kind,
-    _loader = loader,
+    _tree_bufnr = tree_bufnr,
   }
   local renamer = setmetatable(tbl, Renamer)
   renamer:read()
@@ -138,7 +138,7 @@ function Renamer.write(self)
     )
   end
 
-  return self._loader:reload(cursor_line_path)
+  return require("kivi.core.loader").reload(self._tree_bufnr, cursor_line_path)
 end
 
 function Renamer.read(self)

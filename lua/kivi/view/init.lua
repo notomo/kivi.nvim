@@ -24,7 +24,7 @@ function View.open(source, open_opts)
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
     buffer = bufnr,
     callback = function()
-      _promise = require("kivi.core.loader").new(bufnr):reload()
+      _promise = require("kivi.core.loader").reload(bufnr)
     end,
   })
 

@@ -12,7 +12,10 @@ function Clipboard.new(source_name)
     return clipboard
   end
 
-  local tbl = { _nodes = {}, _has_cut = false }
+  local tbl = {
+    _nodes = {},
+    _has_cut = false,
+  }
   local self = setmetatable(tbl, Clipboard)
   _clipboards[source_name] = self
   return self

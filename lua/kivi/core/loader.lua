@@ -1,16 +1,9 @@
 local Context = require("kivi.core.context")
 local collector = require("kivi.core.collector")
 
-local Loader = {}
-Loader.__index = Loader
+local M = {}
 
-function Loader.new(bufnr)
-  vim.validate({ bufnr = { bufnr, "number" } })
-  local tbl = { _bufnr = bufnr }
-  return setmetatable(tbl, Loader)
-end
-
-function Loader.open(_, ctx, source_setup_opts)
+function M.open(ctx, source_setup_opts)
   return collector.start(ctx.source, ctx.opts, function(nodes)
     ctx.ui:redraw(nodes)
     local _ = ctx.ui:move_cursor(ctx.history, ctx.source:init_path()) or ctx.ui:init_cursor()
@@ -19,7 +12,7 @@ function Loader.open(_, ctx, source_setup_opts)
   end, source_setup_opts)
 end
 
-function Loader.navigate(_, ctx, path, source_setup_opts)
+function M.navigate(ctx, path, source_setup_opts)
   vim.validate({ source_setup_opts = { source_setup_opts, "table", true } })
   ctx.opts = ctx.opts:merge({ path = path })
   return collector.start(ctx.source, ctx.opts, function(nodes)
@@ -31,7 +24,7 @@ function Loader.navigate(_, ctx, path, source_setup_opts)
   end, source_setup_opts)
 end
 
-function Loader.navigate_parent(_, ctx, path)
+function M.navigate_parent(ctx, path)
   ctx.opts = ctx.opts:merge({ path = path })
   return collector.start(ctx.source, ctx.opts, function(nodes)
     ctx.history:add(nodes.root_path)
@@ -44,13 +37,14 @@ function Loader.navigate_parent(_, ctx, path)
   end)
 end
 
-function Loader.reload(self, cursor_line_path, expanded)
+function M.reload(bufnr, cursor_line_path, expanded)
   vim.validate({
+    bufnr = { bufnr, "number" },
     cursor_line_path = { cursor_line_path, "string", true },
     expanded = { expanded, "table", true },
   })
 
-  local ctx, ctx_err = Context.get(self._bufnr)
+  local ctx, ctx_err = Context.get(bufnr)
   if ctx_err ~= nil then
     return require("kivi.vendor.promise").reject(ctx_err)
   end
@@ -63,7 +57,7 @@ function Loader.reload(self, cursor_line_path, expanded)
   end)
 end
 
-function Loader.back(_, ctx, path)
+function M.back(ctx, path)
   ctx.opts = ctx.opts:merge({ path = path })
   return collector.start(ctx.source, ctx.opts, function(nodes)
     ctx.history:store_current()
@@ -74,7 +68,7 @@ function Loader.back(_, ctx, path)
   end)
 end
 
-function Loader.expand_child(_, ctx, expanded)
+function M.expand_child(ctx, expanded)
   ctx.opts.expanded = expanded
   return collector.start(ctx.source, ctx.opts, function(nodes)
     ctx.ui:redraw(nodes)
@@ -82,7 +76,7 @@ function Loader.expand_child(_, ctx, expanded)
   end)
 end
 
-function Loader.close_all_tree(_, ctx, path, cursor_line_path)
+function M.close_all_tree(ctx, path, cursor_line_path)
   ctx.opts = ctx.opts:merge({ path = path })
   ctx.opts.expanded = {}
   return collector.start(ctx.source, ctx.opts, function(nodes)
@@ -92,7 +86,7 @@ function Loader.close_all_tree(_, ctx, path, cursor_line_path)
   end)
 end
 
-function Loader.shrink(_, ctx, path, cursor_line_path)
+function M.shrink(ctx, path, cursor_line_path)
   vim.validate({ cursor_line_path = { cursor_line_path, "string", true } })
   ctx.opts = ctx.opts:merge({ path = path })
   return collector.start(ctx.source, ctx.opts, function(nodes)
@@ -104,7 +98,7 @@ function Loader.shrink(_, ctx, path, cursor_line_path)
   end)
 end
 
-function Loader.expand_parent(_, ctx, path, cursor_line_path, expanded)
+function M.expand_parent(ctx, path, cursor_line_path, expanded)
   ctx.opts = ctx.opts:merge({ path = path, expanded = expanded })
   return collector.start(ctx.source, ctx.opts, function(nodes)
     ctx.ui:redraw(nodes)
@@ -114,4 +108,4 @@ function Loader.expand_parent(_, ctx, path, cursor_line_path, expanded)
   end)
 end
 
-return Loader
+return M
