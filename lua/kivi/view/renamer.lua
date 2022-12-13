@@ -90,15 +90,15 @@ function Renamer.write(self)
   local success = {}
   local already_exists = {}
   for i, item in ipairs(items) do
-    if self._kind:exists(item.to) then
+    if self._kind.exists(item.to) then
       table.insert(already_exists, item)
       goto continue
     end
 
     if self._has_cut then
-      self._kind:rename(item.from, item.to)
+      self._kind.rename(item.from, item.to)
     else
-      self._kind:copy(item.from, item.to)
+      self._kind.copy(item.from, item.to)
     end
 
     success[i] = item

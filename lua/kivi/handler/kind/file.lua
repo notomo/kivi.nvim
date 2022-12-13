@@ -30,7 +30,7 @@ end
 
 M.action_child = M.action_open
 
-function M.action_paste(self, nodes, _, ctx)
+function M.action_paste(_, nodes, _, ctx)
   local node = nodes[1]
   if not node then
     return
@@ -41,15 +41,15 @@ function M.action_paste(self, nodes, _, ctx)
   local copied, has_cut = ctx.clipboard:pop()
   for _, old_node in ipairs(copied) do
     local new_node = old_node:move_to(base_node)
-    if self:exists(new_node.path) then
+    if M.exists(new_node.path) then
       table.insert(already_exists, { from = old_node, to = new_node })
       goto continue
     end
 
     if has_cut then
-      self:rename(old_node.path, new_node.path)
+      M.rename(old_node.path, new_node.path)
     else
-      self:copy(old_node.path, new_node.path)
+      M.copy(old_node.path, new_node.path)
     end
 
     ::continue::
@@ -72,9 +72,9 @@ function M.action_paste(self, nodes, _, ctx)
 
   for _, item in ipairs(overwrite_items) do
     if has_cut then
-      self:rename(item.from.path, item.to.path)
+      M.rename(item.from.path, item.to.path)
     else
-      self:copy(item.from.path, item.to.path)
+      M.copy(item.from.path, item.to.path)
     end
   end
 
@@ -141,23 +141,23 @@ function M.action_show_git_ignores(_, nodes, _, ctx)
     end)
 end
 
-function M.create(_, path)
+function M.create(path)
   return filelib.create(path)
 end
 
-function M.delete(_, path)
+function M.delete(path)
   return filelib.delete(path)
 end
 
-function M.rename(_, from, to)
+function M.rename(from, to)
   return filelib.rename(from, to)
 end
 
-function M.copy(_, from, to)
+function M.copy(from, to)
   return filelib.copy(from, to)
 end
 
-function M.exists(_, path)
+function M.exists(path)
   return filelib.exists(path)
 end
 

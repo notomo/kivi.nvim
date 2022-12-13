@@ -62,12 +62,12 @@ function Creator.write(self)
   local success = {}
   local errors = {}
   for i, path in ipairs(paths) do
-    if self._kind:exists(path) then
+    if self._kind.exists(path) then
       table.insert(errors, { path = path, msg = "already exists: " .. path })
       goto continue
     end
 
-    local err = self._kind:create(path)
+    local err = self._kind.create(path)
     if err ~= nil then
       table.insert(errors, { path = path, msg = err })
       goto continue

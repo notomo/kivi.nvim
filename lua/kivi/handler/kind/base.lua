@@ -106,7 +106,7 @@ function M.action_delete(self, nodes, _, ctx)
   end
 
   for _, node in ipairs(nodes) do
-    self:delete(node.path)
+    self.delete(node.path)
   end
   return require("kivi.controller").reload(ctx)
 end
