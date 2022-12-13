@@ -98,7 +98,7 @@ function M.action_rename(_, nodes)
   return require("kivi.controller").open_renamer(base_node, rename_items, has_cut)
 end
 
-function M.action_delete(self, nodes, _, ctx)
+function M.action_delete(_, nodes, action_ctx, ctx)
   local yes = require("kivi.util.input").confirm("delete?", nodes)
   if not yes then
     require("kivi.lib.message").info("canceled.")
@@ -106,19 +106,19 @@ function M.action_delete(self, nodes, _, ctx)
   end
 
   for _, node in ipairs(nodes) do
-    self.delete(node.path)
+    action_ctx.kind.delete(node.path)
   end
   return require("kivi.controller").reload(ctx)
 end
 
-function M.action_expand_parent(self, nodes, action_ctx, ctx)
+function M.action_expand_parent(_, nodes, action_ctx, ctx)
   local node = nodes[1]
   if not node then
     return
   end
 
   local bottom = node:parent_or_root()
-  local above_path = self.find_upward_marker(action_ctx)
+  local above_path = action_ctx.kind.find_upward_marker(action_ctx)
   local paths = pathlib.between(bottom.path, above_path)
 
   local expanded = {}
