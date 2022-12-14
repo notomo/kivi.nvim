@@ -45,6 +45,7 @@ collect = function(target_dir, opts_expanded)
             kind_name = kind_name,
             is_broken = entry.is_broken_link,
             is_link = entry.is_link,
+            real_path = entry.real_path,
           }
           if child.kind_name == "directory" and expanded[child.path] then
             table.insert(expand_indicies, i)
@@ -103,7 +104,7 @@ function M.highlight_one(_, decorator, row, node, opts)
     decorator:highlight_line("KiviBrokenLink", row)
   end
   if node.is_link then
-    decorator:add_virtual_text(row, 0, { { "-> " .. node.path, "Comment" } })
+    decorator:add_virtual_text(row, 0, { { "-> " .. node.real_path, "Comment" } })
   end
   if node.is_git_ignored then
     decorator:highlight_line("Comment", row)

@@ -84,6 +84,20 @@ describe("kivi file source", function()
     assert.exists_pattern("dir2")
   end)
 
+  it("can delete symbolic link", function()
+    helper.set_inputs("y")
+
+    helper.test_data:create_file("file1")
+    helper.symlink("link", "file1")
+
+    helper.wait(kivi.open())
+    helper.search("link")
+    helper.wait(kivi.execute("delete"))
+
+    assert.exists_pattern("file1")
+    assert.no.exists_pattern("link")
+  end)
+
   it("can cancel deleting", function()
     helper.set_inputs("n")
 

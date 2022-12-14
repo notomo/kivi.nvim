@@ -9,6 +9,11 @@ function M.is_dir(path)
   return stat and stat.type == "directory"
 end
 
+function M.is_link(path)
+  local stat = loop.fs_stat(path)
+  return stat and stat.type == "link"
+end
+
 M.home_dir = loop.os_homedir()
 
 function M.adjust(path)
@@ -33,9 +38,9 @@ end
 function M._link_entry(path)
   local real_path = loop.fs_realpath(path)
   if real_path then
-    return real_path, M.is_dir(real_path), false
+    return path, real_path, M.is_dir(real_path), false
   end
-  return path, false, true
+  return path, nil, false, true
 end
 
 function M.entries(dir)
@@ -51,13 +56,13 @@ function M.entries(dir)
       break
     end
 
-    local path, is_directory, is_link, is_broken_link
+    local path, real_path, is_directory, is_link, is_broken_link
     local joined = pathlib.join(dir, file_name)
     if type == "link" then
-      path, is_directory, is_broken_link = M._link_entry(joined)
+      path, real_path, is_directory, is_broken_link = M._link_entry(joined)
       is_link = true
     else
-      path = joined
+      path = M.adjust(joined)
       is_directory = type == "directory"
       is_broken_link = false
       is_link = false
@@ -68,7 +73,8 @@ function M.entries(dir)
       name = name .. "/"
     end
     table.insert(entries, {
-      path = M.adjust(path),
+      path = path,
+      real_path = real_path,
       is_directory = is_directory,
       is_link = is_link,
       is_broken_link = is_broken_link,
@@ -89,6 +95,9 @@ function M.entries(dir)
 end
 
 function M.delete(path)
+  if M.is_link(path) then
+    return vim.fn.delete(pathlib.trim_slash(path))
+  end
   return vim.fn.delete(path, "rf")
 end
 
