@@ -54,6 +54,14 @@ function ReturnValue.is_parent()
   return kind.is_parent == true, nil
 end
 
+function ReturnValue.get()
+  local ctx, err = Context.get()
+  if err then
+    return false, err
+  end
+  return ctx.ui:selected_nodes()
+end
+
 -- for test
 function ReturnValue.promise()
   local promises = {}

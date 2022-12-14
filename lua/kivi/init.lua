@@ -16,6 +16,10 @@ function M.is_parent()
   return require("kivi.command").is_parent()
 end
 
+function M.get()
+  return require("kivi.command").get()
+end
+
 -- for test
 function M.promise()
   return require("kivi.command").promise()
