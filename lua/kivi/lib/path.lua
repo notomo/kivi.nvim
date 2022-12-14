@@ -96,14 +96,16 @@ function M.between(path, base_path)
   return paths
 end
 
+local _adjust_sep
 if vim.loop.os_uname().version:match("Windows") then
-  function M.adjust_sep(path)
+  _adjust_sep = function(path)
     return path:gsub("\\", "/")
   end
 else
-  function M.adjust_sep(path)
+  _adjust_sep = function(path)
     return path
   end
 end
+M.adjust_sep = _adjust_sep
 
 return M

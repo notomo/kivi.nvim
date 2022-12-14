@@ -105,15 +105,16 @@ function M.rename(from, to)
   return loop.fs_rename(from, to)
 end
 
+local _copy_dir
 if vim.loop.os_uname().version:match("Windows") then
-  function M._copy_dir(from, to)
+  _copy_dir = function(from, to)
     local from_path = pathlib.trim_slash(from):gsub("/", "\\")
     local to_path = pathlib.trim_slash(to):gsub("/", "\\")
     local cmd = { "xcopy", "/Y", "/E", "/I", from_path, to_path }
     vim.fn.systemlist(cmd)
   end
 else
-  function M._copy_dir(from, to)
+  _copy_dir = function(from, to)
     if M.is_dir(to) then
       vim.fn.system({ "cp", "-RT", from, pathlib.trim_slash(to) })
     else
@@ -121,6 +122,7 @@ else
     end
   end
 end
+M._copy_dir = _copy_dir
 
 function M.copy(from, to)
   if M.is_dir(from) then
