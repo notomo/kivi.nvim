@@ -4,7 +4,7 @@ function M.promise(cmd)
   local stdout = require("kivi.vendor.misclib.job.output").new()
   local stderr = require("kivi.vendor.misclib.job.output").new()
   return require("kivi.vendor.promise").new(function(resolve, reject)
-    local _, err = require("kivi.lib.job_factory").new():create(cmd, {
+    local _, err = require("kivi.vendor.misclib.job").start(cmd, {
       on_exit = function(_, code)
         if code ~= 0 then
           local err = stderr:str()

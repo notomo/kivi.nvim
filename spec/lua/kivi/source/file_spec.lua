@@ -639,4 +639,16 @@ describe("kivi file source", function()
 
     assert.exists_message("-rw-r--r--")
   end)
+
+  it("can show git ignores", function()
+    helper.test_data:create_file("file")
+
+    helper.wait(kivi.open())
+
+    helper.search("file")
+    helper.wait(kivi.execute("show_git_ignores"))
+
+    local got = kivi.get()[1]
+    assert.is_true(got.is_git_ignored)
+  end)
 end)
