@@ -67,7 +67,7 @@ collect = function(target_dir, opts_expanded)
       table.insert(
         promises,
         collect(child.path, opts_expanded):next(function(result)
-          root.children[i] = result
+          root.children[i].children = result.children
         end)
       )
     end

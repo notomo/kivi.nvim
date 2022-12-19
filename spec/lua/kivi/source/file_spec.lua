@@ -98,6 +98,19 @@ describe("kivi file source", function()
     assert.no.exists_pattern("link")
   end)
 
+  it("can toggle tree with symbolic link directory", function()
+    helper.test_data:create_dir("dir")
+    helper.test_data:create_file("dir/file")
+    helper.symlink("link", "dir")
+
+    helper.wait(kivi.open())
+    helper.search("link")
+    helper.wait(kivi.execute("toggle_tree"))
+
+    assert.exists_pattern("link/")
+    assert.exists_pattern("file")
+  end)
+
   it("can cancel deleting", function()
     helper.set_inputs("n")
 
