@@ -111,7 +111,7 @@ local asserters = require(plugin_name .. ".vendor.assertlib").list()
 require(plugin_name .. ".vendor.misclib.test.assert").register(asserts.create, asserters)
 
 asserts.create("current_dir"):register_eq(function()
-  return require("kivi.lib.path").adjust_sep(vim.fn.getcwd()):gsub(helper.test_data.full_path .. "?", "")
+  return require("kivi.lib.path").normalize(vim.fn.getcwd()):gsub(helper.test_data.full_path .. "?", "")
 end)
 
 asserts.create("register_value"):register_eq(function(name)

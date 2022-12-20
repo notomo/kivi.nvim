@@ -42,7 +42,7 @@ end
 
 function Node.move_to(self, parent)
   local old = vim.deepcopy(self._node)
-  old.path = pathlib.join(parent.path, pathlib.head(self.path))
+  old.path = pathlib.join(parent.path, pathlib.tail(self.path))
   return Node.new(old, parent)
 end
 

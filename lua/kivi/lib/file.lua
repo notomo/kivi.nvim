@@ -28,7 +28,7 @@ function M.adjust(path)
     path = real_path
   end
 
-  path = pathlib.adjust_sep(path)
+  path = pathlib.normalize(path)
   if M.is_dir(path) and not vim.endswith(path, "/") then
     path = path .. "/"
   end

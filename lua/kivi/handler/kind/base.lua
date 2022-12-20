@@ -130,7 +130,7 @@ function M.action_expand_parent(nodes, action_ctx, ctx)
 end
 
 function M.find_upward_marker(_)
-  return pathlib.adjust("/")
+  return pathlib.normalize("/")
 end
 
 function M.action_shrink(nodes, _, ctx)

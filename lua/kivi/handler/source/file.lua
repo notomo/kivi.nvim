@@ -26,7 +26,7 @@ collect = function(target_dir, opts_expanded)
           return async:send(vim.mpack.encode({ error = err }))
         end
         local root = {
-          value = require("kivi.lib.path").head(dir),
+          value = require("kivi.lib.path").tail(dir),
           path = dir,
           kind_name = "directory",
           children = {},
