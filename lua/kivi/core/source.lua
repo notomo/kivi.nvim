@@ -1,5 +1,4 @@
 local modulelib = require("kivi.vendor.misclib.module")
-local Decorator = require("kivi.vendor.misclib.decorator")
 local base = require("kivi.handler.source.base")
 
 local Source = {}
@@ -16,7 +15,6 @@ function Source.new(source_name, source_opts)
   local tbl = {
     name = source_name,
     bufnr = vim.api.nvim_get_current_buf(),
-    decorator_factory = Decorator.factory("kivi-highlight"),
     opts = vim.tbl_extend("force", source.opts, source_opts),
     _source = source,
   }

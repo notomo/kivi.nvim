@@ -134,6 +134,8 @@ function View._highlight_win(_, _, bufnr, topline, botline_guess)
   return false
 end
 
+local Decorator = require("kivi.vendor.misclib.decorator")
+
 local ns = vim.api.nvim_create_namespace("kivi-highlight")
 vim.api.nvim_set_decoration_provider(ns, {})
 vim.api.nvim_set_decoration_provider(ns, { on_win = View._highlight_win })
@@ -143,7 +145,7 @@ function View.highlight(self, source, opts, first_line, last_line)
     return
   end
 
-  local decorator = source.decorator_factory:create(self.bufnr, true)
+  local decorator = Decorator.new(ns, self.bufnr, true)
   local nodes = self._nodes:range(first_line + 1, last_line)
   for i, node in ipairs(nodes) do
     local row = first_line + i - 1
