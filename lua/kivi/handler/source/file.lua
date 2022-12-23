@@ -77,7 +77,7 @@ collect = function(target_dir, opts_expanded)
   end)
 end
 
-function M.collect(_, opts)
+function M.collect(opts)
   local dir = filelib.adjust(opts.path)
   if not filelib.is_dir(dir) then
     return Promise.reject("does not exist: " .. dir)
@@ -93,7 +93,7 @@ highlightlib.define("KiviDirectoryOpen", {
   bold = true,
 })
 
-function M.highlight_one(_, decorator, row, node, opts)
+function M.highlight_one(decorator, row, node, opts)
   if node.kind_name == "directory" then
     decorator:highlight_line("KiviDirectory", row)
   end
@@ -112,7 +112,7 @@ function M.highlight_one(_, decorator, row, node, opts)
   end
 end
 
-function M.init_path(_, bufnr)
+function M.init_path(bufnr)
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return
   end
@@ -125,7 +125,7 @@ function M.init_path(_, bufnr)
   return filelib.adjust(path)
 end
 
-function M.hook(_, path, bufnr)
+function M.hook(path, bufnr)
   if not filelib.exists(path) then
     return
   end
@@ -144,7 +144,7 @@ M.kind_name = "file"
 M.opts = {}
 M.setup_opts = { target = "current", root_patterns = { ".git" } }
 
-function M.setup(_, opts, setup_opts)
+function M.setup(opts, setup_opts)
   local path = M.Target.new(setup_opts.target, setup_opts.root_patterns):path()
   return opts:merge({ path = path })
 end

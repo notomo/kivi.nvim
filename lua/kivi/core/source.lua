@@ -27,10 +27,10 @@ end
 function Source.start(self, opts, setup_opts)
   vim.validate({ opts = { opts, "table" }, setup_opts = { setup_opts, "table", true } })
   if setup_opts then
-    local new_opts = self:setup(opts, vim.tbl_extend("force", self._source.setup_opts, setup_opts))
-    return self:collect(new_opts)
+    local new_opts = self._source.setup(opts, vim.tbl_extend("force", self._source.setup_opts, setup_opts))
+    return self._source.collect(new_opts)
   end
-  return self:collect(opts)
+  return self._source.collect(opts)
 end
 
 return Source

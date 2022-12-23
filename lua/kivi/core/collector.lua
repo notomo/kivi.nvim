@@ -12,7 +12,7 @@ function M.start(source, opts, callback, source_setup_opts)
   return source:start(opts, source_setup_opts):next(function(raw_result)
     local nodes = Nodes.from_node(raw_result)
     local bufnr = callback(nodes)
-    source:hook(nodes.root_path, bufnr)
+    source.hook(nodes.root_path, bufnr)
   end)
 end
 

@@ -149,7 +149,7 @@ function View.highlight(self, source, opts, first_line, last_line)
   local nodes = self._nodes:range(first_line + 1, last_line)
   for i, node in ipairs(nodes) do
     local row = first_line + i - 1
-    source:highlight_one(decorator, row, node, opts)
+    source.highlight_one(decorator, row, node, opts)
     if self._nodes:is_selected(node.path) then
       decorator:highlight_line("KiviSelected", row)
     end

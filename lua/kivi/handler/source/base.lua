@@ -10,7 +10,7 @@ function M.init_path() end
 
 function M.hook() end
 
-function M.setup(_, opts)
+function M.setup(opts)
   return opts
 end
 
