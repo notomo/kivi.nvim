@@ -112,8 +112,7 @@ function M.highlight_one(_, decorator, row, node, opts)
   end
 end
 
-function M.init_path(self)
-  local bufnr = self.bufnr
+function M.init_path(_, bufnr)
   if not vim.api.nvim_buf_is_valid(bufnr) then
     return
   end

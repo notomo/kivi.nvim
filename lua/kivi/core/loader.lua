@@ -3,10 +3,10 @@ local collector = require("kivi.core.collector")
 
 local M = {}
 
-function M.open(ctx, source_setup_opts)
+function M.open(ctx, initial_bufnr, source_setup_opts)
   return collector.start(ctx.source, ctx.opts, function(nodes)
     ctx.ui:redraw(nodes)
-    local _ = ctx.ui:move_cursor(ctx.history, ctx.source:init_path()) or ctx.ui:init_cursor()
+    local _ = ctx.ui:move_cursor(ctx.history, ctx.source:init_path(initial_bufnr)) or ctx.ui:init_cursor()
     ctx.history:set(nodes.root_path)
     return ctx.ui.bufnr
   end, source_setup_opts)
