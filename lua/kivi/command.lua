@@ -1,16 +1,15 @@
 local Context = require("kivi.core.context")
 local controller = require("kivi.controller")
 
-local ShowError = require("kivi.vendor.misclib.error_handler").for_show_error()
-local ReturnValue = require("kivi.vendor.misclib.error_handler").for_return_value()
+local M = {}
 
-function ReturnValue.open(raw_opts)
+function M.open(raw_opts)
   return controller.open(raw_opts):catch(function(e)
     require("kivi.vendor.misclib.message").warn(e)
   end)
 end
 
-function ReturnValue.navigate(path, source_setup_opts)
+function M.navigate(path, source_setup_opts)
   vim.validate({ path = { path, "string" }, source_setup_opts = { source_setup_opts, "table", true } })
   source_setup_opts = source_setup_opts or {}
 
@@ -24,7 +23,7 @@ function ReturnValue.navigate(path, source_setup_opts)
   end)
 end
 
-function ReturnValue.execute(action_name, opts, action_opts)
+function M.execute(action_name, opts, action_opts)
   vim.validate({
     action_name = { action_name, "string" },
     opts = { opts, "table", true },
@@ -39,31 +38,31 @@ function ReturnValue.execute(action_name, opts, action_opts)
   end)
 end
 
-function ReturnValue.is_parent()
+function M.is_parent()
   local ctx, err = Context.get()
   if err then
-    return false, err
+    require("kivi.vendor.misclib.message").error(err)
   end
 
   local nodes = ctx.ui:selected_nodes()
   local kind, kind_err = nodes:kind()
   if kind_err then
-    return false, kind_err
+    require("kivi.vendor.misclib.message").error(kind_err)
   end
 
-  return kind.is_parent == true, nil
+  return kind.is_parent == true
 end
 
-function ReturnValue.get()
+function M.get()
   local ctx, err = Context.get()
   if err then
-    return false, err
+    require("kivi.vendor.misclib.message").error(err)
   end
   return ctx.ui:selected_nodes()
 end
 
 -- for test
-function ReturnValue.promise()
+function M.promise()
   local promises = {}
   vim.list_extend(promises, require("kivi.view").promises())
   vim.list_extend(promises, require("kivi.view.renamer").promises())
@@ -71,4 +70,4 @@ function ReturnValue.promise()
   return require("kivi.vendor.promise").all(promises)
 end
 
-return vim.tbl_extend("force", ShowError:methods(), ReturnValue:methods())
+return M
