@@ -16,7 +16,7 @@ function M.relative(base, path)
 end
 
 function M._depth(path)
-  return #(vim.split(path, "/", true))
+  return #(vim.split(path, "/", { plain = true }))
 end
 
 function M.between(path, base_path)

@@ -120,7 +120,7 @@ function M.action_show_git_ignores(nodes, _, ctx)
   return require("kivi.lib.job")
     .promise(cmd)
     :next(function(output)
-      local paths = vim.split(output, "\n", true)
+      local paths = vim.split(output, "\n", { plain = true })
 
       local in_git = {}
       local pathlib = require("kivi.lib.path")
