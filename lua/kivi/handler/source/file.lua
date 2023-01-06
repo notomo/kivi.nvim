@@ -44,7 +44,6 @@ collect = function(target_dir, opts_expanded)
             path = path,
             kind_name = kind_name,
             is_broken = entry.is_broken_link,
-            is_link = entry.is_link,
             real_path = entry.real_path,
           }
           if child.kind_name == "directory" and expanded[child.path] then
@@ -103,7 +102,7 @@ function M.highlight_one(decorator, row, node, opts)
   if node.is_broken then
     decorator:highlight_line("KiviBrokenLink", row)
   end
-  if node.is_link then
+  if node.real_path then
     decorator:add_virtual_text(row, 0, { { "-> " .. node.real_path, "Comment" } })
   end
   if node.is_git_ignored then

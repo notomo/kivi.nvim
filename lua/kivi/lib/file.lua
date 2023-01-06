@@ -56,16 +56,14 @@ function M.entries(dir)
       break
     end
 
-    local path, real_path, is_directory, is_link, is_broken_link
+    local path, real_path, is_directory, is_broken_link
     local joined = pathlib.join(dir, file_name)
     if type == "link" then
       path, real_path, is_directory, is_broken_link = M._link_entry(joined)
-      is_link = true
     else
       path = M.adjust(joined)
       is_directory = type == "directory"
       is_broken_link = false
-      is_link = false
     end
 
     local name = file_name
@@ -76,7 +74,6 @@ function M.entries(dir)
       path = path,
       real_path = real_path,
       is_directory = is_directory,
-      is_link = is_link,
       is_broken_link = is_broken_link,
       name = name,
     })
