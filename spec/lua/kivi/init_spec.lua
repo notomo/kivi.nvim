@@ -22,7 +22,6 @@ describe("kivi", function()
   end)
 
   it("can remember path history", function()
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/file1")
     helper.test_data:create_file("dir/file2")
     helper.test_data:cd("dir")
@@ -68,7 +67,6 @@ describe("kivi", function()
   end)
 
   it("can execute back action", function()
-    helper.test_data:create_dir("dir1")
     helper.test_data:create_dir("dir1/dir2")
 
     helper.wait(kivi.open({ path = "dir1/dir2" }))
@@ -132,7 +130,6 @@ describe("kivi", function()
   end)
 
   it("can toggle tree", function()
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/file")
 
     helper.wait(kivi.open())
@@ -235,7 +232,6 @@ describe("kivi", function()
 
   it("can execute tab_open node", function()
     helper.test_data:create_file("file1")
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/file2")
 
     helper.wait(kivi.open())
@@ -266,7 +262,6 @@ describe("kivi", function()
   end)
 
   it("does not recall expanded tree", function()
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/file")
 
     helper.wait(kivi.open({ layout = { type = "tab" } }))
@@ -292,9 +287,7 @@ describe("kivi", function()
   end)
 
   it("can close all tree", function()
-    helper.test_data:create_dir("dir1")
     helper.test_data:create_file("dir1/file1")
-    helper.test_data:create_dir("dir2")
     helper.test_data:create_file("dir2/file2")
     helper.test_data:create_file("dir2/file3")
 
@@ -313,7 +306,6 @@ describe("kivi", function()
   end)
 
   it("can shrink tree", function()
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/file1")
     helper.test_data:create_file("dir/file2")
 

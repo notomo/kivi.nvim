@@ -72,7 +72,6 @@ describe("kivi file source", function()
   it("can delete directory", function()
     helper.set_inputs("y")
 
-    helper.test_data:create_dir("dir1")
     helper.test_data:create_file("dir1/file")
     helper.test_data:create_dir("dir2")
 
@@ -99,7 +98,6 @@ describe("kivi file source", function()
   end)
 
   it("can toggle tree with symbolic link directory", function()
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/file")
     helper.symlink("link", "dir")
 
@@ -145,7 +143,6 @@ describe("kivi file source", function()
 
   it("saves tree on pasting", function()
     helper.test_data:create_file("file")
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/in_dir")
 
     helper.wait(kivi.open())
@@ -194,7 +191,6 @@ describe("kivi file source", function()
   end)
 
   it("can copy directory and paste", function()
-    helper.test_data:create_dir("dir1")
     helper.test_data:create_file("dir1/file")
     helper.test_data:create_dir("dir2")
 
@@ -221,7 +217,6 @@ describe("kivi file source", function()
 
   it("can copy and paste file and directory", function()
     helper.test_data:create_file("file")
-    helper.test_data:create_dir("dir1")
     helper.test_data:create_file("dir1/file")
     helper.test_data:create_dir("dir2")
 
@@ -243,7 +238,6 @@ describe("kivi file source", function()
 
   it("can copy file and force paste", function()
     helper.test_data:create_file("file", [[test]])
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/file", [[overwrriten]])
 
     helper.wait(kivi.open())
@@ -269,11 +263,8 @@ describe("kivi file source", function()
   end)
 
   it("can copy directory and force paste", function()
-    helper.test_data:create_dir("dir1")
     helper.test_data:create_file("dir1/file", [[test]])
 
-    helper.test_data:create_dir("dir2")
-    helper.test_data:create_dir("dir2/dir1")
     helper.test_data:create_file("dir2/dir1/file")
 
     helper.wait(kivi.open())
@@ -297,7 +288,6 @@ describe("kivi file source", function()
 
   it("can copy file and rename paste", function()
     helper.test_data:create_file("file", [[test]])
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/file", [[ok]])
 
     helper.wait(kivi.open())
@@ -330,10 +320,8 @@ describe("kivi file source", function()
   end)
 
   it("can copy directory and rename paste", function()
-    helper.test_data:create_dir("dir1")
     helper.test_data:create_file("dir1/file", [[test]])
 
-    helper.test_data:create_dir("dir2")
     helper.test_data:create_dir("dir2/dir1")
 
     helper.wait(kivi.open())
@@ -384,7 +372,6 @@ describe("kivi file source", function()
   end)
 
   it("can cut directory and paste", function()
-    helper.test_data:create_dir("dir1")
     helper.test_data:create_file("dir1/file")
     helper.test_data:create_dir("dir2")
 
@@ -463,7 +450,6 @@ describe("kivi file source", function()
   end)
 
   it("can create file in expanded tree", function()
-    helper.test_data:create_dir("dir")
     helper.test_data:create_file("dir/file1")
 
     helper.wait(kivi.open())
@@ -536,8 +522,6 @@ describe("kivi file source", function()
   end)
 
   it("can open project root from child directory", function()
-    helper.test_data:create_dir("root_marker")
-    helper.test_data:create_dir("root_marker/dir1")
     helper.test_data:create_dir("root_marker/dir1/dir2")
     helper.test_data:cd("root_marker/dir1/dir2")
 
@@ -555,7 +539,6 @@ describe("kivi file source", function()
   end)
 
   it("can move from project root", function()
-    helper.test_data:create_dir("root_marker")
     helper.test_data:create_dir("root_marker/dir")
     helper.test_data:cd("root_marker/dir")
 
@@ -568,7 +551,6 @@ describe("kivi file source", function()
   end)
 
   it("can navigate to specific path", function()
-    helper.test_data:create_dir("dir1/dir2")
     helper.test_data:create_file("dir1/dir2/file")
 
     helper.wait(kivi.open())
@@ -579,7 +561,6 @@ describe("kivi file source", function()
 
   it("can deal with strange name", function()
     local dir = [[dir'"#%!'"]]
-    helper.test_data:create_dir(dir)
     helper.test_data:create_file(dir .. "/file")
 
     helper.wait(kivi.open())
@@ -591,8 +572,6 @@ describe("kivi file source", function()
 
   it("can expand parent", function()
     helper.test_data:create_dir("marker")
-    helper.test_data:create_dir("dir1")
-    helper.test_data:create_dir("dir1/dir2")
     helper.test_data:create_file("dir1/dir2/file")
     helper.test_data:cd("dir1/dir2")
 
@@ -620,9 +599,6 @@ describe("kivi file source", function()
   end)
 
   it("can treat symbolic link", function()
-    helper.test_data:create_dir("a")
-    helper.test_data:create_dir("a/b")
-    helper.test_data:create_dir("a/b/c")
     helper.test_data:create_file("a/b/c/d")
     helper.symlink("link_from", "a/b/c")
 
