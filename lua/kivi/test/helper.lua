@@ -17,7 +17,6 @@ function helper.after_each()
   helper.test_data:teardown()
   helper.cleanup()
   helper.cleanup_loaded_modules(plugin_name)
-  print(" ")
 end
 
 function helper.skip_if_win32(pending_fn)
