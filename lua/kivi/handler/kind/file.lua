@@ -30,6 +30,12 @@ end
 
 M.action_child = M.action_open
 
+function M.action_open_by_system_default(nodes)
+  for _, node in ipairs(nodes) do
+    M.open_by_system_default(node.path)
+  end
+end
+
 function M.action_paste(nodes, _, ctx)
   local node = nodes[1]
   if not node then
@@ -169,6 +175,26 @@ function M.find_upward_marker(action_ctx)
     end
   end
   return filelib.adjust(".")
+end
+
+function M.open_by_system_default(path)
+  local cmd_name
+  if vim.fn.has("mac") == 1 then
+    cmd_name = "open"
+  elseif vim.fn.has("wsl") then
+    cmd_name = "wslview"
+  elseif vim.fn.has("win32") then
+    cmd_name = "start"
+  elseif vim.fn.has("linux") then
+    cmd_name = "xdg-open"
+  end
+  if not cmd_name then
+    return nil, "no cmd to open by system default"
+  end
+  local cmd = { cmd_name, path }
+  return require("kivi.lib.job").start(cmd):catch(function(err)
+    require("kivi.vendor.misclib.message").error(err)
+  end)
 end
 
 return M
