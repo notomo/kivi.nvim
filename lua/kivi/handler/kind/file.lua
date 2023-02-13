@@ -178,22 +178,21 @@ function M.find_upward_marker(action_ctx)
 end
 
 function M.open_by_system_default(path)
-  local cmd_name
+  local cmd
   if vim.fn.has("mac") == 1 then
-    cmd_name = "open"
-  elseif vim.fn.has("wsl") then
-    cmd_name = "wslview"
-  elseif vim.fn.has("win32") then
-    cmd_name = "start"
-  elseif vim.fn.has("linux") then
-    cmd_name = "xdg-open"
+    cmd = { "open", path }
+  elseif vim.fn.has("wsl") == 1 then
+    cmd = { "wslview", path }
+  elseif vim.fn.has("win32") == 1 then
+    cmd = { "cmd.exe", "/c", "start", path }
+  elseif vim.fn.has("linux") == 1 then
+    cmd = { "xdg-open", path }
   end
-  if not cmd_name then
+  if not cmd then
     return nil, "no cmd to open by system default"
   end
-  local cmd = { cmd_name, path }
   return require("kivi.lib.job").start(cmd):catch(function(err)
-    require("kivi.vendor.misclib.message").error(err)
+    require("kivi.vendor.misclib.message").warn(err)
   end)
 end
 
