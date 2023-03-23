@@ -88,7 +88,7 @@ local highlightlib = require("kivi.vendor.misclib.highlight")
 highlightlib.link("KiviDirectory", "String")
 highlightlib.link("KiviBrokenLink", "WarningMsg")
 highlightlib.define("KiviDirectoryOpen", {
-  fg = vim.api.nvim_get_hl_by_name("KiviDirectory", true).foreground,
+  fg = vim.api.nvim_get_hl(0, { name = "KiviDirectory" }).fg,
   bold = true,
 })
 
