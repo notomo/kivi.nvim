@@ -640,4 +640,15 @@ describe("kivi file source", function()
     local got = kivi.get()[1]
     assert.is_true(got.is_git_ignored)
   end)
+
+  it("reloads on fs event", function()
+    helper.wait(kivi.open())
+
+    helper.test_data:create_file("file")
+    vim.wait(1000, function()
+      return vim.fn.search("file") ~= 0
+    end)
+
+    assert.exists_pattern("file")
+  end)
 end)

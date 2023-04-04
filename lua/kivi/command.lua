@@ -4,9 +4,17 @@ local controller = require("kivi.controller")
 local M = {}
 
 function M.open(raw_opts)
-  return controller.open(raw_opts):catch(function(e)
-    require("kivi.vendor.misclib.message").warn(e)
-  end)
+  return controller
+    .open(raw_opts)
+    :next(function(_, e)
+      if e then
+        require("kivi.vendor.misclib.message").warn(e)
+        return
+      end
+    end)
+    :catch(function(e)
+      require("kivi.vendor.misclib.message").warn(e)
+    end)
 end
 
 function M.navigate(path, source_setup_opts)
@@ -18,9 +26,17 @@ function M.navigate(path, source_setup_opts)
     return require("kivi.vendor.promise").reject(err)
   end
 
-  return controller.navigate(ctx, path, source_setup_opts):catch(function(e)
-    require("kivi.vendor.misclib.message").warn(e)
-  end)
+  return controller
+    .navigate(ctx, path, source_setup_opts)
+    :next(function(_, e)
+      if e then
+        require("kivi.vendor.misclib.message").warn(e)
+        return
+      end
+    end)
+    :catch(function(e)
+      require("kivi.vendor.misclib.message").warn(e)
+    end)
 end
 
 function M.execute(action_name, opts, action_opts)
@@ -33,9 +49,17 @@ function M.execute(action_name, opts, action_opts)
     or { first = vim.fn.line("."), last = vim.fn.line(".") }
   opts = opts or {}
   action_opts = action_opts or {}
-  return controller.execute(action_name, range, opts, action_opts):catch(function(err)
-    require("kivi.vendor.misclib.message").warn(err)
-  end)
+  return controller
+    .execute(action_name, range, opts, action_opts)
+    :next(function(_, e)
+      if e then
+        require("kivi.vendor.misclib.message").warn(e)
+        return
+      end
+    end)
+    :catch(function(err)
+      require("kivi.vendor.misclib.message").warn(err)
+    end)
 end
 
 function M.is_parent()

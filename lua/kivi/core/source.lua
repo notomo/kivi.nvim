@@ -25,7 +25,10 @@ function Source.__index(self, k)
 end
 
 function Source.start(self, opts, callback, source_setup_opts)
-  return self:_start(opts, source_setup_opts):next(function(raw_result)
+  return self:_start(opts, source_setup_opts):next(function(raw_result, err)
+    if err then
+      return nil, err
+    end
     local nodes = require("kivi.core.nodes").from_node(raw_result)
     local bufnr = callback(nodes)
     self._source.hook(nodes.root_path, bufnr)

@@ -59,21 +59,32 @@ collect = function(target_dir, opts_expanded)
         error(err)
       end
     end, sender, target_dir, vim.mpack.encode(opts_expanded))
-  end):next(function(root, expand_indicies)
-    local promises = {}
-    for _, i in ipairs(expand_indicies) do
-      local child = root.children[i]
-      table.insert(
-        promises,
-        collect(child.path, opts_expanded):next(function(result)
-          root.children[i].children = result.children
-        end)
-      )
-    end
-    return Promise.all(promises):next(function()
-      return root
-    end)
   end)
+    :next(function(root, expand_indicies)
+      local promises = {}
+      for _, i in ipairs(expand_indicies) do
+        local child = root.children[i]
+        table.insert(
+          promises,
+          collect(child.path, opts_expanded):next(function(result, err)
+            if err then
+              -- HACK
+              return
+            end
+            root.children[i].children = result.children
+          end)
+        )
+      end
+      return Promise.all(promises):next(function()
+        return root
+      end)
+    end)
+    :catch(function(err)
+      if err:match([[can't open]]) then
+        return nil, err
+      end
+      return require("kivi.vendor.promise").reject(err)
+    end)
 end
 
 function M.collect(opts)
@@ -124,19 +135,47 @@ function M.init_path(bufnr)
   return filelib.adjust(path)
 end
 
+local watchers = {}
+
 function M.hook(path, bufnr)
   if not filelib.exists(path) then
     return
   end
 
-  local window_id = vim.fn.win_findbuf(bufnr)[1]
-  if not window_id then
-    return
+  local old_watcher = watchers[bufnr]
+  if old_watcher then
+    old_watcher:stop()
   end
 
-  vim.api.nvim_win_call(window_id, function()
-    filelib.lcd(path)
+  local watcher = vim.loop.new_fs_event()
+  watchers[bufnr] = watcher
+  watcher:start(path, {}, function()
+    watcher:stop()
+    vim.schedule(function()
+      if not vim.api.nvim_buf_is_valid(bufnr) then
+        return
+      end
+      vim.api.nvim_buf_call(bufnr, function()
+        vim.cmd.edit()
+      end)
+    end)
   end)
+
+  local window_id = vim.fn.win_findbuf(bufnr)[1]
+  if window_id then
+    vim.api.nvim_win_call(window_id, function()
+      filelib.lcd(path)
+    end)
+  end
+
+  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
+    group = vim.api.nvim_create_augroup("kivi_file_reload_" .. tostring(bufnr), {}),
+    buffer = bufnr,
+    callback = function()
+      watchers[bufnr] = nil
+      watcher:stop()
+    end,
+  })
 end
 
 M.kind_name = "file"
