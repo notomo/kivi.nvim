@@ -168,14 +168,16 @@ function M.hook(path, bufnr)
     end)
   end
 
-  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
-    group = vim.api.nvim_create_augroup("kivi_file_reload_" .. tostring(bufnr), {}),
-    buffer = bufnr,
-    callback = function()
-      watchers[bufnr] = nil
-      watcher:stop()
-    end,
-  })
+  if vim.api.nvim_buf_is_valid(bufnr) then
+    vim.api.nvim_create_autocmd({ "BufWipeout" }, {
+      group = vim.api.nvim_create_augroup("kivi_file_reload_" .. tostring(bufnr), {}),
+      buffer = bufnr,
+      callback = function()
+        watchers[bufnr] = nil
+        watcher:stop()
+      end,
+    })
+  end
 end
 
 M.kind_name = "file"
