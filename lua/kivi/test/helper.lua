@@ -43,6 +43,8 @@ function helper.set_lines(lines)
 end
 
 function helper.search(pattern)
+  local old = vim.api.nvim_win_get_cursor(0)
+
   local result = vim.fn.search(pattern)
   if result == 0 then
     local info = debug.getinfo(2)
@@ -50,6 +52,11 @@ function helper.search(pattern)
     local lines = table.concat(vim.fn.getbufline("%", 1, "$"), "\n")
     local msg = ("on %s: `%s` not found in buffer:\n%s"):format(pos, pattern, lines)
     assert(false, msg)
+  end
+
+  local current = vim.api.nvim_win_get_cursor(0)
+  if old[1] ~= current[1] or old[2] ~= current[2] then
+    vim.api.nvim_exec_autocmds("CursorMoved", {})
   end
   return result
 end
@@ -86,6 +93,15 @@ function helper.wait(promise)
     on_finished()
   end)
   on_finished:wait()
+end
+
+function helper.wait_pattern(pattern)
+  local ok = vim.wait(1000, function()
+    return vim.fn.search(pattern, "n") ~= 0
+  end)
+  if not ok then
+    error("wait timeout: does not exist pattern: " .. pattern)
+  end
 end
 
 function helper.clipboard()

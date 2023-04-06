@@ -49,9 +49,15 @@ function M.reload(bufnr, cursor_line_path, expanded)
   end
   ctx.opts = ctx.opts:merge({ expanded = expanded or ctx.opts.expanded })
 
+  local unlock = function() end
+  if cursor_line_path then
+    unlock = ctx:lock_last_position(cursor_line_path)
+  end
+
   return ctx.source:start(ctx.opts, function(nodes)
     ctx.ui:redraw(nodes)
     ctx.ui:move_cursor(ctx.history, cursor_line_path)
+    unlock()
     return ctx.ui.bufnr
   end)
 end

@@ -14,6 +14,10 @@ function Context.new(source, ui, key, opts)
     opts = opts,
     history = old_ctx.history or History.new(),
     clipboard = Clipboard.new(source.name),
+    _last_position = {
+      locked = false,
+      path = nil,
+    },
   }
   local self = setmetatable(tbl, Context)
   if not _contexts[key] then
@@ -21,6 +25,17 @@ function Context.new(source, ui, key, opts)
       buffer = ui.bufnr,
       callback = function()
         _contexts[key] = nil
+      end,
+    })
+
+    vim.api.nvim_create_autocmd({ "CursorMoved" }, {
+      buffer = ui.bufnr,
+      callback = function()
+        if self._last_position.locked then
+          return
+        end
+        local node = self.ui:current_node() or {}
+        self._last_position.path = node.path
       end,
     })
   end
@@ -42,6 +57,18 @@ function Context.get(bufnr)
     return nil, "no context: " .. path
   end
   return ctx, nil
+end
+
+function Context.lock_last_position(self, path)
+  self._last_position.locked = true
+  -- self._last_position.path = path
+  return function()
+    self._last_position.locked = false
+  end
+end
+
+function Context.last_position(self)
+  return vim.deepcopy(self._last_position)
 end
 
 return Context

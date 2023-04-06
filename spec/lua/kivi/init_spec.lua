@@ -45,6 +45,19 @@ describe("kivi", function()
     assert.current_line("file1")
   end)
 
+  it("does not move cursor position on reload", function()
+    helper.test_data:create_file("file1")
+    helper.test_data:create_file("file2")
+
+    helper.wait(kivi.open())
+    helper.search("file2")
+
+    vim.cmd.edit()
+    helper.wait_pattern("file2")
+
+    assert.current_line("file2")
+  end)
+
   it("can execute yank action", function()
     vim.g.clipboard = helper.clipboard()
 

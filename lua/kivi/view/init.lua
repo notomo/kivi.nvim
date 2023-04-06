@@ -24,11 +24,18 @@ function View.open(source, open_opts)
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
     buffer = bufnr,
     callback = function()
-      _promise = require("kivi.core.loader").reload(bufnr)
+      local ctx, err = Context.get(bufnr)
+      if err then
+        return
+      end
+      _promise = require("kivi.core.loader").reload(bufnr, ctx:last_position().path)
     end,
   })
 
-  local tbl = { bufnr = bufnr, _nodes = Nodes.new({}) }
+  local tbl = {
+    bufnr = bufnr,
+    _nodes = Nodes.new({}),
+  }
   return setmetatable(tbl, View), key
 end
 
@@ -107,7 +114,11 @@ function View._selected_nodes(self, action_name, range)
     return self._nodes:range(range.first, range.last)
   end
 
-  return { self._nodes[vim.fn.line(".")] }
+  return { self:current_node() }
+end
+
+function View.current_node(self)
+  return self._nodes[vim.fn.line(".")]
 end
 
 function View.toggle_selections(self, nodes)
