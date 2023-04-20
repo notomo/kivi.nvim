@@ -151,6 +151,10 @@ local ns = vim.api.nvim_create_namespace("kivi-highlight")
 vim.api.nvim_set_decoration_provider(ns, {})
 vim.api.nvim_set_decoration_provider(ns, { on_win = View._highlight_win })
 
+local highlight_opts = {
+  priority = vim.highlight.priorities.user - 1,
+}
+
 function View.highlight(self, source, opts, first_line, last_line)
   if vim.api.nvim_buf_get_text(self.bufnr, 0, 0, 0, 1, {})[1] == "" then
     return
@@ -162,11 +166,11 @@ function View.highlight(self, source, opts, first_line, last_line)
     local row = first_line + i - 1
     source.highlight_one(decorator, row, node, opts)
     if self._nodes:is_selected(node.path) then
-      decorator:highlight_line("KiviSelected", row)
+      decorator:highlight_line("KiviSelected", row, highlight_opts)
     end
   end
   if first_line == 0 then
-    decorator:highlight_line("Comment", 0)
+    decorator:highlight_line("Comment", 0, highlight_opts)
   end
 end
 

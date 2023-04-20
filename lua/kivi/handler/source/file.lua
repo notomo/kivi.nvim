@@ -103,21 +103,25 @@ highlightlib.define("KiviDirectoryOpen", {
   bold = true,
 })
 
+local highlight_opts = {
+  priority = vim.highlight.priorities.user - 1,
+}
+
 function M.highlight_one(decorator, row, node, opts)
   if node.kind_name == "directory" then
-    decorator:highlight_line("KiviDirectory", row)
+    decorator:highlight_line("KiviDirectory", row, highlight_opts)
   end
   if node.kind_name == "directory" and opts.expanded[node.path] then
-    decorator:highlight_line("KiviDirectoryOpen", row)
+    decorator:highlight_line("KiviDirectoryOpen", row, highlight_opts)
   end
   if node.is_broken then
-    decorator:highlight_line("KiviBrokenLink", row)
+    decorator:highlight_line("KiviBrokenLink", row, highlight_opts)
   end
   if node.real_path then
     decorator:add_virtual_text(row, 0, { { "-> " .. node.real_path, "Comment" } })
   end
   if node.is_git_ignored then
-    decorator:highlight_line("Comment", row)
+    decorator:highlight_line("Comment", row, highlight_opts)
     decorator:add_virtual_text(row, 0, { { "[X]", "Comment" } })
   end
 end
