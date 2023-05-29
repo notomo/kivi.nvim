@@ -61,7 +61,7 @@ end
 
 function Context.lock_last_position(self, path)
   self._last_position.locked = true
-  -- self._last_position.path = path
+  self._last_position.path = path
   return function()
     self._last_position.locked = false
   end
