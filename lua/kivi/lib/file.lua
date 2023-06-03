@@ -1,29 +1,29 @@
 local pathlib = require("kivi.lib.path")
 local vim = vim
-local loop = vim.loop
+local uv = vim.uv
 
 local M = {}
 
 function M.is_dir(path)
-  local stat = loop.fs_stat(path)
+  local stat = uv.fs_stat(path)
   return stat and stat.type == "directory"
 end
 
 function M.is_link(path)
-  local stat = loop.fs_stat(path)
+  local stat = uv.fs_stat(path)
   return stat and stat.type == "link"
 end
 
-M.home_dir = loop.os_homedir()
+M.home_dir = uv.os_homedir()
 
 function M.adjust(path)
-  path = path or loop.cwd()
+  path = path or uv.cwd()
 
   if vim.startswith(path, "~") then
     path = path:gsub("^~", M.home_dir)
   end
 
-  local real_path = loop.fs_realpath(path)
+  local real_path = uv.fs_realpath(path)
   if real_path then
     path = real_path
   end
@@ -36,7 +36,7 @@ function M.adjust(path)
 end
 
 function M._link_entry(path)
-  local real_path = loop.fs_realpath(path)
+  local real_path = uv.fs_realpath(path)
   if real_path then
     return path, real_path, M.is_dir(real_path), false
   end
@@ -44,14 +44,14 @@ function M._link_entry(path)
 end
 
 function M.entries(dir)
-  local fs = loop.fs_scandir(dir)
+  local fs = uv.fs_scandir(dir)
   if not fs then
     return nil, "can't open " .. dir
   end
 
   local entries = {}
   while true do
-    local file_name, type = loop.fs_scandir_next(fs)
+    local file_name, type = uv.fs_scandir_next(fs)
     if not file_name then
       break
     end
@@ -99,11 +99,11 @@ function M.delete(path)
 end
 
 function M.rename(from, to)
-  return loop.fs_rename(from, to)
+  return uv.fs_rename(from, to)
 end
 
 local _copy_dir
-if vim.loop.os_uname().version:match("Windows") then
+if vim.uv.os_uname().version:match("Windows") then
   _copy_dir = function(from, to)
     local from_path = pathlib.trim_slash(from):gsub("/", "\\")
     local to_path = pathlib.trim_slash(to):gsub("/", "\\")
@@ -190,7 +190,7 @@ function M.vsplit_open(path)
 end
 
 function M.readable(path)
-  return vim.loop.fs_access(path, "R")
+  return vim.uv.fs_access(path, "R")
 end
 
 function M.exists(path)

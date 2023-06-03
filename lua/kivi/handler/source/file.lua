@@ -8,7 +8,7 @@ collect = function(target_dir, opts_expanded)
   target_dir = filelib.adjust(target_dir)
   return Promise.new(function(resolve, reject)
     local sender
-    sender = vim.loop.new_async(function(v)
+    sender = vim.uv.new_async(function(v)
       local decoded = vim.mpack.decode(v)
       if decoded.error then
         reject(decoded.error)
@@ -18,7 +18,7 @@ collect = function(target_dir, opts_expanded)
       sender:close()
     end)
 
-    vim.loop.new_thread(function(async, dir, _expanded)
+    vim.uv.new_thread(function(async, dir, _expanded)
       local f = function()
         local expanded = vim.mpack.decode(_expanded)
         local entries, err = require("kivi.lib.file").entries(dir)
@@ -151,7 +151,7 @@ function M.hook(path, bufnr)
     old_watcher:stop()
   end
 
-  local watcher = vim.loop.new_fs_event()
+  local watcher = vim.uv.new_fs_event()
   watchers[bufnr] = watcher
   watcher:start(path, {}, function()
     watcher:stop()
