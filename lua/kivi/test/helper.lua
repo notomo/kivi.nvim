@@ -62,7 +62,7 @@ function helper.search(pattern)
 end
 
 function helper.symlink(from, to)
-  vim.loop.fs_symlink(helper.test_data.full_path .. to, helper.test_data.full_path .. from)
+  vim.uv.fs_symlink(helper.test_data.full_path .. to, helper.test_data.full_path .. from)
 end
 
 function helper.path(path)
