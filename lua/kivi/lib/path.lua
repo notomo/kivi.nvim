@@ -1,5 +1,13 @@
 local M = require("kivi.vendor.misclib.path")
 
+function M.join(...)
+  return vim.fs.joinpath(...)
+end
+
+function M.normalize(...)
+  return vim.fs.normalize(...)
+end
+
 function M.slash(path)
   if vim.endswith(path, "/") then
     return path
