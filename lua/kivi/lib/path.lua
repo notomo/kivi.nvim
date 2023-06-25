@@ -1,4 +1,4 @@
-local M = require("kivi.vendor.misclib.path")
+local M = {}
 
 function M.join(...)
   return vim.fs.joinpath(...)
@@ -46,6 +46,36 @@ function M.between(path, base_path)
   end
 
   return paths
+end
+
+function M.parent(path)
+  path = M.normalize(path)
+  if vim.endswith(path, "/") then
+    local index = path:reverse():find("/", 2) or 0
+    path = path:sub(1, #path - index + 1)
+    return path
+  end
+  local index = path:reverse():find("/") or 0
+  path = path:sub(1, #path - index + 1)
+  return path
+end
+
+function M.tail(path)
+  path = M.normalize(path)
+  if not vim.endswith(path, "/") then
+    local factors = vim.split(path, "/", { plain = true })
+    return factors[#factors]
+  end
+  local factors = vim.split(path:sub(1, #path - 1), "/", { plain = true })
+  return factors[#factors] .. "/"
+end
+
+function M.trim_slash(path)
+  path = M.normalize(path)
+  if not vim.endswith(path, "/") or path == "/" then
+    return path
+  end
+  return path:sub(1, #path - 1)
 end
 
 return M
