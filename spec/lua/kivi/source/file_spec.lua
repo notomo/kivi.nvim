@@ -504,7 +504,7 @@ describe("kivi file source", function()
     vim.cmd.write()
     helper.wait(kivi.promise())
 
-    assert.exists_message(("can't create: %starget/"):format(helper.test_data.full_path))
+    assert.exists_message(("can't create: %s/target/"):format(helper.test_data.full_path))
 
     vim.cmd.wincmd("p")
     assert.no.exists_pattern("target/")

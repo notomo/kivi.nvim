@@ -73,7 +73,7 @@ describe("kivi", function()
 
     helper.wait(kivi.execute("yank"))
 
-    assert.register_value("+", helper.test_data.full_path .. "file1\n" .. helper.test_data.full_path .. "file2")
+    assert.register_value("+", helper.test_data:path("file1\n") .. helper.test_data:path("file2"))
     assert.exists_message("yank:$")
     assert.exists_message("file1$")
     assert.exists_message("file2$")
@@ -290,10 +290,10 @@ describe("kivi", function()
     helper.test_data:create_dir("dir1/dir2")
 
     helper.wait(kivi.open())
-    helper.wait(kivi.navigate(helper.test_data.full_path .. "dir1"))
-    helper.wait(kivi.navigate(helper.test_data.full_path .. "dir1/dir2"))
-    helper.wait(kivi.navigate(helper.test_data.full_path .. "dir1/dir2"))
-    helper.wait(kivi.navigate(helper.test_data.full_path .. "dir1/dir2"))
+    helper.wait(kivi.navigate(helper.test_data:path("dir1")))
+    helper.wait(kivi.navigate(helper.test_data:path("dir1/dir2")))
+    helper.wait(kivi.navigate(helper.test_data:path("dir1/dir2")))
+    helper.wait(kivi.navigate(helper.test_data:path("dir1/dir2")))
     helper.wait(kivi.execute("back"))
 
     assert.current_dir("dir1")

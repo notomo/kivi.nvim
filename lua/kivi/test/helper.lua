@@ -62,11 +62,11 @@ function helper.search(pattern)
 end
 
 function helper.symlink(from, to)
-  vim.uv.fs_symlink(helper.test_data.full_path .. to, helper.test_data.full_path .. from)
+  vim.uv.fs_symlink(helper.test_data:path(to), helper.test_data:path(from))
 end
 
 function helper.path(path)
-  return helper.test_data.full_path .. (path or "")
+  return helper.test_data:path(path or "")
 end
 
 function helper.on_finished()
@@ -126,7 +126,7 @@ local asserters = require(plugin_name .. ".vendor.assertlib").list()
 require(plugin_name .. ".vendor.misclib.test.assert").register(asserts.create, asserters)
 
 asserts.create("current_dir"):register_eq(function()
-  return require("kivi.lib.path").normalize(vim.fn.getcwd()):gsub(helper.test_data.full_path .. "?", "")
+  return require("kivi.lib.path").normalize(vim.fn.getcwd()):gsub(helper.test_data:path("?"), "")
 end)
 
 asserts.create("register_value"):register_eq(function(name)
