@@ -54,6 +54,7 @@ function View.redraw(self, nodes)
       return indent .. node.value
     end)
   )
+  vim.bo[self.bufnr].modified = false
 end
 
 function View.redraw_buffer(self)
