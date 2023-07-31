@@ -61,21 +61,20 @@ function Creator.write(self)
 
   local success = {}
   local errors = {}
-  for i, path in ipairs(paths) do
+  vim.iter(paths):enumerate():each(function(i, path)
     if self._kind.exists(path) then
       table.insert(errors, { path = path, msg = "already exists: " .. path })
-      goto continue
+      return
     end
 
     local err = self._kind.create(path)
     if err then
       table.insert(errors, { path = path, msg = err })
-      goto continue
+      return
     end
 
     success[i] = path
-    ::continue::
-  end
+  end)
 
   vim.api.nvim_buf_set_lines(
     self._bufnr,

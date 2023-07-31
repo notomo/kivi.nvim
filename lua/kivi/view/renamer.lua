@@ -71,28 +71,30 @@ end
 
 function Renamer.write(self)
   local lines = vim.api.nvim_buf_get_lines(self._bufnr, 1, -1, true)
-  local items = {}
-  for i, line in ipairs(lines) do
-    local original_line = self._lines[i]
-    if original_line == nil then
-      break
-    end
-    if line == original_line then
-      goto continue
-    end
-    table.insert(items, {
-      from = self._froms[i] or pathlib.join(self._base_node.path, original_line),
-      to = pathlib.join(self._base_node.path, line),
-    })
-    ::continue::
-  end
+  local items = vim
+    .iter(lines)
+    :enumerate()
+    :map(function(i, line)
+      local original_line = self._lines[i]
+      if original_line == nil then
+        return
+      end
+      if line == original_line then
+        return
+      end
+      return {
+        from = self._froms[i] or pathlib.join(self._base_node.path, original_line),
+        to = pathlib.join(self._base_node.path, line),
+      }
+    end)
+    :totable()
 
   local success = {}
   local already_exists = {}
-  for i, item in ipairs(items) do
+  vim.iter(items):enumerate():each(function(i, item)
     if self._kind.exists(item.to) then
       table.insert(already_exists, item)
-      goto continue
+      return
     end
 
     if self._has_cut then
@@ -102,8 +104,7 @@ function Renamer.write(self)
     end
 
     success[i] = item
-    ::continue::
-  end
+  end)
 
   local last_index = 0
   for i in pairs(success) do

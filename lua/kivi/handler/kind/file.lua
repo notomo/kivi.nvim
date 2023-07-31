@@ -45,11 +45,11 @@ function M.action_paste(nodes, _, ctx)
 
   local already_exists = {}
   local copied, has_cut = ctx.clipboard:pop()
-  for _, old_node in ipairs(copied) do
+  vim.iter(copied):each(function(old_node)
     local new_node = old_node:move_to(base_node)
     if M.exists(new_node.path) then
       table.insert(already_exists, { from = old_node, to = new_node })
-      goto continue
+      return
     end
 
     if has_cut then
@@ -57,24 +57,21 @@ function M.action_paste(nodes, _, ctx)
     else
       M.copy(old_node.path, new_node.path)
     end
-
-    ::continue::
-  end
+  end)
 
   local overwrite_items = {}
   local rename_items = {}
   local input_reader = require("kivi.lib.input").reader()
-  for _, item in ipairs(already_exists) do
+  vim.iter(already_exists):each(function(item)
     local answer = input_reader:get(item.to.path .. " already exists, (f)orce (n)o (r)ename: ")
     if answer == "n" then
-      goto continue
+      return
     elseif answer == "r" then
       table.insert(rename_items, { from = item.from.path, to = item.to.path })
     elseif answer == "f" then
       table.insert(overwrite_items, item)
     end
-    ::continue::
-  end
+  end)
 
   for _, item in ipairs(overwrite_items) do
     if has_cut then
