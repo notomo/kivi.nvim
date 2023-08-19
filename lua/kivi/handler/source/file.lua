@@ -142,6 +142,8 @@ end
 
 local watchers = {}
 
+M.debounce_ms = 500
+
 function M.hook(path, bufnr)
   if not filelib.exists(path) then
     return
@@ -154,17 +156,21 @@ function M.hook(path, bufnr)
 
   local watcher = vim.uv.new_fs_event()
   watchers[bufnr] = watcher
-  watcher:start(path, {}, function()
-    watcher:stop()
-    vim.schedule(function()
-      if not vim.api.nvim_buf_is_valid(bufnr) then
-        return
-      end
-      vim.api.nvim_buf_call(bufnr, function()
-        vim.cmd.edit()
+  watcher:start(
+    path,
+    {},
+    require("kivi.vendor.misclib.debounce").wrap(M.debounce_ms, function()
+      watcher:stop()
+      vim.schedule(function()
+        if not vim.api.nvim_buf_is_valid(bufnr) then
+          return
+        end
+        vim.api.nvim_buf_call(bufnr, function()
+          vim.cmd.edit()
+        end)
       end)
     end)
-  end)
+  )
 
   local window_id = vim.fn.win_findbuf(bufnr)[1]
   if window_id then

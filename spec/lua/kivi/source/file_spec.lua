@@ -642,6 +642,8 @@ describe("kivi file source", function()
   end)
 
   it("reloads on fs event", function()
+    require("kivi.handler.source.file").debounce_ms = 10 -- to spped up test
+
     helper.wait(kivi.open())
 
     helper.test_data:create_file("file")
