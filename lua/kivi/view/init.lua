@@ -162,7 +162,7 @@ function View.highlight(self, source, opts, first_line, last_line)
   end
 
   local decorator = Decorator.new(ns, self.bufnr, true)
-  local nodes = self._nodes:range(first_line + 1, last_line)
+  local nodes = self._nodes:range(first_line + 1, last_line + 1)
   for i, node in ipairs(nodes) do
     local row = first_line + i - 1
     source.highlight_one(decorator, row, node, opts)
