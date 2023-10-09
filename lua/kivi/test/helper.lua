@@ -2,6 +2,8 @@ local helper = require("vusted.helper")
 local plugin_name = helper.get_module_root(...)
 
 helper.root = helper.find_plugin_root(plugin_name)
+vim.opt.packpath:prepend(vim.fs.joinpath(helper.root, "spec/.shared/packages"))
+require("assertlib").register(require("vusted.assert").register)
 
 function helper.before_each()
   require("kivi").promise()
@@ -122,8 +124,6 @@ function helper.clipboard()
 end
 
 local asserts = require("vusted.assert").asserts
-local asserters = require(plugin_name .. ".vendor.assertlib").list()
-require(plugin_name .. ".vendor.misclib.test.assert").register(asserts.create, asserters)
 
 asserts.create("current_dir"):register_eq(function()
   return require("kivi.lib.path").normalize(vim.fn.getcwd()):gsub(helper.test_data:path("?"), "")
