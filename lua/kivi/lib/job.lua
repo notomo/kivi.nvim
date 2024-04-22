@@ -37,17 +37,23 @@ function M.start(cmd)
         return resolve()
       end,
       on_stdout = function(_, data, _)
-        data = vim.tbl_filter(function(v)
-          return v ~= ""
-        end, data)
+        data = vim
+          .iter(data)
+          :filter(function(v)
+            return v ~= ""
+          end)
+          :totable()
         for _, msg in ipairs(data) do
           vim.api.nvim_echo({ { prefix .. msg } }, true, {})
         end
       end,
       on_stderr = function(_, data, _)
-        data = vim.tbl_filter(function(v)
-          return v ~= ""
-        end, data)
+        data = vim
+          .iter(data)
+          :filter(function(v)
+            return v ~= ""
+          end)
+          :totable()
         for _, msg in ipairs(data) do
           vim.api.nvim_echo({ { prefix .. msg, "WarningMsg" } }, true, {})
         end
