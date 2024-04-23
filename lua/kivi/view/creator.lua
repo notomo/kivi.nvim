@@ -81,9 +81,12 @@ function Creator.write(self)
     0,
     -1,
     false,
-    vim.tbl_map(function(e)
-      return pathlib.relative(self._base_node.path, e.path)
-    end, errors)
+    vim
+      .iter(errors)
+      :map(function(e)
+        return pathlib.relative(self._base_node.path, e.path)
+      end)
+      :totable()
   )
 
   if #errors == 0 then

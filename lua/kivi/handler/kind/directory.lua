@@ -3,21 +3,30 @@ local Promise = require("kivi.vendor.promise")
 local M = {}
 
 function M.action_open(nodes, _, ctx)
-  return Promise.all(vim.tbl_map(function(node)
-    return require("kivi.controller").navigate(ctx, node.path)
-  end, nodes))
+  return Promise.all(vim
+    .iter(nodes)
+    :map(function(node)
+      return require("kivi.controller").navigate(ctx, node.path)
+    end)
+    :totable())
 end
 
 function M.action_tab_open(nodes)
-  return Promise.all(vim.tbl_map(function(node)
-    return require("kivi.controller").open({ path = node.path, layout = { type = "tab" } })
-  end, nodes))
+  return Promise.all(vim
+    .iter(nodes)
+    :map(function(node)
+      return require("kivi.controller").open({ path = node.path, layout = { type = "tab" } })
+    end)
+    :totable())
 end
 
 function M.action_vsplit_open(nodes)
-  return Promise.all(vim.tbl_map(function(node)
-    return require("kivi.controller").open({ path = node.path, layout = { type = "vertical" } })
-  end, nodes))
+  return Promise.all(vim
+    .iter(nodes)
+    :map(function(node)
+      return require("kivi.controller").open({ path = node.path, layout = { type = "vertical" } })
+    end)
+    :totable())
 end
 
 M.action_child = M.action_open

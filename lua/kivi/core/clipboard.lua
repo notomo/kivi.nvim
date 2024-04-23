@@ -26,9 +26,12 @@ function Clipboard.copy(self, nodes)
   self._has_cut = false
   messagelib.info(
     "copied:",
-    vim.tbl_map(function(node)
-      return node.path
-    end, nodes)
+    vim
+      .iter(nodes)
+      :map(function(node)
+        return node.path
+      end)
+      :totable()
   )
 end
 
@@ -37,9 +40,12 @@ function Clipboard.cut(self, nodes)
   self._has_cut = true
   messagelib.info(
     "cut:",
-    vim.tbl_map(function(node)
-      return node.path
-    end, nodes)
+    vim
+      .iter(nodes)
+      :map(function(node)
+        return node.path
+      end)
+      :totable()
   )
 end
 

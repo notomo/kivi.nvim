@@ -89,9 +89,12 @@ function M.action_paste(nodes, _, ctx)
 end
 
 function M.action_show_details(nodes)
-  local paths = vim.tbl_map(function(node)
-    return node.path
-  end, nodes)
+  local paths = vim
+    .iter(nodes)
+    :map(function(node)
+      return node.path
+    end)
+    :totable()
   return filelib
     .details(paths)
     :next(function(output)

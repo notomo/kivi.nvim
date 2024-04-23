@@ -22,10 +22,13 @@ function Renamer.open(kind, tree_bufnr, base_node, rename_items, has_cut)
 
   local tbl = {
     _bufnr = bufnr,
-    _lines = vim.tbl_map(function(item)
-      local path = item.to or item.from
-      return pathlib.relative(base_node.path, path)
-    end, rename_items),
+    _lines = vim
+      .iter(rename_items)
+      :map(function(item)
+        local path = item.to or item.from
+        return pathlib.relative(base_node.path, path)
+      end)
+      :totable(),
     _froms = froms,
     _base_node = base_node,
     _has_cut = has_cut,
@@ -133,9 +136,12 @@ function Renamer.write(self)
   else
     messagelib.warn(
       "already exists:",
-      vim.tbl_map(function(item)
-        return item.to
-      end, already_exists)
+      vim
+        .iter(already_exists)
+        :map(function(item)
+          return item.to
+        end)
+        :totable()
     )
   end
 

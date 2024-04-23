@@ -19,9 +19,12 @@ function M.action_debug_print(nodes)
 end
 
 function M.action_yank(nodes, action_ctx)
-  local values = vim.tbl_map(function(node)
-    return tostring(node[action_ctx.opts.key])
-  end, nodes)
+  local values = vim
+    .iter(nodes)
+    :map(function(node)
+      return tostring(node[action_ctx.opts.key])
+    end)
+    :totable()
   if #values ~= 0 then
     vim.fn.setreg(action_ctx.opts.register, table.concat(values, "\n"))
     require("kivi.lib.message").info("yank:", values)
@@ -90,9 +93,12 @@ function M.action_rename(nodes)
     return
   end
 
-  local rename_items = vim.tbl_map(function(n)
-    return { from = n.path }
-  end, nodes)
+  local rename_items = vim
+    .iter(nodes)
+    :map(function(n)
+      return { from = n.path }
+    end)
+    :totable()
 
   local has_cut = true
   return require("kivi.controller").open_renamer(base_node, rename_items, has_cut)

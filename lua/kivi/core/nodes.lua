@@ -156,7 +156,7 @@ end
 
 function Nodes.map(self, f)
   vim.validate({ f = { f, "function" } })
-  return vim.tbl_map(f, self._nodes)
+  return vim.iter(self._nodes):map(f):totable()
 end
 
 function Nodes.range(self, s, e)
