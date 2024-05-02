@@ -59,7 +59,7 @@ end
 
 function View.redraw_buffer(self)
   -- NOTICE: This works only for the current window.
-  vim.api.nvim__buf_redraw_range(self.bufnr, vim.fn.line("w0"), vim.fn.line("w$"))
+  vim.api.nvim__redraw({ buf = self.bufnr, range = { vim.fn.line("w0"), vim.fn.line("w$") } })
 end
 
 function View.move_cursor(self, history, cursor_line_path)
@@ -124,7 +124,7 @@ end
 
 function View.toggle_selections(self, nodes)
   self._nodes = self._nodes:toggle_selections(nodes)
-  vim.api.nvim__buf_redraw_range(self.bufnr, nodes[1].index - 1, nodes[#nodes].index)
+  vim.api.nvim__redraw({ buf = self.bufnr, range = { nodes[1].index - 1, nodes[#nodes].index } })
 end
 
 function View.reset_selections(self, action_name)
