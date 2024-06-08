@@ -1,3 +1,5 @@
+--- @class KiviHistory
+--- @field latest_path string|nil
 local History = {}
 History.__index = History
 

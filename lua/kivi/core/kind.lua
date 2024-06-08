@@ -3,6 +3,9 @@ local Action = require("kivi.core.action")
 local base = require("kivi.handler.kind.base")
 local vim = vim
 
+--- @class KiviKind
+--- @field name string
+--- @field opts table
 local Kind = {}
 
 function Kind.new(name)
@@ -10,7 +13,7 @@ function Kind.new(name)
 
   local kind = modulelib.find("kivi.handler.kind." .. name)
   if not kind then
-    return nil, "not found kind: " .. name
+    return "not found kind: " .. name
   end
 
   local tbl = {
@@ -18,7 +21,7 @@ function Kind.new(name)
     opts = vim.tbl_deep_extend("force", base.opts, kind.opts or {}),
     _kind = kind,
   }
-  return setmetatable(tbl, Kind), nil
+  return setmetatable(tbl, Kind)
 end
 
 function Kind.__index(self, k)

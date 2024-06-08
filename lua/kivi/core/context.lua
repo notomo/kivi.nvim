@@ -3,6 +3,12 @@ local Clipboard = require("kivi.core.clipboard")
 
 local _contexts = {}
 
+--- @class KiviContext
+--- @field opts KiviOptions
+--- @field history KiviHistory
+--- @field ui KiviView
+--- @field source KiviSource
+--- @field clipboard KiviClipboard
 local Context = {}
 Context.__index = Context
 
@@ -43,20 +49,22 @@ function Context.new(source, ui, key, opts)
   return self
 end
 
---- @return table: context
---- @return string|nil: error
+--- @return KiviContext|string
 function Context.get(bufnr)
   vim.validate({ bufnr = { bufnr, "number", true } })
+
   local path = vim.api.nvim_buf_get_name(bufnr or 0)
   local key = path:match("^kivi://(.+)/kivi")
   if key == nil then
-    return nil, "not matched path: " .. path
+    return "not matched path: " .. path
   end
+
   local ctx = _contexts[key]
   if ctx == nil then
-    return nil, "no context: " .. path
+    return "no context: " .. path
   end
-  return ctx, nil
+
+  return ctx
 end
 
 function Context.lock_last_position(self, path)

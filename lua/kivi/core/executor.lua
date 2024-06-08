@@ -1,13 +1,23 @@
 local M = {}
 
+--- @param ctx KiviContext
+--- @param all_nodes KiviNodes
 function M.execute(ctx, all_nodes, action_name, opts, action_opts)
   action_opts = action_opts or {}
 
   local holders = {}
-  for kind, nodes in all_nodes:group_by_kind() do
-    local action, err = kind:find_action(action_name, action_opts)
-    if err then
-      return nil, err
+
+  local iter = all_nodes:group_by_kind()
+  if type(iter) == "string" then
+    local err = iter
+    return err
+  end
+
+  for kind, nodes in iter do
+    local action = kind:find_action(action_name, action_opts)
+    if type(action) == "string" then
+      local err = action
+      return err
     end
 
     local previous = holders[#holders]
@@ -23,16 +33,13 @@ function M.execute(ctx, all_nodes, action_name, opts, action_opts)
 
   local result = require("kivi.vendor.promise").resolve()
   for _, holder in ipairs(holders) do
-    local res, err = holder.action:execute(holder.nodes, ctx)
+    local res = holder.action:execute(holder.nodes, ctx)
     if opts.quit then
       ctx.ui:close()
     end
-    if err then
-      return nil, err
-    end
     result = res
   end
-  return result, nil
+  return result
 end
 
 return M

@@ -10,11 +10,14 @@ function ActionContext.new(kind, action_opts)
   return setmetatable(tbl, ActionContext)
 end
 
+--- @class KiviAction
+--- @field action_opts table
 local Action = {}
 Action.__index = Action
 
 local ACTION_PREFIX = "action_"
 
+--- @return KiviAction|string
 function Action.new(kind, name, action_opts)
   vim.validate({
     kind = { kind, "table" },
@@ -24,7 +27,7 @@ function Action.new(kind, name, action_opts)
 
   local action = kind[ACTION_PREFIX .. name]
   if not action then
-    return nil, "not found action: " .. name
+    return "not found action: " .. name
   end
 
   local tbl = {

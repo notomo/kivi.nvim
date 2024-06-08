@@ -2,11 +2,18 @@ local Kind = require("kivi.core.kind")
 local listlib = require("kivi.vendor.misclib.collection.list")
 local pathlib = require("kivi.lib.path")
 
+--- @class KiviNode
 local Node = {}
 
 function Node.new(raw_node, parent)
-  vim.validate({ raw_node = { raw_node, "table" }, parent = { parent, "table", true } })
-  local tbl = { parent = parent, _node = raw_node }
+  vim.validate({
+    raw_node = { raw_node, "table" },
+    parent = { parent, "table", true },
+  })
+  local tbl = {
+    parent = parent,
+    _node = raw_node,
+  }
   return setmetatable(tbl, Node)
 end
 
@@ -58,19 +65,23 @@ function Node._walk(self, depth, f)
 end
 
 function Node.kind(self)
-  local kind, err = Kind.new(self.kind_name)
-  if err then
-    return nil, err
-  end
-  return kind, nil
+  return Kind.new(self.kind_name)
 end
 
 local FlatNode = {}
 FlatNode.__index = FlatNode
 
 function FlatNode.new(node, index, depth)
-  vim.validate({ node = { node, "table" }, index = { index, "number" }, depth = { depth, "number" } })
-  local tbl = { _node = node, index = index, depth = depth }
+  vim.validate({
+    node = { node, "table" },
+    index = { index, "number" },
+    depth = { depth, "number" },
+  })
+  local tbl = {
+    _node = node,
+    index = index,
+    depth = depth,
+  }
   return setmetatable(tbl, FlatNode)
 end
 
@@ -87,12 +98,19 @@ function FlatNode.raw(self)
   return values
 end
 
+--- @class KiviNodes
 local Nodes = {}
 Nodes.__index = Nodes
 
 function Nodes.new(raw_nodes, selected)
-  vim.validate({ raw_nodes = { raw_nodes, "table" }, selected = { selected, "table", true } })
-  local tbl = { _nodes = raw_nodes, _selected = selected or {} }
+  vim.validate({
+    raw_nodes = { raw_nodes, "table" },
+    selected = { selected, "table", true },
+  })
+  local tbl = {
+    _nodes = raw_nodes,
+    _selected = selected or {},
+  }
   if raw_nodes[1] then
     tbl.root_path = raw_nodes[1].path
   end
@@ -160,7 +178,10 @@ function Nodes.map(self, f)
 end
 
 function Nodes.range(self, s, e)
-  vim.validate({ s = { s, "number" }, e = { e, "number" } })
+  vim.validate({
+    s = { s, "number" },
+    e = { e, "number" },
+  })
   local nodes = {}
   for i = s, e, 1 do
     table.insert(nodes, self._nodes[i])
@@ -195,9 +216,10 @@ function Nodes.group_by_kind(self)
   local kinds = {}
   for _, node in ipairs(self._nodes) do
     if not cache[node.kind_name] then
-      local kind, err = node:kind()
-      if err then
-        return nil, err
+      local kind = node:kind()
+      if type(kind) == "string" then
+        local err = kind
+        return err
       end
       cache[node.kind_name] = kind
     end

@@ -5,8 +5,9 @@ local M = {}
 
 function M.open(raw_opts)
   local opts, open_opts = require("kivi.core.option").new(raw_opts)
-  local source, err = require("kivi.core.source").new(opts.source, opts.source_opts)
-  if err then
+  local source = require("kivi.core.source").new(opts.source, opts.source_opts)
+  if type(source) == "string" then
+    local err = source
     return require("kivi.vendor.promise").reject(err)
   end
 
@@ -49,8 +50,9 @@ function M.reload(ctx)
 end
 
 function M.execute(action_name, range, opts, action_opts)
-  local ctx, err = Context.get()
-  if err then
+  local ctx = Context.get()
+  if type(ctx) == "string" then
+    local err = ctx
     return require("kivi.vendor.promise").reject(err)
   end
 
@@ -59,29 +61,35 @@ function M.execute(action_name, range, opts, action_opts)
   return require("kivi.core.executor").execute(ctx, nodes, action_name, opts, action_opts)
 end
 
+--- @param base_node KiviNode
 function M.open_renamer(base_node, rename_items, has_cut)
-  local ctx, err = Context.get()
-  if err then
-    return nil, err
+  local ctx = Context.get()
+  if type(ctx) == "string" then
+    local err = ctx
+    return err
   end
 
-  local kind, kind_err = base_node:kind()
-  if kind_err then
-    return nil, kind_err
+  local kind = base_node:kind()
+  if type(kind) == "string" then
+    local err = kind
+    return err
   end
 
   require("kivi.view.renamer").open(kind, ctx.ui.bufnr, base_node, rename_items, has_cut)
 end
 
+--- @param base_node KiviNode
 function M.open_creator(base_node)
-  local ctx, err = Context.get()
-  if err then
-    return nil, err
+  local ctx = Context.get()
+  if type(ctx) == "string" then
+    local err = ctx
+    return err
   end
 
-  local kind, kind_err = base_node:kind()
-  if kind_err then
-    return nil, kind_err
+  local kind = base_node:kind()
+  if type(kind) == "string" then
+    local err = kind
+    return err
   end
 
   require("kivi.view.creator").open(kind, ctx.ui.bufnr, base_node)

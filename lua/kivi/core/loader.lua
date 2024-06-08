@@ -2,6 +2,7 @@ local Context = require("kivi.core.context")
 
 local M = {}
 
+--- @param ctx KiviContext
 function M.open(ctx, initial_bufnr, source_setup_opts)
   return ctx.source:start(ctx.opts, function(nodes)
     ctx.ui:redraw(nodes)
@@ -11,6 +12,7 @@ function M.open(ctx, initial_bufnr, source_setup_opts)
   end, source_setup_opts)
 end
 
+--- @param ctx KiviContext
 function M.navigate(ctx, path, source_setup_opts)
   vim.validate({ source_setup_opts = { source_setup_opts, "table", true } })
   ctx.opts = ctx.opts:merge({ path = path })
@@ -23,6 +25,7 @@ function M.navigate(ctx, path, source_setup_opts)
   end, source_setup_opts)
 end
 
+--- @param ctx KiviContext
 function M.navigate_parent(ctx, path)
   ctx.opts = ctx.opts:merge({ path = path })
   return ctx.source:start(ctx.opts, function(nodes)
@@ -43,9 +46,10 @@ function M.reload(bufnr, cursor_line_path, expanded)
     expanded = { expanded, "table", true },
   })
 
-  local ctx, ctx_err = Context.get(bufnr)
-  if ctx_err then
-    return require("kivi.vendor.promise").reject(ctx_err)
+  local ctx = Context.get(bufnr)
+  if type(ctx) == "string" then
+    local err = ctx
+    return require("kivi.vendor.promise").reject(err)
   end
   ctx.opts = ctx.opts:merge({ expanded = expanded or ctx.opts.expanded })
 
@@ -62,6 +66,7 @@ function M.reload(bufnr, cursor_line_path, expanded)
   end)
 end
 
+--- @param ctx KiviContext
 function M.back(ctx, path)
   ctx.opts = ctx.opts:merge({ path = path })
   return ctx.source:start(ctx.opts, function(nodes)
@@ -73,6 +78,7 @@ function M.back(ctx, path)
   end)
 end
 
+--- @param ctx KiviContext
 function M.expand_child(ctx, expanded)
   ctx.opts.expanded = expanded
   return ctx.source:start(ctx.opts, function(nodes)
@@ -81,6 +87,7 @@ function M.expand_child(ctx, expanded)
   end)
 end
 
+--- @param ctx KiviContext
 function M.close_all_tree(ctx, path, cursor_line_path)
   ctx.opts = ctx.opts:merge({ path = path })
   ctx.opts.expanded = {}
@@ -91,6 +98,7 @@ function M.close_all_tree(ctx, path, cursor_line_path)
   end)
 end
 
+--- @param ctx KiviContext
 function M.shrink(ctx, path, cursor_line_path)
   vim.validate({ cursor_line_path = { cursor_line_path, "string", true } })
   ctx.opts = ctx.opts:merge({ path = path })
@@ -103,6 +111,7 @@ function M.shrink(ctx, path, cursor_line_path)
   end)
 end
 
+--- @param ctx KiviContext
 function M.expand_parent(ctx, path, cursor_line_path, expanded)
   ctx.opts = ctx.opts:merge({ path = path, expanded = expanded })
   return ctx.source:start(ctx.opts, function(nodes)

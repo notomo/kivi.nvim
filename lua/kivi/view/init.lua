@@ -6,6 +6,9 @@ local Nodes = require("kivi.core.nodes")
 local Context = require("kivi.core.context")
 local vim = vim
 
+--- @class KiviView
+--- @field private _nodes KiviNodes
+--- @field bufnr integer
 local View = {}
 View.__index = View
 
@@ -24,8 +27,8 @@ function View.open(source, open_opts)
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
     buffer = bufnr,
     callback = function()
-      local ctx, err = Context.get(bufnr)
-      if err then
+      local ctx = Context.get(bufnr)
+      if type(ctx) == "string" then
         return
       end
       _promise = require("kivi.core.loader").reload(bufnr, ctx:last_position().path)
@@ -39,6 +42,7 @@ function View.open(source, open_opts)
   return setmetatable(tbl, View), key
 end
 
+--- @param nodes KiviNodes
 function View.redraw(self, nodes)
   self._nodes = nodes
   if not vim.api.nvim_buf_is_valid(self.bufnr) then
@@ -62,6 +66,7 @@ function View.redraw_buffer(self)
   vim.api.nvim__redraw({ buf = self.bufnr, range = { vim.fn.line("w0"), vim.fn.line("w$") } })
 end
 
+--- @param history KiviHistory
 function View.move_cursor(self, history, cursor_line_path)
   vim.validate({ path = { cursor_line_path, "string", true } })
   if not cursor_line_path then
@@ -87,6 +92,7 @@ function View.init_cursor(self)
   cursorlib.set_row_by_buffer(2, self.bufnr)
 end
 
+--- @param history KiviHistory
 function View.restore_cursor(self, history, path)
   vim.validate({ history = { history, "table" }, path = { path, "string" } })
   local position = history:stored(path)
@@ -138,8 +144,8 @@ end
 vim.api.nvim_set_hl(0, "KiviSelected", { default = true, link = "Statement" })
 
 function View._highlight_win(_, _, bufnr, topline, botline_guess)
-  local ctx, err = Context.get(bufnr)
-  if err then
+  local ctx = Context.get(bufnr)
+  if type(ctx) == "string" then
     return false
   end
   ctx.ui:highlight(ctx.source, ctx.opts, topline, botline_guess)

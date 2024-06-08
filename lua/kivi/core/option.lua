@@ -11,6 +11,8 @@ local default_open_opts = {
   bufnr = -1,
 }
 
+--- @class KiviOptions
+--- @field expanded table<string,boolean>
 local Options = {}
 Options.__index = Options
 

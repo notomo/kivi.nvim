@@ -6,14 +6,14 @@ local M = {}
 function M.open(raw_opts)
   return controller
     .open(raw_opts)
-    :next(function(_, e)
-      if e then
-        require("kivi.vendor.misclib.message").warn(e)
+    :next(function(err)
+      if err then
+        require("kivi.vendor.misclib.message").warn(err)
         return
       end
     end)
-    :catch(function(e)
-      require("kivi.vendor.misclib.message").warn(e)
+    :catch(function(err)
+      require("kivi.vendor.misclib.message").warn(err)
     end)
 end
 
@@ -21,21 +21,22 @@ function M.navigate(path, source_setup_opts)
   vim.validate({ path = { path, "string" }, source_setup_opts = { source_setup_opts, "table", true } })
   source_setup_opts = source_setup_opts or {}
 
-  local ctx, err = Context.get()
-  if err then
+  local ctx = Context.get()
+  if type(ctx) == "string" then
+    local err = ctx
     return require("kivi.vendor.promise").reject(err)
   end
 
   return controller
     .navigate(ctx, path, source_setup_opts)
-    :next(function(_, e)
-      if e then
-        require("kivi.vendor.misclib.message").warn(e)
+    :next(function(err)
+      if err then
+        require("kivi.vendor.misclib.message").warn(err)
         return
       end
     end)
-    :catch(function(e)
-      require("kivi.vendor.misclib.message").warn(e)
+    :catch(function(err)
+      require("kivi.vendor.misclib.message").warn(err)
     end)
 end
 
@@ -51,9 +52,9 @@ function M.execute(action_name, opts, action_opts)
   action_opts = action_opts or {}
   return controller
     .execute(action_name, range, opts, action_opts)
-    :next(function(_, e)
-      if e then
-        require("kivi.vendor.misclib.message").warn(e)
+    :next(function(err)
+      if err then
+        require("kivi.vendor.misclib.message").warn(err)
         return
       end
     end)
@@ -63,23 +64,26 @@ function M.execute(action_name, opts, action_opts)
 end
 
 function M.is_parent()
-  local ctx, err = Context.get()
-  if err then
+  local ctx = Context.get()
+  if type(ctx) == "string" then
+    local err = ctx
     require("kivi.vendor.misclib.message").error(err)
   end
 
   local nodes = ctx.ui:selected_nodes()
-  local kind, kind_err = nodes:kind()
-  if kind_err then
-    require("kivi.vendor.misclib.message").error(kind_err)
+  local kind = nodes:kind()
+  if type(kind) == "string" then
+    local err = kind
+    require("kivi.vendor.misclib.message").error(err)
   end
 
   return kind.is_parent == true
 end
 
 function M.get()
-  local ctx, err = Context.get()
-  if err then
+  local ctx = Context.get()
+  if type(ctx) == "string" then
+    local err = ctx
     require("kivi.vendor.misclib.message").error(err)
   end
   return ctx.ui:selected_nodes()
