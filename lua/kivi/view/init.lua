@@ -23,7 +23,7 @@ function View.open(source, open_opts)
   vim.bo[bufnr].bufhidden = "wipe"
   vim.bo[bufnr].modifiable = false
 
-  Layout.new(open_opts.layout):open(bufnr)
+  Layout.open(bufnr, open_opts.layout)
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
     buffer = bufnr,
     callback = function()

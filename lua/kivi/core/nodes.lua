@@ -68,6 +68,7 @@ function Node.kind(self)
   return Kind.new(self.kind_name)
 end
 
+--- @class KiviFlatNode
 local FlatNode = {}
 FlatNode.__index = FlatNode
 
@@ -99,6 +100,7 @@ function FlatNode.raw(self)
 end
 
 --- @class KiviNodes
+--- @field _nodes KiviFlatNode[]
 local Nodes = {}
 Nodes.__index = Nodes
 
