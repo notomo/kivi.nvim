@@ -8,7 +8,7 @@ function M.action_open(nodes, _, ctx)
     :map(function(node)
       return require("kivi.controller").navigate(ctx, node.path)
     end)
-    :totable())
+    :totable()):next(function() end)
 end
 
 function M.action_tab_open(nodes)
@@ -17,7 +17,7 @@ function M.action_tab_open(nodes)
     :map(function(node)
       return require("kivi.controller").open({ path = node.path, layout = { type = "tab" } })
     end)
-    :totable())
+    :totable()):next(function() end)
 end
 
 function M.action_vsplit_open(nodes)
@@ -26,7 +26,7 @@ function M.action_vsplit_open(nodes)
     :map(function(node)
       return require("kivi.controller").open({ path = node.path, layout = { type = "vertical" } })
     end)
-    :totable())
+    :totable()):next(function() end)
 end
 
 M.action_child = M.action_open
