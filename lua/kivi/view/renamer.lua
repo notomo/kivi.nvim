@@ -5,7 +5,6 @@ local pathlib = require("kivi.lib.path")
 local ns = vim.api.nvim_create_namespace("kivi-renamer")
 
 local Renamer = {}
-Renamer.__index = Renamer
 
 local _promise = nil
 
@@ -20,23 +19,19 @@ function Renamer.open(kind, tree_bufnr, base_node, rename_items, has_cut)
     froms[i] = item.from
   end
 
-  local tbl = {
-    _bufnr = bufnr,
-    _lines = vim
+  local state = {
+    froms = froms,
+    has_cut = has_cut,
+    lines = vim
       .iter(rename_items)
       :map(function(item)
         local path = item.to or item.from
         return pathlib.relative(base_node.path, path)
       end)
       :totable(),
-    _froms = froms,
-    _base_node = base_node,
-    _has_cut = has_cut,
-    _kind = kind,
-    _tree_bufnr = tree_bufnr,
   }
-  local renamer = setmetatable(tbl, Renamer)
-  renamer:read()
+
+  Renamer._read(bufnr, base_node.path, state.lines)
   vim.bo[bufnr].modified = false
 
   local width = 75
@@ -59,26 +54,28 @@ function Renamer.open(kind, tree_bufnr, base_node, rename_items, has_cut)
     buffer = bufnr,
     nested = true,
     callback = function()
-      renamer:read()
+      Renamer._read(bufnr, base_node.path, state.lines)
     end,
   })
   vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
     buffer = bufnr,
     nested = true,
     callback = function()
-      _promise = renamer:write()
+      local result = Renamer._write(bufnr, base_node.path, kind, state.has_cut, state.lines, state.froms)
+      state = result.next_state
+      _promise = require("kivi.core.loader").reload(tree_bufnr, result.cursor_line_path)
     end,
   })
   vim.api.nvim_exec_autocmds("BufRead", { modeline = false }) -- HACK?
 end
 
-function Renamer.write(self)
-  local lines = vim.api.nvim_buf_get_lines(self._bufnr, 1, -1, true)
+function Renamer._write(bufnr, base_node_path, kind, has_cut, state_lines, froms)
+  local lines = vim.api.nvim_buf_get_lines(bufnr, 1, -1, true)
   local items = vim
     .iter(lines)
     :enumerate()
     :map(function(i, line)
-      local original_line = self._lines[i]
+      local original_line = state_lines[i]
       if original_line == nil then
         return
       end
@@ -86,8 +83,8 @@ function Renamer.write(self)
         return
       end
       return {
-        from = self._froms[i] or pathlib.join(self._base_node.path, original_line),
-        to = pathlib.join(self._base_node.path, line),
+        from = froms[i] or pathlib.join(base_node_path, original_line),
+        to = pathlib.join(base_node_path, line),
       }
     end)
     :totable()
@@ -95,33 +92,35 @@ function Renamer.write(self)
   local success = {}
   local already_exists = {}
   vim.iter(items):enumerate():each(function(i, item)
-    if self._kind.exists(item.to) then
+    if kind.exists(item.to) then
       table.insert(already_exists, item)
       return
     end
 
-    if self._has_cut then
-      self._kind.rename(item.from, item.to)
+    if has_cut then
+      kind.rename(item.from, item.to)
     else
-      self._kind.copy(item.from, item.to)
+      kind.copy(item.from, item.to)
     end
 
     success[i] = item
   end)
 
   local last_index = 0
+  local next_lines = vim.deepcopy(state_lines)
+  local next_froms = vim.deepcopy(froms)
   for i in pairs(success) do
     local line = lines[i]
-    local marks = vim.api.nvim_buf_get_extmarks(self._bufnr, ns, { i, 0 }, { i, -1 }, { details = true })
+    local marks = vim.api.nvim_buf_get_extmarks(bufnr, ns, { i, 0 }, { i, -1 }, { details = true })
     if marks[1] then
       local id = marks[1][1]
-      vim.api.nvim_buf_set_extmark(self._bufnr, ns, i, #line, {
+      vim.api.nvim_buf_set_extmark(bufnr, ns, i, #line, {
         virt_text = { { "<- " .. line, "Comment" } },
         id = id,
       })
     end
-    self._lines[i] = line
-    self._froms[i] = nil
+    next_lines[i] = line
+    next_froms[i] = nil
     last_index = i
   end
 
@@ -130,9 +129,10 @@ function Renamer.write(self)
     cursor_line_path = success[last_index].to
   end
 
+  local next_has_cut = has_cut
   if #already_exists == 0 then
-    vim.bo[self._bufnr].modified = false
-    self._has_cut = true
+    vim.bo[bufnr].modified = false
+    next_has_cut = true
   else
     messagelib.warn(
       "already exists:",
@@ -145,18 +145,25 @@ function Renamer.write(self)
     )
   end
 
-  return require("kivi.core.loader").reload(self._tree_bufnr, cursor_line_path)
+  return {
+    cursor_line_path = cursor_line_path,
+    next_state = {
+      has_cut = next_has_cut,
+      lines = next_lines,
+      froms = next_froms,
+    },
+  }
 end
 
-function Renamer.read(self)
-  vim.api.nvim_buf_set_lines(self._bufnr, 0, 0, true, { "" })
-  vim.api.nvim_buf_set_lines(self._bufnr, 1, -1, true, self._lines)
+function Renamer._read(bufnr, base_node_path, lines)
+  vim.api.nvim_buf_set_lines(bufnr, 0, 0, true, { "" })
+  vim.api.nvim_buf_set_lines(bufnr, 1, -1, true, lines)
 
-  vim.api.nvim_buf_set_extmark(self._bufnr, ns, 0, 0, {
-    virt_text = { { self._base_node.path, "Comment" } },
+  vim.api.nvim_buf_set_extmark(bufnr, ns, 0, 0, {
+    virt_text = { { base_node_path, "Comment" } },
   })
-  for i, line in ipairs(self._lines) do
-    vim.api.nvim_buf_set_extmark(self._bufnr, ns, i, #line, {
+  for i, line in ipairs(lines) do
+    vim.api.nvim_buf_set_extmark(bufnr, ns, i, #line, {
       virt_text = { { "<- " .. line, "Comment" } },
     })
   end
