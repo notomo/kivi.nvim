@@ -3,7 +3,6 @@ local windowlib = require("kivi.lib.window")
 local pathlib = require("kivi.lib.path")
 
 local Creator = {}
-Creator.__index = Creator
 
 local _promise = nil
 
@@ -30,44 +29,38 @@ function Creator.open(kind, tree_bufnr, base_node)
   vim.api.nvim_buf_set_name(bufnr, "kivi://" .. bufnr .. "/kivi-creator")
   vim.api.nvim_exec_autocmds("BufRead", { modeline = false }) -- HACK?
 
-  local tbl = {
-    _bufnr = bufnr,
-    _base_node = base_node,
-    _kind = kind,
-    _tree_bufnr = tree_bufnr,
-    _window_id = window_id,
-  }
-  local creator = setmetatable(tbl, Creator)
-
   vim.cmd.startinsert()
 
   vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
     buffer = bufnr,
     nested = true,
     callback = function()
-      _promise = creator:write()
+      local result = Creator._write(bufnr, window_id, base_node.path, kind)
+      _promise = require("kivi.core.loader").reload(tree_bufnr, result.cursor_line_path, result.expanded)
     end,
   })
 end
 
-function Creator.write(self)
-  local lines = vim.api.nvim_buf_get_lines(self._bufnr, 0, -1, true)
-  local paths = {}
-  for _, line in ipairs(lines) do
-    if line ~= "" then
-      table.insert(paths, pathlib.join(self._base_node.path, line))
-    end
-  end
+function Creator._write(bufnr, window_id, base_node_path, kind)
+  local paths = vim
+    .iter(vim.api.nvim_buf_get_lines(bufnr, 0, -1, true))
+    :filter(function(line)
+      return line ~= ""
+    end)
+    :map(function(line)
+      return pathlib.join(base_node_path, line)
+    end)
+    :totable()
 
   local success = {}
   local errors = {}
   vim.iter(paths):enumerate():each(function(i, path)
-    if self._kind.exists(path) then
+    if kind.exists(path) then
       table.insert(errors, { path = path, msg = "already exists: " .. path })
       return
     end
 
-    local err = self._kind.create(path)
+    local err = kind.create(path)
     if err then
       table.insert(errors, { path = path, msg = err })
       return
@@ -77,21 +70,21 @@ function Creator.write(self)
   end)
 
   vim.api.nvim_buf_set_lines(
-    self._bufnr,
+    bufnr,
     0,
     -1,
     false,
     vim
       .iter(errors)
       :map(function(e)
-        return pathlib.relative(self._base_node.path, e.path)
+        return pathlib.relative(base_node_path, e.path)
       end)
       :totable()
   )
 
   if #errors == 0 then
-    vim.bo[self._bufnr].modified = false
-    windowlib.close(self._window_id)
+    vim.bo[bufnr].modified = false
+    windowlib.close(window_id)
   else
     for _, e in ipairs(errors) do
       messagelib.warn(e.msg)
@@ -101,7 +94,7 @@ function Creator.write(self)
   local last_index = 0
   local expanded = {}
   for i, path in pairs(success) do
-    for _, p in ipairs(pathlib.between(path, self._base_node.path)) do
+    for _, p in ipairs(pathlib.between(path, base_node_path)) do
       expanded[p] = true
     end
     last_index = i
@@ -112,7 +105,10 @@ function Creator.write(self)
     cursor_line_path = success[last_index]
   end
 
-  return require("kivi.core.loader").reload(self._tree_bufnr, cursor_line_path, expanded)
+  return {
+    expanded = expanded,
+    cursor_line_path = cursor_line_path,
+  }
 end
 
 -- for test
