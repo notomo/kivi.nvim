@@ -1,6 +1,5 @@
 local windowlib = require("kivi.lib.window")
 local cursorlib = require("kivi.lib.cursor")
-local bufferlib = require("kivi.vendor.misclib.buffer")
 local Layout = require("kivi.view.layout")
 local Nodes = require("kivi.core.nodes")
 local Context = require("kivi.core.context")
@@ -48,7 +47,9 @@ function View.redraw(self, nodes)
   if not vim.api.nvim_buf_is_valid(self.bufnr) then
     return
   end
-  bufferlib.set_lines_as_modifiable(
+
+  vim.bo[self.bufnr].modifiable = true
+  vim.api.nvim_buf_set_lines(
     self.bufnr,
     0,
     -1,
@@ -58,6 +59,7 @@ function View.redraw(self, nodes)
       return indent .. node.value
     end)
   )
+  vim.bo[self.bufnr].modifiable = false
   vim.bo[self.bufnr].modified = false
 end
 
