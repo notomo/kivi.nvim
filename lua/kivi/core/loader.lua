@@ -13,8 +13,9 @@ function M.open(ctx, initial_bufnr, source_setup_opts)
 end
 
 --- @param ctx KiviContext
+--- @param path string
+--- @param source_setup_opts table?
 function M.navigate(ctx, path, source_setup_opts)
-  vim.validate({ source_setup_opts = { source_setup_opts, "table", true } })
   ctx.opts = ctx.opts:merge({ path = path })
   return ctx.source:start(ctx.opts, function(nodes)
     ctx.history:add(nodes.root_path)
@@ -39,13 +40,10 @@ function M.navigate_parent(ctx, path)
   end)
 end
 
+--- @param bufnr integer
+--- @param cursor_line_path string?
+--- @param expanded table?
 function M.reload(bufnr, cursor_line_path, expanded)
-  vim.validate({
-    bufnr = { bufnr, "number" },
-    cursor_line_path = { cursor_line_path, "string", true },
-    expanded = { expanded, "table", true },
-  })
-
   local ctx = Context.get(bufnr)
   if type(ctx) == "string" then
     local err = ctx
@@ -99,8 +97,9 @@ function M.close_all_tree(ctx, path, cursor_line_path)
 end
 
 --- @param ctx KiviContext
+--- @param path string
+--- @param cursor_line_path string?
 function M.shrink(ctx, path, cursor_line_path)
-  vim.validate({ cursor_line_path = { cursor_line_path, "string", true } })
   ctx.opts = ctx.opts:merge({ path = path })
   return ctx.source:start(ctx.opts, function(nodes)
     ctx.history:add(nodes.root_path)

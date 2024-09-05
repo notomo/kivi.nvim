@@ -204,8 +204,9 @@ local Target = {}
 Target.__index = Target
 M.Target = Target
 
+--- @param name string
+--- @param root_patterns string[]
 function Target.new(name, root_patterns)
-  vim.validate({ name = { name, "string" } })
   local tbl = { _name = name, _root_patterns = root_patterns }
   return setmetatable(tbl, Target)
 end

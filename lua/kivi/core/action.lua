@@ -17,14 +17,11 @@ Action.__index = Action
 
 local ACTION_PREFIX = "action_"
 
+--- @param kind table
+--- @param name string
+--- @param action_opts table
 --- @return KiviAction|string
 function Action.new(kind, name, action_opts)
-  vim.validate({
-    kind = { kind, "table" },
-    name = { name, "string" },
-    action_opts = { action_opts, "table" },
-  })
-
   local action = kind[ACTION_PREFIX .. name]
   if not action then
     return "not found action: " .. name

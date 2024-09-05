@@ -8,8 +8,8 @@ local _clipboards = {}
 local Clipboard = {}
 Clipboard.__index = Clipboard
 
+--- @param source_name string
 function Clipboard.new(source_name)
-  vim.validate({ source_name = { source_name, "string" } })
   local clipboard = _clipboards[source_name]
   if clipboard ~= nil then
     return clipboard

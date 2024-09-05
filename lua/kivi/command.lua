@@ -17,8 +17,9 @@ function M.open(raw_opts)
     end)
 end
 
+--- @param path string
+--- @param source_setup_opts table?
 function M.navigate(path, source_setup_opts)
-  vim.validate({ path = { path, "string" }, source_setup_opts = { source_setup_opts, "table", true } })
   source_setup_opts = source_setup_opts or {}
 
   local ctx = Context.get()
@@ -41,11 +42,6 @@ function M.navigate(path, source_setup_opts)
 end
 
 function M.execute(action_name, opts, action_opts)
-  vim.validate({
-    action_name = { action_name, "string" },
-    opts = { opts, "table", true },
-    action_opts = { action_opts, "table", true },
-  })
   local range = require("kivi.vendor.misclib.visual_mode").row_range()
     or { first = vim.fn.line("."), last = vim.fn.line(".") }
   opts = opts or {}

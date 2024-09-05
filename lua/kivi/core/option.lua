@@ -16,8 +16,8 @@ local default_open_opts = {
 local Options = {}
 Options.__index = Options
 
+--- @param raw_opts table?
 function Options.new(raw_opts)
-  vim.validate({ raw_opts = { raw_opts, "table", true } })
   raw_opts = raw_opts or {}
 
   local opts = vim.tbl_extend("keep", raw_opts, vim.deepcopy(default_opts))

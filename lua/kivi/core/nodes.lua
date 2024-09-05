@@ -5,11 +5,9 @@ local pathlib = require("kivi.lib.path")
 --- @class KiviNode
 local Node = {}
 
+--- @param raw_node table
+--- @param parent table?
 function Node.new(raw_node, parent)
-  vim.validate({
-    raw_node = { raw_node, "table" },
-    parent = { parent, "table", true },
-  })
   local tbl = {
     parent = parent,
     _node = raw_node,
@@ -72,12 +70,10 @@ end
 local FlatNode = {}
 FlatNode.__index = FlatNode
 
+--- @param node table
+--- @param index integer
+--- @param depth integer
 function FlatNode.new(node, index, depth)
-  vim.validate({
-    node = { node, "table" },
-    index = { index, "number" },
-    depth = { depth, "number" },
-  })
   local tbl = {
     _node = node,
     index = index,
@@ -104,11 +100,9 @@ end
 local Nodes = {}
 Nodes.__index = Nodes
 
+--- @param raw_nodes table
+--- @param selected table?
 function Nodes.new(raw_nodes, selected)
-  vim.validate({
-    raw_nodes = { raw_nodes, "table" },
-    selected = { selected, "table", true },
-  })
   local tbl = {
     _nodes = raw_nodes,
     _selected = selected or {},
@@ -119,8 +113,8 @@ function Nodes.new(raw_nodes, selected)
   return setmetatable(tbl, Nodes)
 end
 
+--- @param root table
 function Nodes.from_node(root)
-  vim.validate({ root = { root, "table" } })
   local raw_nodes = {}
   local index = 1
   Node.new(root):walk(function(node, depth)
@@ -179,11 +173,9 @@ function Nodes.map(self, f)
   return vim.iter(self._nodes):map(f):totable()
 end
 
+--- @param s integer
+--- @param e integer
 function Nodes.range(self, s, e)
-  vim.validate({
-    s = { s, "number" },
-    e = { e, "number" },
-  })
   local nodes = {}
   for i = s, e, 1 do
     table.insert(nodes, self._nodes[i])
@@ -191,8 +183,8 @@ function Nodes.range(self, s, e)
   return nodes
 end
 
+--- @param path string
 function Nodes.find(self, path)
-  vim.validate({ path = { path, "string" } })
   for _, node in ipairs(self._nodes) do
     if node.path == path then
       return node

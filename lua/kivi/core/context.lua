@@ -49,10 +49,9 @@ function Context.new(source, ui, key, opts)
   return self
 end
 
+--- @param bufnr integer?
 --- @return KiviContext|string
 function Context.get(bufnr)
-  vim.validate({ bufnr = { bufnr, "number", true } })
-
   local path = vim.api.nvim_buf_get_name(bufnr or 0)
   local key = path:match("^kivi://(.+)/kivi")
   if key == nil then

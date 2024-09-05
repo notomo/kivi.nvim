@@ -8,9 +8,8 @@ local vim = vim
 --- @field opts table
 local Kind = {}
 
+--- @param name string
 function Kind.new(name)
-  vim.validate({ name = { name, "string" } })
-
   local kind = modulelib.find("kivi.handler.kind." .. name)
   if not kind then
     return "not found kind: " .. name
