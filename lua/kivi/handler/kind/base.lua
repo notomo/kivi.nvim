@@ -51,6 +51,11 @@ function M.action_cut(nodes, _, ctx)
   ctx.clipboard:cut(nodes)
 end
 
+function M.action_clear_clipboard(_, _, ctx)
+  ctx.clipboard:clear()
+  require("kivi.lib.message").info("Cleared clipboard.")
+end
+
 function M.action_toggle_tree(nodes, _, ctx)
   local expanded = ctx.opts.expanded
   for _, node in ipairs(nodes) do

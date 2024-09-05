@@ -52,12 +52,13 @@ function Clipboard.cut(self, nodes)
   )
 end
 
-function Clipboard.pop(self)
-  local nodes = self._nodes
-  local has_cut = self._has_cut
+function Clipboard.peek(self)
+  return self._nodes, self._has_cut
+end
+
+function Clipboard.clear(self)
   self._nodes = {}
   self._has_cut = false
-  return nodes, has_cut
 end
 
 return Clipboard

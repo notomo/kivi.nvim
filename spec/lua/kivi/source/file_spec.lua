@@ -405,6 +405,39 @@ describe("kivi file source", function()
     assert.exists_pattern("file")
   end)
 
+  it("can clear clipboard", function()
+    helper.test_data:create_file("file")
+
+    helper.wait(kivi.open())
+
+    helper.search("file")
+    helper.wait(kivi.execute("copy"))
+
+    helper.wait(kivi.execute("clear_clipboard"))
+    helper.wait(kivi.execute("paste"))
+
+    assert.exists_message("Cleared clipboard.")
+    assert.exists_message("No copied files.")
+  end)
+
+  it("does not clear clipboard when all pasting are canceled", function()
+    helper.test_data:create_file("file")
+
+    helper.wait(kivi.open())
+
+    helper.search("file")
+    helper.wait(kivi.execute("copy"))
+
+    helper.set_inputs("n")
+    helper.wait(kivi.execute("paste"))
+
+    helper.set_inputs("n")
+    helper.wait(kivi.execute("paste"))
+
+    assert.exists_message("Canceled.")
+    assert.no.exists_message("No copied files.")
+  end)
+
   it("can rename file", function()
     helper.test_data:create_file("file")
 
