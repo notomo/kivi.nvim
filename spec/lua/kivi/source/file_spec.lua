@@ -1,5 +1,6 @@
 local helper = require("kivi.test.helper")
 local kivi = helper.require("kivi")
+local assert = helper.typed_assert(assert)
 
 describe("kivi file source", function()
   before_each(helper.before_each)

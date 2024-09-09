@@ -1,5 +1,6 @@
 local helper = require("kivi.test.helper")
 local kivi = helper.require("kivi")
+local assert = helper.typed_assert(assert)
 
 describe("kivi", function()
   before_each(helper.before_each)
@@ -262,7 +263,7 @@ describe("kivi", function()
   it("can return whether the node is parent", function()
     helper.wait(kivi.open())
 
-    assert.is_same(true, kivi.is_parent())
+    assert.same(true, kivi.is_parent())
   end)
 
   it("can return whether the node is not parent", function()
@@ -271,7 +272,7 @@ describe("kivi", function()
     helper.wait(kivi.open())
     helper.search("file")
 
-    assert.is_same(false, kivi.is_parent())
+    assert.same(false, kivi.is_parent())
   end)
 
   it("does not recall expanded tree", function()

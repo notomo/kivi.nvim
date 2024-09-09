@@ -29,6 +29,7 @@ end
 
 function helper.set_inputs(...)
   local answers = vim.fn.reverse({ ... })
+  ---@diagnostic disable-next-line: duplicate-set-field
   require("kivi.lib.input").read = function(msg)
     local answer = table.remove(answers)
     if answer == nil then
@@ -51,7 +52,7 @@ function helper.search(pattern)
   if result == 0 then
     local info = debug.getinfo(2)
     local pos = ("%s:%d"):format(info.source, info.currentline)
-    local lines = table.concat(vim.fn.getbufline("%", 1, "$"), "\n")
+    local lines = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
     local msg = ("on %s: `%s` not found in buffer:\n%s"):format(pos, pattern, lines)
     assert(false, msg)
   end
@@ -132,5 +133,11 @@ end)
 asserts.create("register_value"):register_eq(function(name)
   return vim.fn.getreg(name)
 end)
+
+function helper.typed_assert(assert)
+  local x = require("assertlib").typed(assert)
+  ---@cast x +{current_dir:fun(want), register_value:fun(name,want)}
+  return x
+end
 
 return helper
