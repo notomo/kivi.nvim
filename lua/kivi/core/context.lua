@@ -9,6 +9,7 @@ local _contexts = {}
 --- @field ui KiviView
 --- @field source KiviSource
 --- @field clipboard KiviClipboard
+--- @field private _last_position {locked:boolean,path:string}
 local Context = {}
 Context.__index = Context
 
@@ -37,10 +38,12 @@ function Context.new(source, ui, key, opts)
     vim.api.nvim_create_autocmd({ "CursorMoved" }, {
       buffer = ui.bufnr,
       callback = function()
+        ---@diagnostic disable-next-line: invisible
         if self._last_position.locked then
           return
         end
         local node = self.ui:current_node() or {}
+        ---@diagnostic disable-next-line: invisible
         self._last_position.path = node.path
       end,
     })
@@ -70,6 +73,7 @@ function Context.lock_last_position(self, path)
   self._last_position.locked = true
   self._last_position.path = path
   return function()
+    ---@diagnostic disable-next-line: invisible
     self._last_position.locked = false
   end
 end

@@ -5,7 +5,9 @@ local vim = vim
 
 --- @class KiviKind
 --- @field name string
+--- @field is_parent boolean
 --- @field opts table
+--- @field private _kind table
 local Kind = {}
 
 --- @param name string

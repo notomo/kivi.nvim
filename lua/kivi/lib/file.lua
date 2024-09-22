@@ -46,7 +46,7 @@ end
 function M.entries(dir)
   local fs = uv.fs_scandir(dir)
   if not fs then
-    return nil, "can't open " .. dir
+    return "can't open " .. dir
   end
 
   local entries = {}

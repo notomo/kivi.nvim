@@ -1,5 +1,7 @@
 --- @class KiviHistory
 --- @field latest_path string|nil
+--- @field private _positions table<string,{cursor_row:integer,first_row:integer}>
+--- @field private _paths string[]
 local History = {}
 History.__index = History
 

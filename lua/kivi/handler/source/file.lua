@@ -15,14 +15,18 @@ collect = function(target_dir, opts_expanded)
       else
         resolve(decoded.root, decoded.expand_indicies)
       end
+      assert(sender)
       sender:close()
     end)
+    assert(sender)
 
+    ---@diagnostic disable-next-line: param-type-mismatch
     vim.uv.new_thread(function(async, dir, _expanded)
       local f = function()
         local expanded = vim.mpack.decode(_expanded)
-        local entries, err = require("kivi.lib.file").entries(dir)
-        if err then
+        local entries = require("kivi.lib.file").entries(dir)
+        if type(entries) == "string" then
+          local err = entries
           return async:send(vim.mpack.encode({ error = err }))
         end
         local pathlib = require("kivi.lib.path")
@@ -55,10 +59,13 @@ collect = function(target_dir, opts_expanded)
 
         async:send(vim.mpack.encode({ expand_indicies = expand_indicies, root = root }))
       end
-      local ok, err = xpcall(f, debug.traceback)
+      local traceback = debug.traceback
+      ---@cast traceback function
+      local ok, err = xpcall(f, traceback)
       if not ok then
         error(err)
       end
+      ---@diagnostic disable-next-line: param-type-mismatch
     end, sender, target_dir, vim.mpack.encode(opts_expanded))
   end)
     :next(function(root, expand_indicies)
@@ -155,6 +162,7 @@ function M.hook(path, bufnr)
   end
 
   local watcher = vim.uv.new_fs_event()
+  assert(watcher, "failed to create fs event")
   watchers[bufnr] = watcher
   watcher:start(
     path,

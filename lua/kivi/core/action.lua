@@ -1,5 +1,6 @@
 local Promise = require("kivi.vendor.promise")
 
+--- @class KiviActionContext
 local ActionContext = {}
 
 function ActionContext.new(kind, action_opts)
@@ -12,6 +13,8 @@ end
 
 --- @class KiviAction
 --- @field action_opts table
+--- @field private _action fun(nodes:KiviNodes,action_ctx:KiviActionContext,ctx:KiviContext)
+--- @field private _kind KiviKind
 local Action = {}
 Action.__index = Action
 

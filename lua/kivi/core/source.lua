@@ -4,6 +4,8 @@ local base = require("kivi.handler.source.base")
 --- @class KiviSource
 --- @field name string
 --- @field opts table
+--- @field init_path fun(initial_bufnr:integer):string
+--- @field private _source table
 local Source = {}
 
 --- @return KiviSource|string
@@ -38,6 +40,7 @@ function Source.start(self, opts, callback, source_setup_opts)
     end
     local nodes = require("kivi.core.nodes").from_node(raw_result)
     local bufnr = callback(nodes)
+    ---@diagnostic disable-next-line: invisible
     self._source.hook(nodes.root_path, bufnr)
   end)
 end

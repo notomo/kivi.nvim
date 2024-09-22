@@ -3,6 +3,11 @@ local listlib = require("kivi.vendor.misclib.collection.list")
 local pathlib = require("kivi.lib.path")
 
 --- @class KiviNode
+--- @field parent KiviNode?
+--- @field path string
+--- @field kind_name string
+--- @field children KiviNode[]
+--- @field private _node table
 local Node = {}
 
 --- @param raw_node table
@@ -67,6 +72,12 @@ function Node.kind(self)
 end
 
 --- @class KiviFlatNode
+--- @field index integer
+--- @field path string
+--- @field kind_name string
+--- @field kind fun(self:KiviFlatNode):KiviKind
+--- @field parent_or_root fun(self:KiviFlatNode):KiviNode
+--- @field private _node table
 local FlatNode = {}
 FlatNode.__index = FlatNode
 
@@ -97,6 +108,7 @@ end
 
 --- @class KiviNodes
 --- @field _nodes KiviFlatNode[]
+--- @field _selected table<string,KiviNode>
 local Nodes = {}
 Nodes.__index = Nodes
 
