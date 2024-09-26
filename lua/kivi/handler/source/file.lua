@@ -1,5 +1,6 @@
 local filelib = require("kivi.lib.file")
 local Promise = require("kivi.vendor.promise")
+local stringbuf = require("string.buffer")
 
 local M = {}
 
@@ -9,7 +10,7 @@ collect = function(target_dir, opts_expanded)
   return Promise.new(function(resolve, reject)
     local sender
     sender = vim.uv.new_async(function(v)
-      local decoded = vim.mpack.decode(v)
+      local decoded = stringbuf.decode(v) or { error = "decoded invalid" }
       if decoded.error then
         reject(decoded.error)
       else
@@ -22,13 +23,17 @@ collect = function(target_dir, opts_expanded)
 
     ---@diagnostic disable-next-line: param-type-mismatch
     vim.uv.new_thread(function(async, dir, _expanded)
+      ---@diagnostic disable-next-line: redefined-local
+      local stringbuf = require("string.buffer")
       local f = function()
-        local expanded = vim.mpack.decode(_expanded)
         local entries = require("kivi.lib.file").entries(dir)
         if type(entries) == "string" then
           local err = entries
-          return async:send(vim.mpack.encode({ error = err }))
+          return async:send(stringbuf.encode({ error = err }))
         end
+
+        local expanded = stringbuf.decode(_expanded) or {}
+
         local pathlib = require("kivi.lib.path")
         local root = {
           value = pathlib.slash(pathlib.tail(dir)),
@@ -57,7 +62,7 @@ collect = function(target_dir, opts_expanded)
           table.insert(root.children, child)
         end
 
-        async:send(vim.mpack.encode({ expand_indicies = expand_indicies, root = root }))
+        async:send(stringbuf.encode({ expand_indicies = expand_indicies, root = root }))
       end
       local traceback = debug.traceback
       ---@cast traceback function
@@ -66,7 +71,7 @@ collect = function(target_dir, opts_expanded)
         error(err)
       end
       ---@diagnostic disable-next-line: param-type-mismatch
-    end, sender, target_dir, vim.mpack.encode(opts_expanded))
+    end, sender, target_dir, stringbuf.encode(opts_expanded))
   end)
     :next(function(root, expand_indicies)
       local promises = {}
