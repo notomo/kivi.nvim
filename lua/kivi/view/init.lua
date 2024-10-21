@@ -69,8 +69,8 @@ function View.redraw_buffer(self)
 end
 
 --- @param history KiviHistory
+--- @param cursor_line_path string?
 function View.move_cursor(self, history, cursor_line_path)
-  vim.validate({ path = { cursor_line_path, "string", true } })
   if not cursor_line_path then
     return false
   end
@@ -95,8 +95,8 @@ function View.init_cursor(self)
 end
 
 --- @param history KiviHistory
+--- @param path string
 function View.restore_cursor(self, history, path)
-  vim.validate({ history = { history, "table" }, path = { path, "string" } })
   local position = history:stored(path)
   if position ~= nil then
     cursorlib.set_row_by_buffer(position.cursor_row, self.bufnr)

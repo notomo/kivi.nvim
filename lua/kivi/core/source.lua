@@ -8,12 +8,10 @@ local base = require("kivi.handler.source.base")
 --- @field private _source table
 local Source = {}
 
+--- @param source_name string
+--- @param source_opts table?
 --- @return KiviSource|string
 function Source.new(source_name, source_opts)
-  vim.validate({
-    source_name = { source_name, "string" },
-    source_opts = { source_opts, "table", true },
-  })
   source_opts = source_opts or {}
 
   local source = modulelib.find("kivi.handler.source." .. source_name)
@@ -45,11 +43,9 @@ function Source.start(self, opts, callback, source_setup_opts)
   end)
 end
 
+--- @param opts table
+--- @param setup_opts table?
 function Source._start(self, opts, setup_opts)
-  vim.validate({
-    opts = { opts, "table" },
-    setup_opts = { setup_opts, "table", true },
-  })
   if setup_opts then
     local new_opts = self._source.setup(opts, vim.tbl_extend("force", self._source.setup_opts, setup_opts))
     return self._source.collect(new_opts)

@@ -180,8 +180,8 @@ function Nodes.selected(self)
   return nodes
 end
 
+--- @param f function
 function Nodes.map(self, f)
-  vim.validate({ f = { f, "function" } })
   return vim.iter(self._nodes):map(f):totable()
 end
 
