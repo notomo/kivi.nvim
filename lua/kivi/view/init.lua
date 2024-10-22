@@ -161,7 +161,7 @@ vim.api.nvim_set_decoration_provider(ns, {})
 vim.api.nvim_set_decoration_provider(ns, { on_win = View._highlight_win })
 
 local highlight_opts = {
-  priority = vim.highlight.priorities.user - 1,
+  priority = vim.hl.priorities.user - 1,
 }
 
 function View.highlight(self, source, opts, first_line, last_line)

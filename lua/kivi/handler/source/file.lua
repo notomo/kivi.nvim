@@ -117,7 +117,7 @@ highlightlib.define("KiviDirectoryOpen", {
 })
 
 local highlight_opts = {
-  priority = vim.highlight.priorities.user - 1,
+  priority = vim.hl.priorities.user - 1,
 }
 
 function M.highlight_one(decorator, row, node, opts)
