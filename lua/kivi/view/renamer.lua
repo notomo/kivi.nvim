@@ -1,4 +1,3 @@
-local messagelib = require("kivi.lib.message")
 local cursorlib = require("kivi.lib.cursor")
 local pathlib = require("kivi.lib.path")
 
@@ -134,7 +133,7 @@ function Renamer._write(bufnr, base_node_path, kind, has_cut, state_lines, froms
     vim.bo[bufnr].modified = false
     next_has_cut = true
   else
-    messagelib.warn(
+    require("kivi.lib.message").warn_with(
       "already exists:",
       vim
         .iter(already_exists)

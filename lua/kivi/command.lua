@@ -8,12 +8,11 @@ function M.open(raw_opts)
     .open(raw_opts)
     :next(function(err)
       if err then
-        require("kivi.vendor.misclib.message").warn(err)
-        return
+        require("kivi.lib.message").warn(err)
       end
     end)
     :catch(function(err)
-      require("kivi.vendor.misclib.message").warn(err)
+      require("kivi.lib.message").warn(err)
     end)
 end
 
@@ -32,12 +31,11 @@ function M.navigate(path, source_setup_opts)
     .navigate(ctx, path, source_setup_opts)
     :next(function(err)
       if err then
-        require("kivi.vendor.misclib.message").warn(err)
-        return
+        require("kivi.lib.message").warn(err)
       end
     end)
     :catch(function(err)
-      require("kivi.vendor.misclib.message").warn(err)
+      require("kivi.lib.message").warn(err)
     end)
 end
 
@@ -50,12 +48,11 @@ function M.execute(action_name, opts, action_opts)
     .execute(action_name, range, opts, action_opts)
     :next(function(err)
       if err then
-        require("kivi.vendor.misclib.message").warn(err)
-        return
+        require("kivi.lib.message").warn(err)
       end
     end)
     :catch(function(err)
-      require("kivi.vendor.misclib.message").warn(err)
+      require("kivi.lib.message").warn(err)
     end)
 end
 
@@ -63,14 +60,14 @@ function M.is_parent()
   local ctx = Context.get()
   if type(ctx) == "string" then
     local err = ctx
-    require("kivi.vendor.misclib.message").error(err)
+    error(require("kivi.lib.message").wrap(err), 0)
   end
 
   local nodes = ctx.ui:selected_nodes()
   local kind = nodes:kind()
   if type(kind) == "string" then
     local err = kind
-    require("kivi.vendor.misclib.message").error(err)
+    error(require("kivi.lib.message").wrap(err), 0)
   end
 
   return kind.is_parent == true
@@ -80,7 +77,7 @@ function M.get()
   local ctx = Context.get()
   if type(ctx) == "string" then
     local err = ctx
-    require("kivi.vendor.misclib.message").error(err)
+    error(require("kivi.lib.message").wrap(err), 0)
   end
   return ctx.ui:selected_nodes()
 end

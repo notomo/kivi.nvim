@@ -1,5 +1,3 @@
-local messagelib = require("kivi.lib.message")
-
 local _clipboards = {}
 
 --- @class KiviClipboard
@@ -27,7 +25,7 @@ end
 function Clipboard.copy(self, nodes)
   self._nodes = nodes
   self._has_cut = false
-  messagelib.info(
+  require("kivi.lib.message").info_with(
     "copied:",
     vim
       .iter(nodes)
@@ -41,7 +39,7 @@ end
 function Clipboard.cut(self, nodes)
   self._nodes = nodes
   self._has_cut = true
-  messagelib.info(
+  require("kivi.lib.message").info_with(
     "cut:",
     vim
       .iter(nodes)

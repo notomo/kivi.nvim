@@ -46,7 +46,7 @@ function M.action_paste(nodes, _, ctx)
 
   local copied, has_cut = ctx.clipboard:peek()
   if #copied == 0 then
-    require("kivi.vendor.misclib.message").info("No copied files.")
+    require("kivi.lib.message").info("No copied files.")
     return
   end
 
@@ -93,7 +93,7 @@ function M.action_paste(nodes, _, ctx)
   if #canceled_items ~= #copied then
     ctx.clipboard:clear()
   elseif #canceled_items > 0 then
-    require("kivi.vendor.misclib.message").info("Canceled.")
+    require("kivi.lib.message").info("Canceled.")
   end
 
   return require("kivi.controller").reload(ctx):next(function()
@@ -121,7 +121,7 @@ function M.action_show_details(nodes)
       end
     end)
     :catch(function(err)
-      require("kivi.vendor.misclib.message").error(err)
+      require("kivi.lib.message").warn(err)
     end)
 end
 
@@ -158,7 +158,7 @@ function M.action_show_git_ignores(nodes, _, ctx)
       ctx.ui:redraw_buffer()
     end)
     :catch(function(err)
-      require("kivi.vendor.misclib.message").error(err)
+      require("kivi.lib.message").warn(err)
     end)
 end
 
@@ -207,7 +207,7 @@ function M.open_by_system_default(path)
     return nil, "no cmd to open by system default"
   end
   return require("kivi.lib.job").start(cmd):catch(function(err)
-    require("kivi.vendor.misclib.message").warn(err)
+    require("kivi.lib.message").warn(err)
   end)
 end
 

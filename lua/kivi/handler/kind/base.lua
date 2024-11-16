@@ -14,7 +14,7 @@ end
 
 function M.action_debug_print(nodes)
   for _, node in ipairs(nodes) do
-    require("kivi.vendor.misclib.message").info(node:raw())
+    require("kivi.lib.message").info(node:raw())
   end
 end
 
@@ -27,7 +27,7 @@ function M.action_yank(nodes, action_ctx)
     :totable()
   if #values ~= 0 then
     vim.fn.setreg(action_ctx.opts.register, table.concat(values, "\n"))
-    require("kivi.lib.message").info("yank:", values)
+    require("kivi.lib.message").info_with("yank:", values)
   end
 end
 
