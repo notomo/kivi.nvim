@@ -185,6 +185,10 @@ function Nodes.map(self, f)
   return vim.iter(self._nodes):map(f):totable()
 end
 
+function Nodes.iter(self)
+  return vim.iter(self._nodes)
+end
+
 --- @param s integer
 --- @param e integer
 function Nodes.range(self, s, e)

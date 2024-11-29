@@ -156,7 +156,8 @@ local watchers = {}
 
 M.debounce_ms = 500
 
-function M.hook(path, bufnr)
+function M.hook(nodes, bufnr)
+  local path = nodes.root_path
   if not filelib.exists(path) then
     return
   end
@@ -190,6 +191,7 @@ function M.hook(path, bufnr)
     vim.api.nvim_win_call(window_id, function()
       filelib.lcd(path)
     end)
+    require("kivi.lib.git_ignore").apply(path, nodes, window_id)
   end
 
   if vim.api.nvim_buf_is_valid(bufnr) then

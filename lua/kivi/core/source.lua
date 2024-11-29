@@ -39,7 +39,7 @@ function Source.start(self, opts, callback, source_setup_opts)
     local nodes = require("kivi.core.nodes").from_node(raw_result)
     local bufnr = callback(nodes)
     ---@diagnostic disable-next-line: invisible
-    self._source.hook(nodes.root_path, bufnr)
+    self._source.hook(nodes, bufnr)
   end)
 end
 
