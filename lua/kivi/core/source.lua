@@ -31,16 +31,17 @@ function Source.__index(self, k)
   return rawget(Source, k) or self._source[k] or base[k]
 end
 
-function Source.start(self, opts, callback, source_setup_opts)
+function Source.start(self, opts, source_setup_opts)
   return self:_start(opts, source_setup_opts):next(function(raw_result, err)
     if err then
-      return err
+      return require("kivi.vendor.promise").reject(err)
     end
-    local nodes = require("kivi.core.nodes").from_node(raw_result)
-    local bufnr = callback(nodes)
-    ---@diagnostic disable-next-line: invisible
-    self._source.hook(nodes, bufnr)
+    return require("kivi.core.nodes").from_node(raw_result)
   end)
+end
+
+function Source.hook(self, nodes, bufnr)
+  self._source.hook(nodes, bufnr)
 end
 
 --- @param opts table
