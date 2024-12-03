@@ -36,6 +36,7 @@ function M.action_open_by_system_default(nodes)
   end
 end
 
+--- @param nodes KiviNode[]
 --- @param ctx KiviContext
 function M.action_paste(nodes, _, ctx)
   local node = nodes[1]

@@ -1,7 +1,7 @@
 local _clipboards = {}
 
 --- @class KiviClipboard
---- @field private _nodes table
+--- @field private _nodes KiviNode[]
 --- @field private _has_cut boolean
 local Clipboard = {}
 Clipboard.__index = Clipboard

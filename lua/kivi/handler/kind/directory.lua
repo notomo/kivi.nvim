@@ -2,6 +2,7 @@ local Promise = require("kivi.vendor.promise")
 
 local M = {}
 
+--- @param ctx KiviContext
 function M.action_open(nodes, _, ctx)
   return Promise.all(vim
     .iter(nodes)
