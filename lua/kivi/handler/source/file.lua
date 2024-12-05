@@ -7,72 +7,74 @@ local M = {}
 local collect
 collect = function(target_dir, opts_expanded)
   target_dir = filelib.adjust(target_dir)
-  return Promise.new(function(resolve, reject)
-    local sender
-    sender = vim.uv.new_async(function(v)
-      local decoded = stringbuf.decode(v) or { error = "decoded invalid" }
-      if decoded.error then
-        reject(decoded.error)
-      else
-        resolve(decoded.root, decoded.expand_indicies)
-      end
-      assert(sender)
-      sender:close()
-    end)
+
+  local promise, resolve, reject = Promise.with_resolvers()
+  local sender
+  sender = vim.uv.new_async(function(v)
+    local decoded = stringbuf.decode(v) or { error = "decoded invalid" }
+    if decoded.error then
+      reject(decoded.error)
+    else
+      resolve(decoded.root, decoded.expand_indicies)
+    end
     assert(sender)
-
-    ---@diagnostic disable-next-line: param-type-mismatch
-    vim.uv.new_thread(function(async, dir, _expanded)
-      ---@diagnostic disable-next-line: redefined-local
-      local stringbuf = require("string.buffer")
-      local f = function()
-        local entries = require("kivi.lib.file").entries(dir)
-        if type(entries) == "string" then
-          local err = entries
-          return async:send(stringbuf.encode({ error = err }))
-        end
-
-        local expanded = stringbuf.decode(_expanded) or {}
-
-        local pathlib = require("kivi.lib.path")
-        local root = {
-          value = pathlib.slash(pathlib.tail(dir)),
-          path = dir,
-          kind_name = "directory",
-          children = {},
-        }
-        local expand_indicies = {}
-        for i, entry in ipairs(entries) do
-          local kind_name = "file"
-          if entry.is_directory then
-            kind_name = "directory"
-          end
-
-          local path = entry.path
-          local child = {
-            value = entry.name,
-            path = path,
-            kind_name = kind_name,
-            is_broken = entry.is_broken_link,
-            real_path = entry.real_path,
-          }
-          if child.kind_name == "directory" and expanded[child.path] then
-            table.insert(expand_indicies, i)
-          end
-          table.insert(root.children, child)
-        end
-
-        async:send(stringbuf.encode({ expand_indicies = expand_indicies, root = root }))
-      end
-      local traceback = debug.traceback
-      ---@cast traceback function
-      local ok, err = xpcall(f, traceback)
-      if not ok then
-        error(err)
-      end
-      ---@diagnostic disable-next-line: param-type-mismatch
-    end, sender, target_dir, stringbuf.encode(opts_expanded))
+    sender:close()
   end)
+  assert(sender)
+
+  ---@diagnostic disable-next-line: param-type-mismatch
+  vim.uv.new_thread(function(async, dir, _expanded)
+    ---@diagnostic disable-next-line: redefined-local
+    local stringbuf = require("string.buffer")
+    local f = function()
+      local entries = require("kivi.lib.file").entries(dir)
+      if type(entries) == "string" then
+        local err = entries
+        return async:send(stringbuf.encode({ error = err }))
+      end
+
+      local expanded = stringbuf.decode(_expanded) or {}
+
+      local pathlib = require("kivi.lib.path")
+      local root = {
+        value = pathlib.slash(pathlib.tail(dir)),
+        path = dir,
+        kind_name = "directory",
+        children = {},
+      }
+      local expand_indicies = {}
+      for i, entry in ipairs(entries) do
+        local kind_name = "file"
+        if entry.is_directory then
+          kind_name = "directory"
+        end
+
+        local path = entry.path
+        local child = {
+          value = entry.name,
+          path = path,
+          kind_name = kind_name,
+          is_broken = entry.is_broken_link,
+          real_path = entry.real_path,
+        }
+        if child.kind_name == "directory" and expanded[child.path] then
+          table.insert(expand_indicies, i)
+        end
+        table.insert(root.children, child)
+      end
+
+      async:send(stringbuf.encode({ expand_indicies = expand_indicies, root = root }))
+    end
+    local traceback = debug.traceback
+    ---@cast traceback function
+    local ok, err = xpcall(f, traceback)
+    if not ok then
+      error(err)
+    end
+    ---@diagnostic disable-next-line: param-type-mismatch
+  end, sender, target_dir, stringbuf.encode(opts_expanded))
+
+  return promise
     :next(function(root, expand_indicies)
       local promises = {}
       for _, i in ipairs(expand_indicies) do
