@@ -8,7 +8,7 @@ function M.open(ctx, initial_bufnr, source_setup_opts)
     ctx.ui:redraw(nodes)
     local _ = ctx.ui:move_cursor(ctx.history, ctx.source.init_path(initial_bufnr)) or ctx.ui:init_cursor()
     ctx.history:set(nodes.root_path)
-    ctx.source:hook(nodes, ctx.ui.bufnr)
+    ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr })
   end)
 end
 
@@ -22,7 +22,7 @@ function M.navigate(ctx, path, source_setup_opts)
     ctx.ui:redraw(nodes)
     local _ = ctx.ui:restore_cursor(ctx.history, nodes.root_path) or ctx.ui:init_cursor()
     ctx.history:set(nodes.root_path)
-    ctx.source:hook(nodes, ctx.ui.bufnr)
+    ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr })
   end)
 end
 
@@ -36,7 +36,7 @@ function M.navigate_parent(ctx, path)
       local _ = ctx.ui:move_cursor(ctx.history, ctx.history.latest_path) or ctx.ui:init_cursor()
     end
     ctx.history:set(nodes.root_path)
-    ctx.source:hook(nodes, ctx.ui.bufnr)
+    ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr })
   end)
 end
 
@@ -60,7 +60,7 @@ function M.reload(bufnr, cursor_line_path, expanded)
     ctx.ui:redraw(nodes)
     ctx.ui:move_cursor(ctx.history, cursor_line_path)
     unlock()
-    ctx.source:hook(nodes, ctx.ui.bufnr)
+    ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr, reload = true })
   end)
 end
 
@@ -72,7 +72,7 @@ function M.back(ctx, path)
     ctx.ui:redraw(nodes)
     ctx.ui:restore_cursor(ctx.history, nodes.root_path)
     ctx.history:set(nodes.root_path)
-    ctx.source:hook(nodes, ctx.ui.bufnr)
+    ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr })
   end)
 end
 
@@ -81,7 +81,7 @@ function M.expand_child(ctx, expanded)
   ctx.opts.expanded = expanded
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.ui:redraw(nodes)
-    ctx.source:hook(nodes, ctx.ui.bufnr)
+    ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr })
   end)
 end
 
@@ -92,7 +92,7 @@ function M.close_all_tree(ctx, path, cursor_line_path)
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.ui:redraw(nodes)
     ctx.ui:move_cursor(ctx.history, cursor_line_path)
-    ctx.source:hook(nodes, ctx.ui.bufnr)
+    ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr })
   end)
 end
 
@@ -106,7 +106,7 @@ function M.shrink(ctx, path, cursor_line_path)
     ctx.ui:redraw(nodes)
     ctx.ui:move_cursor(ctx.history, cursor_line_path)
     ctx.history:set(nodes.root_path)
-    ctx.source:hook(nodes, ctx.ui.bufnr)
+    ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr })
   end)
 end
 
@@ -117,7 +117,7 @@ function M.expand_parent(ctx, path, cursor_line_path, expanded)
     ctx.ui:redraw(nodes)
     ctx.ui:move_cursor(ctx.history, cursor_line_path)
     ctx.history:set(nodes.root_path)
-    ctx.source:hook(nodes, ctx.ui.bufnr)
+    ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr })
   end)
 end
 

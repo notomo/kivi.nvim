@@ -107,6 +107,7 @@ function FlatNode.raw(self)
 end
 
 --- @class KiviNodes
+--- @field root_path string
 --- @field _nodes KiviFlatNode[]
 --- @field _selected table<string,KiviNode>
 local Nodes = {}

@@ -158,12 +158,15 @@ local watchers = {}
 
 M.debounce_ms = 500
 
-function M.hook(nodes, bufnr)
+--- @param hook_ctx KiviSourceHookContext
+function M.hook(hook_ctx)
+  local nodes = hook_ctx.nodes
   local path = nodes.root_path
   if not filelib.exists(path) then
     return
   end
 
+  local bufnr = hook_ctx.bufnr
   local old_watcher = watchers[bufnr]
   if old_watcher then
     old_watcher:stop()
@@ -193,7 +196,7 @@ function M.hook(nodes, bufnr)
     vim.api.nvim_win_call(window_id, function()
       filelib.lcd(path)
     end)
-    require("kivi.lib.git_ignore").apply(path, nodes, window_id)
+    require("kivi.lib.git_ignore").apply(path, nodes, window_id, hook_ctx.reload)
   end
 
   if vim.api.nvim_buf_is_valid(bufnr) then

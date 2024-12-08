@@ -40,8 +40,14 @@ function Source.start(self, opts, source_setup_opts)
   end)
 end
 
-function Source.hook(self, nodes, bufnr)
-  self._source.hook(nodes, bufnr)
+--- @class KiviSourceHookContext
+--- @field nodes KiviNodes
+--- @field bufnr integer
+--- @field reload boolean?
+
+--- @param hook_ctx KiviSourceHookContext
+function Source.hook(self, hook_ctx)
+  self._source.hook(hook_ctx)
 end
 
 --- @param opts table

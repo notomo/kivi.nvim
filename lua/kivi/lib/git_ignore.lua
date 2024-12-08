@@ -16,14 +16,14 @@ end
 
 local repository_ignored = {}
 
-function M.apply(cwd, nodes, window_id)
+function M.apply(cwd, nodes, window_id, reload)
   local git_root = vim.fs.root(cwd, { ".git" })
   if not git_root then
     return
   end
 
   local already = repository_ignored[git_root]
-  if already then
+  if not reload and already then
     apply(nodes, already, window_id)
     return
   end
