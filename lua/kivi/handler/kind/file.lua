@@ -31,9 +31,13 @@ end
 M.action_child = M.action_open
 
 function M.action_open_by_system_default(nodes)
-  for _, node in ipairs(nodes) do
-    M.open_by_system_default(node.path)
-  end
+  local promises = vim
+    .iter(nodes)
+    :map(function(node)
+      return M.open_by_system_default(node.path)
+    end)
+    :totable()
+  return require("kivi.vendor.promise").all(promises)
 end
 
 --- @param nodes KiviNode[]
@@ -168,9 +172,9 @@ function M.open_by_system_default(path)
     cmd = { "xdg-open", path }
   end
   if not cmd then
-    return nil, "no cmd to open by system default"
+    return require("kivi.vendor.promise").reject("no cmd to open by system default")
   end
-  return require("kivi.lib.job").start(cmd):catch(function(err)
+  return require("kivi.lib.job").promise(cmd):catch(function(err)
     require("kivi.lib.message").warn(err)
   end)
 end
