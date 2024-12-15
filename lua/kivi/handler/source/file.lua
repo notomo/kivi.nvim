@@ -240,13 +240,8 @@ function Target.path(self)
 end
 
 function Target.project(self)
-  for _, pattern in ipairs(self._root_patterns) do
-    local found = filelib.find_upward_dir(pattern)
-    if found ~= nil then
-      return found
-    end
-  end
-  return "."
+  local found = vim.fs.root(assert(vim.uv.cwd()), self._root_patterns)
+  return found or "."
 end
 
 function Target.current()

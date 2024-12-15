@@ -220,28 +220,6 @@ function M.create(path)
   io.open(path, "w"):close()
 end
 
-function M.find_upward_dir(child_pattern)
-  local found_file = vim.fn.findfile(child_pattern, ".;")
-  if found_file ~= "" then
-    return pathlib.parent(M.adjust(found_file))
-  end
-
-  local found_dir = vim.fn.finddir(child_pattern, ".;")
-  if found_dir ~= "" then
-    return pathlib.parent(M.adjust(found_dir))
-  end
-
-  return nil
-end
-
-function M.find_git_root()
-  local git_root = M.find_upward_dir(".git")
-  if git_root == nil then
-    return nil, "not found .git"
-  end
-  return git_root, nil
-end
-
 function M.details(paths)
   local cmd = { "ls", "-lh", unpack(paths) }
   return require("kivi.lib.job").promise(cmd)

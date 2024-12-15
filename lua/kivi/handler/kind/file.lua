@@ -151,13 +151,8 @@ function M.exists(path)
 end
 
 function M.find_upward_marker(action_ctx)
-  for _, pattern in ipairs(action_ctx.opts.root_patterns) do
-    local found = filelib.find_upward_dir(pattern)
-    if found ~= nil then
-      return filelib.adjust(found)
-    end
-  end
-  return filelib.adjust(".")
+  local root = vim.fs.root(assert(vim.uv.cwd()), action_ctx.opts.root_patterns)
+  return filelib.adjust(root or ".")
 end
 
 function M.open_by_system_default(path)
