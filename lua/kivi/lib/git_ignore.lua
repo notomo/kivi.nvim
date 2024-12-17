@@ -38,23 +38,6 @@ function M.apply(cwd, nodes, window_id, reload)
     "--ignored=matching",
   }, {
     cwd = git_root,
-    stdout = function(_, data)
-      if not data then
-        return
-      end
-
-      local ignored = {}
-      vim.iter(vim.split(data, "\0", { plain = true, trimempty = true })):each(function(line)
-        local status, file_path = unpack(vim.split(line, " ", { plain = true, trimempty = true }))
-        if status ~= "!!" then
-          return
-        end
-        local path = vim.fs.joinpath(git_root, file_path)
-        ignored[path] = true
-      end)
-      repository_ignored[git_root] = ignored
-      apply(nodes, ignored, window_id)
-    end,
     stderr = function(_, data)
       if not data then
         return
@@ -63,7 +46,22 @@ function M.apply(cwd, nodes, window_id, reload)
         require("kivi.lib.message").warn(data)
       end)
     end,
-  })
+  }, function(o)
+    if o.code ~= 0 then
+      return
+    end
+    local ignored = {}
+    vim.iter(vim.split(o.stdout, "\0", { plain = true, trimempty = true })):each(function(line)
+      local status, file_path = unpack(vim.split(line, " ", { plain = true, trimempty = true }))
+      if status ~= "!!" then
+        return
+      end
+      local path = vim.fs.joinpath(git_root, file_path)
+      ignored[path] = true
+    end)
+    repository_ignored[git_root] = ignored
+    apply(nodes, ignored, window_id)
+  end)
 end
 
 return M
