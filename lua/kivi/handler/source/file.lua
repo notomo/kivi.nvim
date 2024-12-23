@@ -206,6 +206,7 @@ function M.hook(hook_ctx)
       callback = function()
         watchers[bufnr] = nil
         watcher:stop()
+        watcher:close()
       end,
     })
   end
