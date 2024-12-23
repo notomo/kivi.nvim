@@ -61,6 +61,7 @@ function View.redraw(self, nodes)
   )
   vim.bo[self.bufnr].modifiable = false
   vim.bo[self.bufnr].modified = false
+  vim.api.nvim__redraw({ buf = self.bufnr, valid = true })
 end
 
 function View.redraw_buffer(self)
