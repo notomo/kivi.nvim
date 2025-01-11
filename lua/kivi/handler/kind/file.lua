@@ -56,55 +56,58 @@ function M.action_paste(nodes, _, ctx)
   end
 
   local already_exists = {}
-  vim.iter(copied):each(function(old_node)
-    local new_node = old_node:move_to(base_node)
-    if M.exists(new_node.path) then
-      table.insert(already_exists, { from = old_node, to = new_node })
-      return
-    end
+  local try_paste = function()
+    return require("kivi.lib.job").series(copied, function(old_node)
+      local new_node = old_node:move_to(base_node)
+      if M.exists(new_node.path) then
+        table.insert(already_exists, { from = old_node, to = new_node })
+        return
+      end
 
-    if has_cut then
-      M.rename(old_node.path, new_node.path)
-    else
-      M.copy(old_node.path, new_node.path)
-    end
-  end)
+      if has_cut then
+        return M.rename(old_node.path, new_node.path)
+      end
+      return M.copy(old_node.path, new_node.path)
+    end)
+  end
 
   local canceled_items = {}
-  local overwrite_items = {}
   local rename_items = {}
-  local input_reader = require("kivi.lib.input").reader()
-  vim.iter(already_exists):each(function(item)
-    local answer = input_reader:get(item.to.path .. " already exists, (f)orce (n)o (r)ename: ")
-    if answer == "r" then
-      table.insert(rename_items, { from = item.from.path, to = item.to.path })
-      return
-    end
-    if answer == "f" then
-      table.insert(overwrite_items, item)
-      return
-    end
-    table.insert(canceled_items, item)
-  end)
-
-  for _, item in ipairs(overwrite_items) do
-    if has_cut then
-      M.rename(item.from.path, item.to.path)
-    else
-      M.copy(item.from.path, item.to.path)
-    end
+  local retry = function()
+    local overwrite_items = {}
+    local input_reader = require("kivi.lib.input").reader()
+    vim.iter(already_exists):each(function(item)
+      local answer = input_reader:get(item.to.path .. " already exists, (f)orce (n)o (r)ename: ")
+      if answer == "r" then
+        table.insert(rename_items, { from = item.from.path, to = item.to.path })
+        return
+      end
+      if answer == "f" then
+        table.insert(overwrite_items, item)
+        return
+      end
+      table.insert(canceled_items, item)
+    end)
+    return require("kivi.lib.job").series(overwrite_items, function(item)
+      if has_cut then
+        return M.rename(item.from.path, item.to.path)
+      end
+      return M.copy(item.from.path, item.to.path)
+    end)
   end
 
-  if #canceled_items ~= #copied then
-    ctx.clipboard:clear()
-  elseif #canceled_items > 0 then
-    require("kivi.lib.message").info("Canceled.")
-  end
-
-  return require("kivi.controller").reload(ctx):next(function()
-    if #rename_items > 0 then
-      return require("kivi.controller").open_renamer(base_node, rename_items, has_cut)
+  return try_paste():next(retry):next(function()
+    if #canceled_items ~= #copied then
+      ctx.clipboard:clear()
+    elseif #canceled_items > 0 then
+      require("kivi.lib.message").info("Canceled.")
     end
+
+    return require("kivi.controller").reload(ctx):next(function()
+      if #rename_items > 0 then
+        return require("kivi.controller").open_renamer(base_node, rename_items, has_cut)
+      end
+    end)
   end)
 end
 

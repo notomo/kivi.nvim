@@ -99,7 +99,16 @@ function M.delete(path)
 end
 
 function M.rename(from, to)
-  return uv.fs_rename(from, to)
+  local promise, resolve, reject = require("kivi.vendor.promise").with_resolvers()
+  uv.fs_rename(from, to, function(err, ok)
+    assert(not err, err)
+    if ok then
+      resolve()
+      return
+    end
+    reject()
+  end)
+  return promise
 end
 
 local _copy_dir
@@ -108,15 +117,24 @@ if vim.uv.os_uname().version:match("Windows") then
     local from_path = pathlib.trim_slash(from):gsub("/", "\\")
     local to_path = pathlib.trim_slash(to):gsub("/", "\\")
     local cmd = { "xcopy", "/Y", "/E", "/I", from_path, to_path }
-    vim.fn.systemlist(cmd)
+    return require("kivi.lib.job").promise(cmd)
   end
 else
   _copy_dir = function(from, to)
     if M.is_dir(to) then
-      vim.fn.system({ "cp", "-RT", from, pathlib.trim_slash(to) })
-    else
-      vim.fn.system({ "cp", "-R", from, pathlib.trim_slash(to) })
+      return require("kivi.lib.job").promise({
+        "cp",
+        "-RT",
+        from,
+        pathlib.trim_slash(to),
+      })
     end
+    return require("kivi.lib.job").promise({
+      "cp",
+      "-R",
+      from,
+      pathlib.trim_slash(to),
+    })
   end
 end
 M._copy_dir = _copy_dir
@@ -139,6 +157,8 @@ function M.copy(from, to)
   end
   to_file:write(content)
   to_file:close()
+
+  return require("kivi.vendor.promise").resolve()
 end
 
 function M._bufnr(path)

@@ -97,9 +97,9 @@ function Renamer._write(bufnr, base_node_path, kind, has_cut, state_lines, froms
     end
 
     if has_cut then
-      kind.rename(item.from, item.to)
+      require("kivi.lib.job").wait(kind.rename(item.from, item.to))
     else
-      kind.copy(item.from, item.to)
+      require("kivi.lib.job").wait(kind.copy(item.from, item.to))
     end
 
     success[i] = item

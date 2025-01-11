@@ -24,4 +24,27 @@ function M.promise(cmd)
   return promise
 end
 
+function M.series(elements, promise_factory)
+  local promise = require("kivi.vendor.promise").resolve()
+  for _, e in ipairs(elements) do
+    promise = promise:next(function()
+      return promise_factory(e)
+    end)
+  end
+  return promise
+end
+
+function M.wait(promise)
+  local finished = false
+  promise:finally(function()
+    finished = true
+  end)
+  local ok = vim.wait(5000, function()
+    return finished
+  end, 10, false)
+  if not ok then
+    error("wait timeout")
+  end
+end
+
 return M
