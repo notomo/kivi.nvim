@@ -133,10 +133,16 @@ function M.action_delete(nodes, action_ctx, ctx)
     return
   end
 
-  for _, node in ipairs(nodes) do
-    action_ctx.kind.delete(node.path)
-  end
-  return require("kivi.controller").reload(ctx)
+  return require("kivi.vendor.promise")
+    .all(vim
+      .iter(nodes)
+      :map(function(node)
+        return action_ctx.kind.delete(node.path)
+      end)
+      :totable())
+    :next(function()
+      return require("kivi.controller").reload(ctx)
+    end)
 end
 
 --- @param nodes KiviNode[]

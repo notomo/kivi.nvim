@@ -92,10 +92,34 @@ function M.entries(dir)
 end
 
 function M.delete(path)
-  if M.is_link(path) then
-    return vim.fn.delete(pathlib.trim_slash(path))
-  end
-  return vim.fn.delete(path, "rf")
+  local promise, resolve, reject = require("kivi.vendor.promise").with_resolvers()
+
+  local sender
+  sender = vim.uv.new_async(vim.schedule_wrap(function(err)
+    if err then
+      reject(err)
+    else
+      resolve()
+    end
+    assert(sender)
+    sender:close()
+  end))
+  assert(sender)
+
+  ---@diagnostic disable-next-line: param-type-mismatch
+  vim.uv.new_thread(function(async, _path)
+    local ok, result = pcall(function()
+      require("vim.fs").rm(_path, { recursive = true })
+    end)
+    if ok then
+      async:send()
+    else
+      async:send(result)
+    end
+    ---@diagnostic disable-next-line: param-type-mismatch
+  end, sender, path)
+
+  return promise
 end
 
 function M.rename(from, to)
