@@ -3,8 +3,8 @@ local Context = require("kivi.core.context")
 local M = {}
 
 --- @param ctx KiviContext
-function M.open(ctx, initial_bufnr, source_setup_opts)
-  return ctx.source:start(ctx.opts, source_setup_opts):next(function(nodes)
+function M.open(ctx, initial_bufnr)
+  return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.ui:redraw(nodes)
     local _ = ctx.ui:move_cursor(ctx.history, ctx.source.init_path(initial_bufnr)) or ctx.ui:init_cursor()
     ctx.history:set(nodes.root_path)
@@ -14,10 +14,9 @@ end
 
 --- @param ctx KiviContext
 --- @param path string
---- @param source_setup_opts table?
-function M.navigate(ctx, path, source_setup_opts)
+function M.navigate(ctx, path)
   ctx.opts = ctx.opts:merge({ path = path })
-  return ctx.source:start(ctx.opts, source_setup_opts):next(function(nodes)
+  return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.history:add(nodes.root_path)
     ctx.ui:redraw(nodes)
     local _ = ctx.ui:restore_cursor(ctx.history, nodes.root_path) or ctx.ui:init_cursor()

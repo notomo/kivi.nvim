@@ -3,7 +3,6 @@ local default_opts = {
   path = ".",
   expanded = {},
   source_opts = {},
-  source_setup_opts = {},
 }
 
 local default_open_opts = {

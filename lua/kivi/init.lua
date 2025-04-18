@@ -4,8 +4,8 @@ function M.open(opts)
   return require("kivi.command").open(opts)
 end
 
-function M.navigate(path, source_setup_opts)
-  return require("kivi.command").navigate(path, source_setup_opts)
+function M.navigate(path)
+  return require("kivi.command").navigate(path)
 end
 
 function M.execute(action_name, opts, action_opts)

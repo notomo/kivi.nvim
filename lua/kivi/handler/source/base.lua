@@ -15,7 +15,6 @@ function M.setup(opts)
 end
 
 M.opts = {}
-M.setup_opts = {}
 M.kind_name = "base"
 
 return M

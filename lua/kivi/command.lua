@@ -10,17 +10,14 @@ function M.open(raw_opts)
 end
 
 --- @param path string
---- @param source_setup_opts table?
-function M.navigate(path, source_setup_opts)
-  source_setup_opts = source_setup_opts or {}
-
+function M.navigate(path)
   local ctx = Context.get()
   if type(ctx) == "string" then
     local err = ctx
     return require("kivi.vendor.promise").reject(err)
   end
 
-  return controller.navigate(ctx, path, source_setup_opts):catch(function(err)
+  return controller.navigate(ctx, path):catch(function(err)
     require("kivi.lib.message").warn(err)
   end)
 end

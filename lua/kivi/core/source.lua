@@ -31,8 +31,8 @@ function Source.__index(self, k)
   return rawget(Source, k) or self._source[k] or base[k]
 end
 
-function Source.start(self, opts, source_setup_opts)
-  return self:_start(opts, source_setup_opts):next(function(raw_result, err)
+function Source.start(self, opts)
+  return self._source.collect(opts):next(function(raw_result, err)
     if err then
       return require("kivi.vendor.promise").reject(err)
     end
@@ -48,16 +48,6 @@ end
 --- @param hook_ctx KiviSourceHookContext
 function Source.hook(self, hook_ctx)
   self._source.hook(hook_ctx)
-end
-
---- @param opts table
---- @param setup_opts table?
-function Source._start(self, opts, setup_opts)
-  if setup_opts then
-    local new_opts = self._source.setup(opts, vim.tbl_extend("force", self._source.setup_opts, setup_opts))
-    return self._source.collect(new_opts)
-  end
-  return self._source.collect(opts)
 end
 
 return Source

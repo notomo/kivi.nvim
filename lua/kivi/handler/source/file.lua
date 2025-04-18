@@ -214,39 +214,5 @@ end
 
 M.kind_name = "file"
 M.opts = {}
-M.setup_opts = { target = "current", root_patterns = { ".git" } }
-
-function M.setup(opts, setup_opts)
-  local path = M.Target.new(setup_opts.target, setup_opts.root_patterns):path()
-  return opts:merge({ path = path })
-end
-
-local Target = {}
-Target.__index = Target
-M.Target = Target
-
---- @param name string
---- @param root_patterns string[]
-function Target.new(name, root_patterns)
-  local tbl = { _name = name, _root_patterns = root_patterns }
-  return setmetatable(tbl, Target)
-end
-
-function Target.path(self)
-  local f = self[self._name]
-  if f == nil then
-    return nil
-  end
-  return f(self)
-end
-
-function Target.project(self)
-  local found = vim.fs.root(assert(vim.uv.cwd()), self._root_patterns)
-  return found or "."
-end
-
-function Target.current()
-  return nil
-end
 
 return M

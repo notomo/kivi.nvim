@@ -14,11 +14,11 @@ function M.open(raw_opts)
   local initial_bufnr = vim.api.nvim_get_current_buf()
   local ui, key = require("kivi.view").open(source, open_opts)
   local ctx = Context.new(source, ui, key, opts)
-  return loader.open(ctx, initial_bufnr, opts.source_setup_opts)
+  return loader.open(ctx, initial_bufnr)
 end
 
-function M.navigate(ctx, path, source_setup_opts)
-  return loader.navigate(ctx, path, source_setup_opts)
+function M.navigate(ctx, path)
+  return loader.navigate(ctx, path)
 end
 
 function M.navigate_parent(ctx, path)
