@@ -13,6 +13,9 @@ function helper.before_each()
   helper.test_data:cd("")
 
   helper.set_inputs()
+
+  vim.cmd.wincmd("t")
+  vim.cmd.only({ mods = { silent = true } })
 end
 
 function helper.after_each()
