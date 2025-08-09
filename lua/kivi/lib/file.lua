@@ -198,10 +198,6 @@ function M._escape(path)
   return ([[`='%s'`]]):format(path:gsub("'", "''"))
 end
 
-function M.lcd(path)
-  vim.cmd.lcd({ args = { M._escape(path) }, mods = { silent = true } })
-end
-
 function M.open(path)
   local bufnr = M._bufnr(path)
   if bufnr ~= nil then

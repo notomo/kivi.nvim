@@ -194,7 +194,7 @@ function M.hook(hook_ctx)
   local window_id = vim.fn.win_findbuf(bufnr)[1]
   if window_id then
     vim.api.nvim_win_call(window_id, function()
-      filelib.lcd(path)
+      vim.fn.chdir(path, "window")
     end)
     require("kivi.lib.git_ignore").apply(path, nodes, window_id, hook_ctx.reload)
   end
