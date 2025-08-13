@@ -36,11 +36,12 @@ function M.open(bufnr, opts)
   end
 
   local opened = f(bufnr, opts)
+  local window_id = vim.api.nvim_get_current_win()
   if opened then
-    vim.api.nvim_set_option_value("number", false, { scope = "local" })
-    vim.api.nvim_set_option_value("list", false, { scope = "local" })
+    vim.wo[window_id][0].number = false
+    vim.wo[window_id][0].list = false
   end
-  return vim.api.nvim_get_current_win()
+  return window_id
 end
 
 return M
