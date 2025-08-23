@@ -194,16 +194,13 @@ function M._bufnr(path)
   return nil
 end
 
-function M._escape(path)
-  return ([[`='%s'`]]):format(path:gsub("'", "''"))
-end
 
 function M.open(path)
   local bufnr = M._bufnr(path)
   if bufnr ~= nil then
     vim.cmd.buffer(bufnr)
   else
-    vim.cmd.edit(M._escape(path))
+    vim.cmd.edit({ args = { path }, magic = { file = false } })
   end
 end
 
@@ -215,7 +212,7 @@ function M.tab_open(path)
     vim.bo.bufhidden = "wipe"
     vim.cmd.buffer(bufnr)
   else
-    vim.cmd.tabedit(M._escape(path))
+    vim.cmd.tabedit({ args = { path }, magic = { file = false } })
   end
 end
 
@@ -225,7 +222,7 @@ function M.vsplit_open(path)
     vim.cmd.vsplit()
     vim.cmd.buffer(bufnr)
   else
-    vim.cmd.vsplit(M._escape(path))
+    vim.cmd.vsplit({ args = { path }, magic = { file = false } })
   end
 end
 
