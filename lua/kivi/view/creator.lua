@@ -32,7 +32,7 @@ function Creator.open(kind, tree_bufnr, base_node)
   vim.cmd.startinsert()
 
   vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
-    buffer = bufnr,
+    buf = bufnr,
     nested = true,
     callback = function()
       local result = Creator._write(bufnr, window_id, base_node.path, kind)

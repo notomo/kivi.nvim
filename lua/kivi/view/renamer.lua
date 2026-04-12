@@ -50,14 +50,14 @@ function Renamer.open(kind, tree_bufnr, base_node, rename_items, has_cut)
   cursorlib.set_row(2, window_id, bufnr)
 
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
-    buffer = bufnr,
+    buf = bufnr,
     nested = true,
     callback = function()
       Renamer._read(bufnr, base_node.path, state.lines)
     end,
   })
   vim.api.nvim_create_autocmd({ "BufWriteCmd" }, {
-    buffer = bufnr,
+    buf = bufnr,
     nested = true,
     callback = function()
       local result = Renamer._write(bufnr, base_node.path, kind, state.has_cut, state.lines, state.froms)

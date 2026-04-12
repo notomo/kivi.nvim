@@ -24,7 +24,7 @@ function View.open(source, open_opts)
 
   Layout.open(bufnr, open_opts.layout)
   vim.api.nvim_create_autocmd({ "BufReadCmd" }, {
-    buffer = bufnr,
+    buf = bufnr,
     callback = function()
       local ctx = Context.get(bufnr)
       if type(ctx) == "string" then

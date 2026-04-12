@@ -202,7 +202,7 @@ function M.hook(hook_ctx)
   if vim.api.nvim_buf_is_valid(bufnr) then
     vim.api.nvim_create_autocmd({ "BufWipeout" }, {
       group = vim.api.nvim_create_augroup("kivi.file.reload_buffer_" .. tostring(bufnr), {}),
-      buffer = bufnr,
+      buf = bufnr,
       callback = function()
         watchers[bufnr] = nil
         watcher:stop()
