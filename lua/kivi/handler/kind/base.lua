@@ -133,6 +133,8 @@ function M.action_delete(nodes, action_ctx, ctx)
     return
   end
 
+  ctx.ui:set_busy()
+
   return require("kivi.vendor.promise")
     .all(vim
       .iter(nodes)

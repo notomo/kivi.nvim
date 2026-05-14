@@ -62,6 +62,7 @@ function View.redraw(self, nodes)
   vim.bo[self.bufnr].modifiable = false
   vim.bo[self.bufnr].modified = false
   vim.api.nvim__redraw({ buf = self.bufnr, valid = true })
+  vim.bo[self.bufnr].busy = 0
 end
 
 function View.redraw_buffer(self)
@@ -142,6 +143,10 @@ function View.reset_selections(self, action_name)
   end
   self._nodes = self._nodes:clear_selections()
   self:redraw_buffer()
+end
+
+function View.set_busy(self)
+  vim.bo[self.bufnr].busy = vim.bo[self.bufnr].busy + 1
 end
 
 vim.api.nvim_set_hl(0, "KiviSelected", { default = true, link = "Statement" })

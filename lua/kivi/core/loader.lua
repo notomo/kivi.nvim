@@ -4,6 +4,7 @@ local M = {}
 
 --- @param ctx KiviContext
 function M.open(ctx, initial_bufnr)
+  ctx.ui:set_busy()
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.ui:redraw(nodes)
     local _ = ctx.ui:move_cursor(ctx.history, ctx.source.init_path(initial_bufnr)) or ctx.ui:init_cursor()
@@ -16,6 +17,8 @@ end
 --- @param path string
 function M.navigate(ctx, path)
   ctx.opts = ctx.opts:merge({ path = path })
+
+  ctx.ui:set_busy()
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.history:add(nodes.root_path)
     ctx.ui:redraw(nodes)
@@ -28,6 +31,8 @@ end
 --- @param ctx KiviContext
 function M.navigate_parent(ctx, path)
   ctx.opts = ctx.opts:merge({ path = path })
+
+  ctx.ui:set_busy()
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.history:add(nodes.root_path)
     ctx.ui:redraw(nodes)
@@ -55,6 +60,7 @@ function M.reload(bufnr, cursor_line_path, expanded)
     unlock = ctx:lock_last_position(cursor_line_path)
   end
 
+  ctx.ui:set_busy()
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.ui:redraw(nodes)
     ctx.ui:move_cursor(ctx.history, cursor_line_path)
@@ -66,6 +72,7 @@ end
 --- @param ctx KiviContext
 function M.back(ctx, path)
   ctx.opts = ctx.opts:merge({ path = path })
+  ctx.ui:set_busy()
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.history:store_current()
     ctx.ui:redraw(nodes)
@@ -78,6 +85,7 @@ end
 --- @param ctx KiviContext
 function M.expand_child(ctx, expanded)
   ctx.opts.expanded = expanded
+  ctx.ui:set_busy()
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.ui:redraw(nodes)
     ctx.source:hook({ nodes = nodes, bufnr = ctx.ui.bufnr })
@@ -88,6 +96,7 @@ end
 function M.close_all_tree(ctx, path, cursor_line_path)
   ctx.opts = ctx.opts:merge({ path = path })
   ctx.opts.expanded = {}
+  ctx.ui:set_busy()
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.ui:redraw(nodes)
     ctx.ui:move_cursor(ctx.history, cursor_line_path)
@@ -100,6 +109,7 @@ end
 --- @param cursor_line_path string?
 function M.shrink(ctx, path, cursor_line_path)
   ctx.opts = ctx.opts:merge({ path = path })
+  ctx.ui:set_busy()
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.history:add(nodes.root_path)
     ctx.ui:redraw(nodes)
@@ -112,6 +122,7 @@ end
 --- @param ctx KiviContext
 function M.expand_parent(ctx, path, cursor_line_path, expanded)
   ctx.opts = ctx.opts:merge({ path = path, expanded = expanded })
+  ctx.ui:set_busy()
   return ctx.source:start(ctx.opts):next(function(nodes)
     ctx.ui:redraw(nodes)
     ctx.ui:move_cursor(ctx.history, cursor_line_path)

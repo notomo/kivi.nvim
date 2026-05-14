@@ -64,6 +64,8 @@ function M.action_paste(nodes, _, ctx)
         return
       end
 
+      ctx.ui:set_busy()
+
       if has_cut then
         return M.rename(old_node.path, new_node.path)
       end
@@ -89,6 +91,8 @@ function M.action_paste(nodes, _, ctx)
       table.insert(canceled_items, item)
     end)
     return require("kivi.lib.job").series(overwrite_items, function(item)
+      ctx.ui:set_busy()
+
       if has_cut then
         return M.rename(item.from.path, item.to.path)
       end
