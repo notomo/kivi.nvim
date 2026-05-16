@@ -109,7 +109,8 @@ function M.delete(path)
   ---@diagnostic disable-next-line: param-type-mismatch
   vim.uv.new_thread(function(async, _path)
     local ok, result = pcall(function()
-      require("vim.fs").rm(_path, { recursive = true })
+      -- don't use vim.fs to use in uv.nw_thread
+      return require("kivi.lib.rm").execute(_path)
     end)
     if ok then
       async:send()
@@ -193,7 +194,6 @@ function M._bufnr(path)
   end
   return nil
 end
-
 
 function M.open(path)
   local bufnr = M._bufnr(path)

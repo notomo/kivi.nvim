@@ -1,11 +1,34 @@
 local M = {}
 
-function M.join(...)
-  return vim.fs.joinpath(...)
+local _dedup_sep
+if vim.uv.os_uname().version:match("Windows") then
+  _dedup_sep = function(path)
+    return (path:gsub("[/\\][/\\]*", "/"))
+  end
+else
+  _dedup_sep = function(path)
+    return (path:gsub("//+", "/"))
+  end
 end
 
-function M.normalize(...)
-  return vim.fs.normalize(...)
+function M.join(...)
+  -- don't use vim.fs to use in uv.nw_thread
+  local n = select("#", ...)
+  local segments = {}
+  for i = 1, n do
+    local s = select(i, ...)
+    if s and #s > 0 then
+      segments[#segments + 1] = s
+    end
+  end
+  local path = table.concat(segments, "/")
+  return _dedup_sep(path)
+end
+
+function M.normalize(path)
+  -- don't use vim.fs to use in uv.nw_thread
+  local x = path:gsub("\\", "/")
+  return x
 end
 
 function M.slash(path)
