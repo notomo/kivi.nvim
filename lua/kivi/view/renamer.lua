@@ -128,6 +128,14 @@ function Renamer._write(bufnr, base_node_path, kind, has_cut, state_lines, froms
     cursor_line_path = success[last_index].to
   end
 
+  if has_cut then
+    local renames = {}
+    for _, item in pairs(success) do
+      table.insert(renames, { old_path = item.from, new_path = item.to })
+    end
+    require("kivi.core.event").emit_renamed(renames)
+  end
+
   local next_has_cut = has_cut
   if #already_exists == 0 then
     vim.bo[bufnr].modified = false

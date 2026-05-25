@@ -447,12 +447,25 @@ describe("kivi file source", function()
 
     assert.current_line("file")
 
+    local renames
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "KiviRenamed",
+      once = true,
+      callback = function(args)
+        renames = args.data.renames
+      end,
+    })
+
     vim.cmd.substitute("/file/renamed/")
     vim.cmd.wq()
     helper.wait(kivi.promise())
 
     assert.no.exists_pattern("file")
     assert.exists_pattern("renamed")
+
+    assert.same({
+      { old_path = helper.path("file"), new_path = helper.path("renamed") },
+    }, renames)
   end)
 
   it("can rename directory", function()
@@ -463,12 +476,25 @@ describe("kivi file source", function()
 
     assert.current_line("dir/")
 
+    local renames
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "KiviRenamed",
+      once = true,
+      callback = function(args)
+        renames = args.data.renames
+      end,
+    })
+
     vim.cmd.substitute("/dir/renamed/")
     vim.cmd.wq()
     helper.wait(kivi.promise())
 
     assert.no.exists_pattern("dir")
     assert.exists_pattern("renamed/")
+
+    assert.same({
+      { old_path = helper.path("dir/"), new_path = helper.path("renamed/") },
+    }, renames)
   end)
 
   it("can create file in root", function()
