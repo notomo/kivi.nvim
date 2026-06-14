@@ -133,8 +133,8 @@ assert.register_eq("register_value", function(name)
   return vim.fn.getreg(name)
 end)
 
-function helper.typed_assert(assert)
-  local x = require("assertlib").typed(assert)
+function helper.typed_assert(raw_assert)
+  local x = require("assertlib").typed(raw_assert)
   ---@cast x +{current_dir:fun(want), register_value:fun(name,want)}
   return x
 end
