@@ -1,6 +1,8 @@
+local ntf = require("ntf")
+local describe, before_each, after_each, it = ntf.describe, ntf.before_each, ntf.after_each, ntf.it
 local helper = require("kivi.test.helper")
-local kivi = helper.require("kivi")
-local assert = helper.typed_assert(assert)
+local kivi = require("kivi")
+local assert = helper.typed_assert(ntf.assert)
 
 describe("kivi", function()
   before_each(helper.before_each)

@@ -1,27 +1,23 @@
-local helper = require("vusted.helper")
+local helper = require("ntf.helper")
 local plugin_name = helper.get_module_root(...)
 
 helper.root = helper.find_plugin_root(plugin_name)
 vim.opt.packpath:prepend(vim.fs.joinpath(helper.root, "spec/.shared/packages"))
-require("assertlib").register(require("vusted.assert").register)
+require("assertlib").register(require("ntf.assert").register)
 
 function helper.before_each()
   require("kivi").promise()
-  vim.g.clipboard = nil
 
-  helper.test_data = require("kivi.vendor.misclib.test.data_dir").setup(helper.root)
+  helper.test_data = require("kivi.vendor.misclib.test.data_dir").setup(helper.root, {
+    base_dir = ("test_data_%d/"):format(vim.fn.getpid()),
+  })
   helper.test_data:cd("")
 
   helper.set_inputs()
-
-  vim.cmd.wincmd("t")
-  vim.cmd.only({ mods = { silent = true } })
 end
 
 function helper.after_each()
   helper.test_data:teardown()
-  helper.cleanup()
-  helper.cleanup_loaded_modules(plugin_name)
 end
 
 function helper.skip_if_win32(pending_fn)
@@ -127,13 +123,13 @@ function helper.clipboard()
   }
 end
 
-local asserts = require("vusted.assert").asserts
+local assert = require("ntf.assert")
 
-asserts.create("current_dir"):register_eq(function()
+assert.register_eq("current_dir", function()
   return require("kivi.lib.path").normalize(vim.fn.getcwd()):gsub(helper.test_data:path("?"), "")
 end)
 
-asserts.create("register_value"):register_eq(function(name)
+assert.register_eq("register_value", function(name)
   return vim.fn.getreg(name)
 end)
 
