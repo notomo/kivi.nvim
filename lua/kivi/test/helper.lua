@@ -8,9 +8,7 @@ require("assertlib").register(require("ntf.assert").register)
 function helper.before_each()
   require("kivi").promise()
 
-  helper.test_data = require("kivi.vendor.misclib.test.data_dir").setup(helper.root, {
-    base_dir = ("test_data_%d/"):format(vim.fn.getpid()),
-  })
+  helper.test_data = require("kivi.vendor.misclib.test.data_dir").setup(helper.root, { base_dir = "spec/test_data/" })
   helper.test_data:cd("")
 
   helper.set_inputs()
