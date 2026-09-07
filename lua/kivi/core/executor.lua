@@ -1,5 +1,6 @@
 local M = {}
 
+--- @async
 --- @param ctx KiviContext
 --- @param all_nodes KiviNodes
 function M.execute(ctx, all_nodes, action_name, opts, action_opts)
@@ -31,7 +32,7 @@ function M.execute(ctx, all_nodes, action_name, opts, action_opts)
     end
   end
 
-  local result = require("kivi.vendor.promise").resolve()
+  local result
   for _, holder in ipairs(holders) do
     local res = holder.action:execute(holder.nodes, ctx)
     if opts.quit then

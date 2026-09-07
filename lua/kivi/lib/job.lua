@@ -1,42 +1,37 @@
 local M = {}
 
+--- @async
 function M.promise(cmd)
-  local promise, resolve, reject = require("kivi.vendor.promise").with_resolvers()
-
-  local ok, err = pcall(function()
+  --- @type vim.SystemCompleted?
+  local completed
+  vim.async.await(function(callback)
+    -- schedule_wrap so the task does not resume in a fast event context
     vim.system(
       cmd,
-      {
-        text = true,
-      },
+      { text = true },
       vim.schedule_wrap(function(o)
-        if o.code == 0 then
-          return resolve(vim.trim(o.stderr .. o.stdout))
-        end
-        return reject(vim.trim(o.stdout .. o.stderr))
+        completed = o
+        callback()
       end)
     )
   end)
-  if not ok and err then
-    reject(err)
+  assert(completed)
+  if completed.code ~= 0 then
+    error(vim.trim(completed.stdout .. completed.stderr), 0)
   end
-
-  return promise
+  return vim.trim(completed.stderr .. completed.stdout)
 end
 
-function M.series(elements, promise_factory)
-  local promise = require("kivi.vendor.promise").resolve()
+--- @async
+function M.series(elements, f)
   for _, e in ipairs(elements) do
-    promise = promise:next(function()
-      return promise_factory(e)
-    end)
+    f(e)
   end
-  return promise
 end
 
-function M.wait(promise)
+function M.wait(task)
   local finished = false
-  promise:finally(function()
+  task:on_complete(function()
     finished = true
   end)
   local ok = vim.wait(5000, function()

@@ -31,13 +31,13 @@ function Source.__index(self, k)
   return rawget(Source, k) or self._source[k] or base[k]
 end
 
+--- @async
 function Source.start(self, opts)
-  return self._source.collect(opts):next(function(raw_result, err)
-    if err then
-      return require("kivi.vendor.promise").reject(err)
-    end
-    return require("kivi.core.nodes").from_node(raw_result)
-  end)
+  local raw_result, err = self._source.collect(opts)
+  if err then
+    error(err, 0)
+  end
+  return require("kivi.core.nodes").from_node(raw_result)
 end
 
 --- @class KiviSourceHookContext

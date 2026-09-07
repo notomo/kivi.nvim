@@ -36,7 +36,12 @@ function Creator.open(kind, tree_bufnr, base_node)
     nested = true,
     callback = function()
       local result = Creator._write(bufnr, window_id, base_node.path, kind)
-      _promise = require("kivi.core.loader").reload(tree_bufnr, result.cursor_line_path, result.expanded)
+      --- @async
+      --- @return nil
+      local reload = function()
+        require("kivi.core.loader").reload(tree_bufnr, result.cursor_line_path, result.expanded)
+      end
+      _promise = vim.async.run(reload)
     end,
   })
 end

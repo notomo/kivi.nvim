@@ -62,7 +62,12 @@ function Renamer.open(kind, tree_bufnr, base_node, rename_items, has_cut)
     callback = function()
       local result = Renamer._write(bufnr, base_node.path, kind, state.has_cut, state.lines, state.froms)
       state = result.next_state
-      _promise = require("kivi.core.loader").reload(tree_bufnr, result.cursor_line_path)
+      --- @async
+      --- @return nil
+      local reload = function()
+        require("kivi.core.loader").reload(tree_bufnr, result.cursor_line_path)
+      end
+      _promise = vim.async.run(reload)
     end,
   })
   vim.api.nvim_exec_autocmds("BufRead", { modeline = false }) -- HACK?
@@ -96,11 +101,16 @@ function Renamer._write(bufnr, base_node_path, kind, has_cut, state_lines, froms
       return
     end
 
-    if has_cut then
-      require("kivi.lib.job").wait(kind.rename(item.from, item.to))
-    else
-      require("kivi.lib.job").wait(kind.copy(item.from, item.to))
+    --- @async
+    --- @return nil
+    local move = function()
+      if has_cut then
+        kind.rename(item.from, item.to)
+      else
+        kind.copy(item.from, item.to)
+      end
     end
+    require("kivi.lib.job").wait(vim.async.run(move))
 
     success[i] = item
   end)

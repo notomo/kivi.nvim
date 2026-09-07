@@ -6,6 +6,7 @@ M.opts = { yank = { key = "path", register = "+" } }
 
 --- @param nodes KiviNode[]
 --- @param ctx KiviContext
+--- @async
 function M.action_parent(nodes, _, ctx)
   local node = nodes[1]
   if not node then
@@ -15,6 +16,7 @@ function M.action_parent(nodes, _, ctx)
 end
 
 --- @param nodes KiviNode[]
+--- @async
 function M.action_debug_print(nodes)
   for _, node in ipairs(nodes) do
     require("kivi.lib.message").info(node:raw())
@@ -22,6 +24,7 @@ function M.action_debug_print(nodes)
 end
 
 --- @param nodes KiviNode[]
+--- @async
 function M.action_yank(nodes, action_ctx)
   local values = vim
     .iter(nodes)
@@ -36,6 +39,7 @@ function M.action_yank(nodes, action_ctx)
 end
 
 --- @param ctx KiviContext
+--- @async
 function M.action_back(_, _, ctx)
   local path = ctx.history:pop()
   if not path then
@@ -45,21 +49,25 @@ function M.action_back(_, _, ctx)
 end
 
 --- @param ctx KiviContext
+--- @async
 function M.action_toggle_selection(nodes, _, ctx)
   ctx.ui:toggle_selections(nodes)
 end
 
 --- @param ctx KiviContext
+--- @async
 function M.action_copy(nodes, _, ctx)
   ctx.clipboard:copy(nodes)
 end
 
 --- @param ctx KiviContext
+--- @async
 function M.action_cut(nodes, _, ctx)
   ctx.clipboard:cut(nodes)
 end
 
 --- @param ctx KiviContext
+--- @async
 function M.action_clear_clipboard(_, _, ctx)
   ctx.clipboard:clear()
   require("kivi.lib.message").info("Cleared clipboard.")
@@ -67,6 +75,7 @@ end
 
 --- @param nodes KiviNode[]
 --- @param ctx KiviContext
+--- @async
 function M.action_toggle_tree(nodes, _, ctx)
   local expanded = ctx.opts.expanded
   for _, node in ipairs(nodes) do
@@ -83,6 +92,7 @@ end
 
 --- @param nodes KiviNode[]
 --- @param ctx KiviContext
+--- @async
 function M.action_close_all_tree(nodes, _, ctx)
   local node = nodes[1]
   if not node then
@@ -93,6 +103,7 @@ function M.action_close_all_tree(nodes, _, ctx)
 end
 
 --- @param nodes KiviNode[]
+--- @async
 function M.action_create(nodes)
   local node = nodes[1]
   if not node then
@@ -103,6 +114,7 @@ function M.action_create(nodes)
 end
 
 --- @param nodes KiviNode[]
+--- @async
 function M.action_rename(nodes)
   local node = nodes[1]
   if not node then
@@ -126,6 +138,7 @@ end
 
 --- @param nodes KiviNode[]
 --- @param ctx KiviContext
+--- @async
 function M.action_delete(nodes, action_ctx, ctx)
   local yes = require("kivi.util.input").confirm("delete?", nodes)
   if not yes then
@@ -135,20 +148,20 @@ function M.action_delete(nodes, action_ctx, ctx)
 
   ctx.ui:set_busy()
 
-  return require("kivi.vendor.promise")
-    .all(vim
-      .iter(nodes)
-      :map(function(node)
-        return action_ctx.kind.delete(node.path)
-      end)
-      :totable())
-    :next(function()
-      return require("kivi.controller").reload(ctx)
+  require("kivi.lib.async").all(vim
+    .iter(nodes)
+    :map(function(node)
+      return function()
+        action_ctx.kind.delete(node.path)
+      end
     end)
+    :totable())
+  return require("kivi.controller").reload(ctx)
 end
 
 --- @param nodes KiviNode[]
 --- @param ctx KiviContext
+--- @async
 function M.action_expand_parent(nodes, action_ctx, ctx)
   local node = nodes[1]
   if not node then
@@ -173,6 +186,7 @@ end
 
 --- @param nodes KiviNode[]
 --- @param ctx KiviContext
+--- @async
 function M.action_shrink(nodes, _, ctx)
   local node = nodes[1]
   if not node then

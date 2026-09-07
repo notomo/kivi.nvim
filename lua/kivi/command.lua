@@ -4,9 +4,15 @@ local controller = require("kivi.controller")
 local M = {}
 
 function M.open(raw_opts)
-  return controller.open(raw_opts):catch(function(err)
-    require("kivi.lib.message").warn(err)
-  end)
+  --- @async
+  --- @return nil
+  local open = function()
+    local ok, err = pcall(controller.open, raw_opts)
+    if not ok then
+      require("kivi.lib.message").warn(err)
+    end
+  end
+  return vim.async.run(open)
 end
 
 --- @param path string
@@ -14,12 +20,18 @@ function M.navigate(path)
   local ctx = Context.get()
   if type(ctx) == "string" then
     local err = ctx
-    return require("kivi.vendor.promise").reject(err)
+    error(require("kivi.lib.message").wrap(err), 0)
   end
 
-  return controller.navigate(ctx, path):catch(function(err)
-    require("kivi.lib.message").warn(err)
-  end)
+  --- @async
+  --- @return nil
+  local navigate = function()
+    local ok, err = pcall(controller.navigate, ctx, path)
+    if not ok then
+      require("kivi.lib.message").warn(err)
+    end
+  end
+  return vim.async.run(navigate)
 end
 
 function M.execute(action_name, opts, action_opts)
@@ -27,9 +39,15 @@ function M.execute(action_name, opts, action_opts)
     or { first = vim.fn.line("."), last = vim.fn.line(".") }
   opts = opts or {}
   action_opts = action_opts or {}
-  return controller.execute(action_name, range, opts, action_opts):catch(function(err)
-    require("kivi.lib.message").warn(err)
-  end)
+  --- @async
+  --- @return nil
+  local execute = function()
+    local ok, err = pcall(controller.execute, action_name, range, opts, action_opts)
+    if not ok then
+      require("kivi.lib.message").warn(err)
+    end
+  end
+  return vim.async.run(execute)
 end
 
 function M.is_parent()
@@ -60,11 +78,18 @@ end
 
 -- for test
 function M.promise()
-  local promises = {}
-  vim.list_extend(promises, require("kivi.view").promises())
-  vim.list_extend(promises, require("kivi.view.renamer").promises())
-  vim.list_extend(promises, require("kivi.view.creator").promises())
-  return require("kivi.vendor.promise").all(promises)
+  local tasks = {}
+  vim.list_extend(tasks, require("kivi.view").promises())
+  vim.list_extend(tasks, require("kivi.view.renamer").promises())
+  vim.list_extend(tasks, require("kivi.view.creator").promises())
+  --- @async
+  --- @return nil
+  local wait_all = function()
+    for _, task in ipairs(tasks) do
+      vim.async.pawait(task)
+    end
+  end
+  return vim.async.run(wait_all)
 end
 
 return M

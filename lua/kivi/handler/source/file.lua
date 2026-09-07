@@ -1,111 +1,128 @@
 local filelib = require("kivi.lib.file")
-local Promise = require("kivi.vendor.promise")
+local asynclib = require("kivi.lib.async")
 local stringbuf = require("string.buffer")
 
 local M = {}
 
-local collect
-collect = function(target_dir, opts_expanded)
-  target_dir = filelib.adjust(target_dir)
+--- @async
+--- @return table? root
+--- @return string? err
+local _collect
 
-  local promise, resolve, reject = Promise.with_resolvers()
-  local sender
-  sender = vim.uv.new_async(function(v)
-    local decoded = stringbuf.decode(v) or { error = "decoded invalid" }
-    if decoded.error then
-      reject(decoded.error)
-    else
-      resolve(decoded.root, decoded.expand_indicies)
-    end
-    assert(sender)
-    sender:close()
-  end)
-  assert(sender)
+--- Returns `nil, err` for a non-fatal `can't open`, raises otherwise.
+--- @async
+--- @return table? root
+--- @return string? err
+local collect = function(target_dir, opts_expanded)
+  local ok, result, err = pcall(_collect, target_dir, opts_expanded)
+  if ok then
+    return result, err
+  end
 
-  ---@diagnostic disable-next-line: param-type-mismatch
-  vim.uv.new_thread(function(async, dir, _expanded)
-    ---@diagnostic disable-next-line: redefined-local
-    local stringbuf = require("string.buffer")
-    local f = function()
-      local entries = require("kivi.lib.file").entries(dir)
-      if type(entries) == "string" then
-        local err = entries
-        return async:send(stringbuf.encode({ error = err }))
-      end
-
-      local expanded = stringbuf.decode(_expanded) or {}
-
-      local pathlib = require("kivi.lib.path")
-      local root = {
-        value = pathlib.slash(pathlib.tail(dir)),
-        path = dir,
-        kind_name = "directory",
-        children = {},
-      }
-      local expand_indicies = {}
-      for i, entry in ipairs(entries) do
-        local kind_name = "file"
-        if entry.is_directory then
-          kind_name = "directory"
-        end
-
-        local path = entry.path
-        local child = {
-          value = entry.name,
-          path = path,
-          kind_name = kind_name,
-          is_broken = entry.is_broken_link,
-          real_path = entry.real_path,
-        }
-        if child.kind_name == "directory" and expanded[child.path] then
-          table.insert(expand_indicies, i)
-        end
-        table.insert(root.children, child)
-      end
-
-      async:send(stringbuf.encode({ expand_indicies = expand_indicies, root = root }))
-    end
-    local traceback = debug.traceback
-    ---@cast traceback function
-    local ok, err = xpcall(f, traceback)
-    if not ok then
-      error(err)
-    end
-    ---@diagnostic disable-next-line: param-type-mismatch
-  end, sender, target_dir, stringbuf.encode(opts_expanded))
-
-  return promise
-    :next(function(root, expand_indicies)
-      local promises = {}
-      for _, i in ipairs(expand_indicies) do
-        local child = root.children[i]
-        table.insert(
-          promises,
-          collect(child.path, opts_expanded):next(function(result, err)
-            if err then
-              -- HACK
-              return
-            end
-            root.children[i].children = result.children
-          end)
-        )
-      end
-      return Promise.all(promises):next(function()
-        return root
-      end)
-    end)
-    :catch(function(err)
-      if err:match([[can't open]]) then
-        return nil, err
-      end
-      return require("kivi.vendor.promise").reject(err)
-    end)
+  local raised = result
+  if type(raised) == "string" and raised:match([[can't open]]) then
+    return nil, raised
+  end
+  error(raised, 0)
 end
 
+--- @async
+_collect = function(target_dir, opts_expanded)
+  target_dir = filelib.adjust(target_dir)
+
+  --- @type {error:string?, root:table, expand_indicies:integer[]}
+  local decoded = vim.async.await(function(callback)
+    local sender
+    -- schedule_wrap so the task does not resume in a fast event context
+    sender = vim.uv.new_async(vim.schedule_wrap(function(v)
+      assert(sender)
+      sender:close()
+      callback(stringbuf.decode(v) or { error = "decoded invalid" })
+    end))
+    assert(sender)
+
+    ---@diagnostic disable-next-line: param-type-mismatch
+    vim.uv.new_thread(function(async, dir, _expanded)
+      ---@diagnostic disable-next-line: redefined-local
+      local stringbuf = require("string.buffer")
+      local f = function()
+        local entries = require("kivi.lib.file").entries(dir)
+        if type(entries) == "string" then
+          local err = entries
+          return async:send(stringbuf.encode({ error = err }))
+        end
+
+        local expanded = stringbuf.decode(_expanded) or {}
+
+        local pathlib = require("kivi.lib.path")
+        local root = {
+          value = pathlib.slash(pathlib.tail(dir)),
+          path = dir,
+          kind_name = "directory",
+          children = {},
+        }
+        local expand_indicies = {}
+        for i, entry in ipairs(entries) do
+          local kind_name = "file"
+          if entry.is_directory then
+            kind_name = "directory"
+          end
+
+          local path = entry.path
+          local child = {
+            value = entry.name,
+            path = path,
+            kind_name = kind_name,
+            is_broken = entry.is_broken_link,
+            real_path = entry.real_path,
+          }
+          if child.kind_name == "directory" and expanded[child.path] then
+            table.insert(expand_indicies, i)
+          end
+          table.insert(root.children, child)
+        end
+
+        async:send(stringbuf.encode({ expand_indicies = expand_indicies, root = root }))
+      end
+      local traceback = debug.traceback
+      ---@cast traceback function
+      local ok, err = xpcall(f, traceback)
+      if not ok then
+        error(err)
+      end
+      ---@diagnostic disable-next-line: param-type-mismatch
+    end, sender, target_dir, stringbuf.encode(opts_expanded))
+  end)
+
+  if decoded.error then
+    error(decoded.error, 0)
+  end
+
+  local root = decoded.root
+  local fs = {}
+  for _, i in ipairs(decoded.expand_indicies) do
+    local child = root.children[i]
+    --- @async
+    local f = function()
+      local result, err = collect(child.path, opts_expanded)
+      if err or not result then
+        -- HACK
+        return
+      end
+      root.children[i].children = result.children
+    end
+    table.insert(fs, f)
+  end
+  asynclib.all(fs)
+
+  return root
+end
+
+--- @async
 function M.collect(opts)
   local dir = filelib.adjust(opts.path)
   if not filelib.is_dir(dir) then
-    return Promise.reject("does not exist: " .. dir)
+    error("does not exist: " .. dir, 0)
   end
   return collect(dir, opts.expanded)
 end

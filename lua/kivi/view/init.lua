@@ -30,7 +30,12 @@ function View.open(source, open_opts)
       if type(ctx) == "string" then
         return
       end
-      _promise = require("kivi.core.loader").reload(bufnr, ctx:last_position().path)
+      --- @async
+      --- @return nil
+      local reload = function()
+        require("kivi.core.loader").reload(bufnr, ctx:last_position().path)
+      end
+      _promise = vim.async.run(reload)
     end,
   })
 

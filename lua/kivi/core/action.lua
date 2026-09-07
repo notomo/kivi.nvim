@@ -1,5 +1,3 @@
-local Promise = require("kivi.vendor.promise")
-
 --- @class KiviActionContext
 local ActionContext = {}
 
@@ -38,13 +36,14 @@ function Action.new(kind, name, action_opts)
   return setmetatable(tbl, Action)
 end
 
+--- @async
 function Action.execute(self, nodes, ctx)
   local action_ctx = ActionContext.new(self._kind, self.action_opts)
   local result, err = self._action(nodes, action_ctx, ctx)
   if err then
-    return Promise.reject(err)
+    error(err, 0)
   end
-  return Promise.resolve(result)
+  return result
 end
 
 function Action.is_same(self, action)

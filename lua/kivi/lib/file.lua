@@ -91,53 +91,58 @@ function M.entries(dir)
   return entries
 end
 
+--- @async
 function M.delete(path)
-  local promise, resolve, reject = require("kivi.vendor.promise").with_resolvers()
-
-  local sender
-  sender = vim.uv.new_async(vim.schedule_wrap(function(err)
-    if err then
-      reject(err)
-    else
-      resolve()
-    end
+  local err = vim.async.await(function(callback)
+    local sender
+    sender = vim.uv.new_async(vim.schedule_wrap(function(e)
+      assert(sender)
+      sender:close()
+      callback(e)
+    end))
     assert(sender)
-    sender:close()
-  end))
-  assert(sender)
 
-  ---@diagnostic disable-next-line: param-type-mismatch
-  vim.uv.new_thread(function(async, _path)
-    local ok, result = pcall(function()
-      -- don't use vim.fs to use in uv.nw_thread
-      return require("kivi.lib.rm").execute(_path)
-    end)
-    if ok then
-      async:send()
-    else
-      async:send(result)
-    end
     ---@diagnostic disable-next-line: param-type-mismatch
-  end, sender, path)
+    vim.uv.new_thread(function(async, _path)
+      local ok, result = pcall(function()
+        -- don't use vim.fs to use in uv.nw_thread
+        return require("kivi.lib.rm").execute(_path)
+      end)
+      if ok then
+        async:send()
+      else
+        async:send(result)
+      end
+      ---@diagnostic disable-next-line: param-type-mismatch
+    end, sender, path)
+  end)
 
-  return promise
+  if err then
+    error(err, 0)
+  end
 end
 
+--- @async
 function M.rename(from, to)
-  local promise, resolve, reject = require("kivi.vendor.promise").with_resolvers()
-  uv.fs_rename(from, to, function(err, ok)
-    assert(not err, err)
-    if ok then
-      resolve()
-      return
-    end
-    reject()
+  -- schedule_wrap so the task does not resume in a fast event context
+  local ok = vim.async.await(function(callback)
+    uv.fs_rename(
+      from,
+      to,
+      vim.schedule_wrap(function(err, renamed)
+        assert(not err, err)
+        callback(renamed)
+      end)
+    )
   end)
-  return promise
+  if not ok then
+    error("failed to rename: " .. from, 0)
+  end
 end
 
 local _copy_dir
 if vim.uv.os_uname().version:match("Windows") then
+  --- @async
   _copy_dir = function(from, to)
     local from_path = pathlib.trim_slash(from):gsub("/", "\\")
     local to_path = pathlib.trim_slash(to):gsub("/", "\\")
@@ -145,6 +150,7 @@ if vim.uv.os_uname().version:match("Windows") then
     return require("kivi.lib.job").promise(cmd)
   end
 else
+  --- @async
   _copy_dir = function(from, to)
     if M.is_dir(to) then
       return require("kivi.lib.job").promise({
@@ -164,6 +170,7 @@ else
 end
 M._copy_dir = _copy_dir
 
+--- @async
 function M.copy(from, to)
   if M.is_dir(from) then
     return M._copy_dir(from, to)
@@ -182,8 +189,6 @@ function M.copy(from, to)
   end
   to_file:write(content)
   to_file:close()
-
-  return require("kivi.vendor.promise").resolve()
 end
 
 function M._bufnr(path)
@@ -257,6 +262,7 @@ function M.create(path)
   io.open(path, "w"):close()
 end
 
+--- @async
 function M.details(paths)
   local cmd = { "ls", "-lh", unpack(paths) }
   return require("kivi.lib.job").promise(cmd)
