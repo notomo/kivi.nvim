@@ -7,7 +7,7 @@ end
 
 function Layouts.vertical(bufnr, opts)
   vim.cmd.vsplit()
-  vim.api.nvim_win_set_width(0, opts.width or 38)
+  vim.api.nvim_win_resize(0, opts.width or 38, -1)
   vim.api.nvim_win_set_buf(0, bufnr)
   return true
 end

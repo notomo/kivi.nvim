@@ -109,7 +109,7 @@ end
 --- @class KiviNodes
 --- @field root_path string
 --- @field _nodes KiviFlatNode[]
---- @field _selected table<string,KiviNode>
+--- @field _selected table<string,KiviFlatNode>
 local Nodes = {}
 Nodes.__index = Nodes
 
