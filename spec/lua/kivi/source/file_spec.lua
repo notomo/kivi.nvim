@@ -2,7 +2,7 @@ local ntf = require("ntf")
 local describe, before_each, after_each, it = ntf.describe, ntf.before_each, ntf.after_each, ntf.it
 local helper = require("kivi.test.helper")
 local kivi = require("kivi")
-local assert = helper.typed_assert(ntf.assert)
+local assert = ntf.assert
 
 describe("kivi file source", function()
   before_each(helper.before_each)
