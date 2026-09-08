@@ -19,7 +19,7 @@ describe("kivi", function()
 
     helper.wait(kivi.open())
     vim.cmd.edit({ bang = true })
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.exists_pattern("file")
   end)
@@ -206,7 +206,7 @@ describe("kivi", function()
 
     vim.fn.setline(1, "file")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.exists_message("already exists: .*/file")
   end)
@@ -222,7 +222,7 @@ describe("kivi", function()
 
     vim.cmd.substitute("/file1/file2/")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.exists_message("already exists: .*/file2")
   end)
@@ -347,8 +347,8 @@ describe("kivi", function()
   end)
 
   it("does not raise error even if executed action on empty kivi buffer", function()
-    local promise = kivi.open()
+    local task = kivi.open()
     helper.wait(kivi.execute("child"))
-    helper.wait(promise)
+    helper.wait(task)
   end)
 end)

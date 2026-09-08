@@ -77,11 +77,11 @@ function M.get()
 end
 
 -- for test
-function M.promise()
+function M.task()
   local tasks = {}
-  vim.list_extend(tasks, require("kivi.view").promises())
-  vim.list_extend(tasks, require("kivi.view.renamer").promises())
-  vim.list_extend(tasks, require("kivi.view.creator").promises())
+  vim.list_extend(tasks, require("kivi.view").tasks())
+  vim.list_extend(tasks, require("kivi.view.renamer").tasks())
+  vim.list_extend(tasks, require("kivi.view.creator").tasks())
   --- @async
   --- @return nil
   local wait_all = function()

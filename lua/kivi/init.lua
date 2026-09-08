@@ -21,8 +21,8 @@ function M.get()
 end
 
 -- for test
-function M.promise()
-  return require("kivi.command").promise()
+function M.task()
+  return require("kivi.command").task()
 end
 
 return M

@@ -306,7 +306,7 @@ describe("kivi file source", function()
 
     vim.cmd.substitute("/file/renamed/")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
     vim.cmd.wincmd("p")
 
     assert.current_line("renamed")
@@ -315,7 +315,7 @@ describe("kivi file source", function()
     vim.cmd.wincmd("w")
     vim.cmd.substitute("/renamed/again/")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
     vim.cmd.wincmd("p")
 
     assert.no.exists_pattern("renamed")
@@ -340,7 +340,7 @@ describe("kivi file source", function()
 
     vim.cmd.substitute("/dir1/renamed/")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
     vim.cmd.wincmd("p")
 
     assert.exists_pattern("dir1")
@@ -460,7 +460,7 @@ describe("kivi file source", function()
 
     vim.cmd.substitute("/file/renamed/")
     vim.cmd.wq()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.no.exists_pattern("file")
     assert.exists_pattern("renamed")
@@ -489,7 +489,7 @@ describe("kivi file source", function()
 
     vim.cmd.substitute("/dir/renamed/")
     vim.cmd.wq()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.no.exists_pattern("dir")
     assert.exists_pattern("renamed/")
@@ -506,7 +506,7 @@ describe("kivi file source", function()
 
     vim.fn.setline(1, "created")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.exists_pattern("created")
   end)
@@ -524,7 +524,7 @@ describe("kivi file source", function()
 
     vim.fn.setline(1, "created")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.exists_pattern("  created")
   end)
@@ -536,7 +536,7 @@ describe("kivi file source", function()
 
     vim.fn.setline(1, "created/")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.exists_pattern("created/")
   end)
@@ -548,7 +548,7 @@ describe("kivi file source", function()
 
     vim.fn.setline(1, "created1/created2/file")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.exists_pattern("created1/")
     assert.exists_pattern("  created2/")
@@ -564,7 +564,7 @@ describe("kivi file source", function()
 
     vim.fn.setline(1, "target/file")
     vim.cmd.write()
-    helper.wait(kivi.promise())
+    helper.wait(kivi.task())
 
     assert.exists_message(("can't create: %s/target/"):format(helper.test_data.full_path))
 

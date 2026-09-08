@@ -147,20 +147,20 @@ if vim.uv.os_uname().version:match("Windows") then
     local from_path = pathlib.trim_slash(from):gsub("/", "\\")
     local to_path = pathlib.trim_slash(to):gsub("/", "\\")
     local cmd = { "xcopy", "/Y", "/E", "/I", from_path, to_path }
-    return require("kivi.lib.job").promise(cmd)
+    return require("kivi.lib.job").await(cmd)
   end
 else
   --- @async
   _copy_dir = function(from, to)
     if M.is_dir(to) then
-      return require("kivi.lib.job").promise({
+      return require("kivi.lib.job").await({
         "cp",
         "-RT",
         from,
         pathlib.trim_slash(to),
       })
     end
-    return require("kivi.lib.job").promise({
+    return require("kivi.lib.job").await({
       "cp",
       "-R",
       from,
@@ -265,7 +265,7 @@ end
 --- @async
 function M.details(paths)
   local cmd = { "ls", "-lh", unpack(paths) }
-  return require("kivi.lib.job").promise(cmd)
+  return require("kivi.lib.job").await(cmd)
 end
 
 return M

@@ -4,7 +4,7 @@ local pathlib = require("kivi.lib.path")
 
 local Creator = {}
 
-local _promise = nil
+local _task = nil
 
 function Creator.open(kind, tree_bufnr, base_node)
   local bufnr = vim.api.nvim_create_buf(false, true)
@@ -41,7 +41,7 @@ function Creator.open(kind, tree_bufnr, base_node)
       local reload = function()
         require("kivi.core.loader").reload(tree_bufnr, result.cursor_line_path, result.expanded)
       end
-      _promise = vim.async.run(reload)
+      _task = vim.async.run(reload)
     end,
   })
 end
@@ -117,11 +117,11 @@ function Creator._write(bufnr, window_id, base_node_path, kind)
 end
 
 -- for test
-function Creator.promises()
-  if _promise then
-    local promise = _promise
-    _promise = nil
-    return { promise }
+function Creator.tasks()
+  if _task then
+    local task = _task
+    _task = nil
+    return { task }
   end
   return {}
 end

@@ -1,7 +1,7 @@
 local M = {}
 
 --- @async
-function M.promise(cmd)
+function M.await(cmd)
   --- @type vim.SystemCompleted?
   local completed
   vim.async.await(function(callback)

@@ -6,7 +6,7 @@ vim.opt.packpath:prepend(vim.env.TESTPACK_PACKPATH or vim.fs.joinpath(helper.roo
 require("assertlib").register(require("ntf.assert").register)
 
 function helper.before_each()
-  require("kivi").promise()
+  require("kivi").task()
 
   helper.test_data = require("kivi.vendor.misclib.test.data_dir").setup(vim.fs.joinpath(helper.root, "spec"))
   helper.test_data:cd("")

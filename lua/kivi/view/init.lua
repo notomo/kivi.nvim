@@ -11,7 +11,7 @@ local vim = vim
 local View = {}
 View.__index = View
 
-local _promise = nil
+local _task = nil
 
 function View.open(source, open_opts)
   local bufnr = open_opts.bufnr or vim.api.nvim_create_buf(false, true)
@@ -35,7 +35,7 @@ function View.open(source, open_opts)
       local reload = function()
         require("kivi.core.loader").reload(bufnr, ctx:last_position().path)
       end
-      _promise = vim.async.run(reload)
+      _task = vim.async.run(reload)
     end,
   })
 
@@ -195,11 +195,11 @@ function View.highlight(self, source, opts, first_line, last_line)
 end
 
 -- for test
-function View.promises()
-  if _promise then
-    local promise = _promise
-    _promise = nil
-    return { promise }
+function View.tasks()
+  if _task then
+    local task = _task
+    _task = nil
+    return { task }
   end
   return {}
 end

@@ -191,7 +191,7 @@ function M.open_by_system_default(path)
     error("no cmd to open by system default", 0)
   end
 
-  local ok, err = pcall(require("kivi.lib.job").promise, cmd)
+  local ok, err = pcall(require("kivi.lib.job").await, cmd)
   if not ok then
     require("kivi.lib.message").warn(err)
   end
