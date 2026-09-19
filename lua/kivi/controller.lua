@@ -11,6 +11,7 @@ function M.open(raw_opts)
     local err = source
     error(err, 0)
   end
+  opts = opts:merge({ path = vim.fn.fnamemodify(opts.path, ":p") })
 
   local initial_bufnr = vim.api.nvim_get_current_buf()
   local ui, key = require("kivi.view").open(source, open_opts)

@@ -53,9 +53,22 @@ describe("kivi file source", function()
     assert.current_line("file3")
   end)
 
+  it("opens the current directory of the source buffer", function()
+    helper.test_data:create_dir("dir")
+    helper.test_data:create_file("dir/file")
+
+    vim.cmd.edit("dir/file")
+    vim.fn.chdir(helper.test_data:path("dir"), "buffer")
+
+    helper.wait(kivi.open())
+
+    assert.current_dir("dir")
+    assert.exists_pattern("file")
+  end)
+
   it("raise error if path does not exist", function()
     helper.wait(kivi.open({ path = "invalid_file_path" }))
-    assert.exists_message("does not exist: invalid_file_path")
+    assert.exists_message("does not exist: .*/invalid_file_path")
   end)
 
   it("can delete file", function()
