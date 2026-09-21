@@ -177,13 +177,17 @@ M.debounce_ms = 500
 
 --- @param hook_ctx KiviSourceHookContext
 function M.hook(hook_ctx)
+  local bufnr = hook_ctx.bufnr
+  if not vim.api.nvim_buf_is_valid(bufnr) then
+    return
+  end
+
   local nodes = hook_ctx.nodes
   local path = nodes.root_path
   if not filelib.exists(path) then
     return
   end
 
-  local bufnr = hook_ctx.bufnr
   local old_watcher = watchers[bufnr]
   if old_watcher then
     old_watcher:stop()
@@ -217,17 +221,15 @@ function M.hook(hook_ctx)
     require("kivi.lib.git_ignore").apply(path, nodes, window_id, hook_ctx.reload)
   end
 
-  if vim.api.nvim_buf_is_valid(bufnr) then
-    vim.api.nvim_create_autocmd({ "BufWipeout" }, {
-      group = vim.api.nvim_create_augroup("kivi.file.reload_buffer_" .. tostring(bufnr), {}),
-      buf = bufnr,
-      callback = function()
-        watchers[bufnr] = nil
-        watcher:stop()
-        watcher:close()
-      end,
-    })
-  end
+  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
+    group = vim.api.nvim_create_augroup("kivi.file.reload_buffer_" .. tostring(bufnr), {}),
+    buf = bufnr,
+    callback = function()
+      watchers[bufnr] = nil
+      watcher:stop()
+      watcher:close()
+    end,
+  })
 end
 
 M.kind_name = "file"

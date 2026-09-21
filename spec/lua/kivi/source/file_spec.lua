@@ -687,4 +687,17 @@ describe("kivi file source", function()
 
     assert.exists_pattern("file")
   end)
+
+  it("does not raise error if the buffer is wiped out while loading", function()
+    helper.test_data:create_dir("dir")
+
+    helper.wait(kivi.open())
+    helper.search("dir")
+
+    local task = kivi.execute("toggle_tree")
+    vim.cmd.bwipeout({ bang = true })
+    helper.wait(task)
+
+    assert.no.exists_message("Invalid buffer id")
+  end)
 end)
