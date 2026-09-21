@@ -191,6 +191,7 @@ function M.hook(hook_ctx)
   local old_watcher = watchers[bufnr]
   if old_watcher then
     old_watcher:stop()
+    old_watcher:close()
   end
 
   local watcher = vim.uv.new_fs_event()
