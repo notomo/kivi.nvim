@@ -60,6 +60,7 @@ function M.action_paste(nodes, _, ctx)
   end
 
   local already_exists = {}
+  local pasted = {}
   --- @async
   local try_paste = function()
     --- @async
@@ -73,9 +74,11 @@ function M.action_paste(nodes, _, ctx)
       ctx.ui:set_busy()
 
       if has_cut then
-        return M.rename(old_node.path, new_node.path)
+        M.rename(old_node.path, new_node.path)
+      else
+        M.copy(old_node.path, new_node.path)
       end
-      return M.copy(old_node.path, new_node.path)
+      table.insert(pasted, ("%s -> %s"):format(old_node.path, new_node.path))
     end)
   end
 
@@ -102,14 +105,20 @@ function M.action_paste(nodes, _, ctx)
       ctx.ui:set_busy()
 
       if has_cut then
-        return M.rename(item.from.path, item.to.path)
+        M.rename(item.from.path, item.to.path)
+      else
+        M.copy(item.from.path, item.to.path)
       end
-      return M.copy(item.from.path, item.to.path)
+      table.insert(pasted, ("%s -> %s (overwritten)"):format(item.from.path, item.to.path))
     end)
   end
 
   try_paste()
   retry()
+
+  if #pasted > 0 then
+    require("kivi.lib.message").info_with(has_cut and "moved:" or "pasted:", pasted)
+  end
 
   if #canceled_items ~= #copied then
     ctx.clipboard:clear()

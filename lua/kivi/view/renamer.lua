@@ -133,6 +133,17 @@ function Renamer._write(bufnr, base_node_path, kind, has_cut, state_lines, froms
     last_index = i
   end
 
+  local renamed = {}
+  for i = 1, last_index do
+    local item = success[i]
+    if item then
+      table.insert(renamed, ("%s -> %s"):format(item.from, item.to))
+    end
+  end
+  if #renamed > 0 then
+    require("kivi.lib.message").info_with(has_cut and "renamed:" or "pasted:", renamed)
+  end
+
   local cursor_line_path = nil
   if success[last_index] ~= nil then
     cursor_line_path = success[last_index].to

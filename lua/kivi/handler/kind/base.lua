@@ -156,6 +156,15 @@ function M.action_delete(nodes, action_ctx, ctx)
       end
     end)
     :totable())
+
+  local paths = vim
+    .iter(nodes)
+    :map(function(node)
+      return node.path
+    end)
+    :totable()
+  require("kivi.lib.message").info_with("deleted:", paths)
+
   return require("kivi.controller").reload(ctx)
 end
 

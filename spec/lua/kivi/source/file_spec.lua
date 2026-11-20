@@ -83,6 +83,7 @@ describe("kivi file source", function()
 
     assert.no.exists_pattern("file1")
     assert.exists_pattern("file2")
+    assert.exists_message("deleted: .*/file1$")
   end)
 
   it("can delete directory", function()
@@ -201,6 +202,7 @@ describe("kivi file source", function()
     helper.wait(kivi.execute("paste"))
 
     assert.exists_pattern("file")
+    assert.exists_message("pasted: .*/file %-> .*/dir/file$")
 
     helper.wait(kivi.execute("parent"))
     assert.exists_pattern("file")
@@ -268,6 +270,7 @@ describe("kivi file source", function()
     helper.wait(kivi.execute("paste"))
 
     assert.exists_pattern("file")
+    assert.exists_message("pasted: .*/file %-> .*/dir/file %(overwritten%)$")
 
     helper.search("file")
     helper.wait(kivi.execute("vsplit_open"))
@@ -324,6 +327,7 @@ describe("kivi file source", function()
 
     assert.current_line("renamed")
     assert.exists_pattern("file")
+    assert.exists_message("pasted: .*/file %-> .*/dir/renamed$")
 
     vim.cmd.wincmd("w")
     vim.cmd.substitute("/renamed/again/")
@@ -382,6 +386,7 @@ describe("kivi file source", function()
     helper.wait(kivi.execute("paste"))
 
     assert.exists_pattern("file")
+    assert.exists_message("moved: .*/file %-> .*/dir/file$")
 
     helper.wait(kivi.execute("parent"))
     assert.no.exists_pattern("file")
@@ -477,6 +482,7 @@ describe("kivi file source", function()
 
     assert.no.exists_pattern("file")
     assert.exists_pattern("renamed")
+    assert.exists_message("renamed: .*/file %-> .*/renamed$")
 
     assert.same({
       { old_path = helper.path("file"), new_path = helper.path("renamed") },
